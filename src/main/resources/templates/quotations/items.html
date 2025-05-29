@@ -1,0 +1,166 @@
+<!-- Page Header with Actions -->
+<div class="bg-white border-b border-gray-200 mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="mb-4 sm:mb-0">
+                <h1 class="text-2xl font-semibold text-gray-800">Détails du devis</h1>
+                <p class="text-sm text-gray-500 mt-1">Liste des articles pour le devis <b th:text="${parentId}"></b></p>
+                
+                
+                <th:block th:if="${quotationInfo.status == 'Submitted' or quotationInfo.status == 'Cancelled'}">
+                    <div th:classappend="${quotationInfo.status == 'Submitted'} ? 'bg-yellow-100 border-yellow-500 text-yellow-700' : 'bg-red-100 border-red-500 text-red-700'"
+                        class="border-l-4 p-4 rounded mt-4">
+                        <p class="font-medium">
+                            <span th:if="${quotationInfo.status == 'Submitted'}">⚠️ Ce devis a été validé et n'est plus modifiable.</span>
+                            <span th:if="${quotationInfo.status == 'Cancelled'}">❌ Ce devis a été annulé et n'est plus modifiable.</span>
+                        </p>
+                    </div>
+                </th:block>
+
+
+                <th:block th:unless="${quotationInfo.status == 'Submitted' or quotationInfo.status == 'Cancelled'}">
+                    <form th:action="@{/quotations/submit}" method="post" class="mt-4 sm:mt-0">
+                        <input type="hidden" name="quotationName" th:value="${parentId}" />
+                        <button type="submit" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Valider le devis
+                        </button>
+                    </form>
+                </th:block>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
+            <!-- Message de succès -->
+            <th:block th:if="${success}">
+                <div id="success-message" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Succès ! </strong>
+                    <span class="block sm:inline" th:text="${success}"></span>
+                    <!-- Bouton pour fermer le message -->
+                    <button onclick="closeMessage('success-message')" class="absolute top-0 right-0 p-2 text-green-700 hover:text-green-900 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </th:block>
+        
+            <th:block th:if="${error}">
+                <div id="error-message" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Erreur ! </strong>
+                    <span class="block sm:inline" th:text="${error}"></span>  <!-- Utilisez th:utext pour rendre le texte avec HTML -->
+                    <button onclick="closeMessage('error-message')" class="absolute top-0 right-0 p-2 text-red-700 hover:text-red-900 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </th:block>
+
+        </div>
+        
+        <!-- Script pour fermer le message -->
+        <script>
+            function closeMessage(messageId) {
+                document.getElementById(messageId).style.display = 'none';
+            }
+        </script>
+        
+
+    </div>
+</div>
+
+<!-- Items Table -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code Article</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom Article</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Entrepôt</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantité</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix Unitaire</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="item : ${quotationItems}" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${item.itemCode}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${item.itemName}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${item.warehouse}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${item.qty}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <form th:action="@{/quotation-items}" method="post" class="flex items-center space-x-2">
+                                <input type="hidden" name="itemName" th:value="${item.name}" />
+                                <input type="hidden" name="parentId" th:value="${parentId}" />
+                                <input type="number" step="0.01" name="newRate" th:value="${item.rate}" class="border rounded px-2 py-1 w-24 text-sm" />
+                                <button type="button"
+                                        class="ml-2 text-blue-500 hover:text-blue-700 text-xs flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                        onclick="editRate(this)"
+                                        th:disabled="${quotationInfo.status == 'Submitted'}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                        <path fill-rule="evenodd" d="M5 15a1 1 0 011-1h9a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    Modifier
+                                </button>
+                            </form>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900"
+                            th:text="${#numbers.formatDecimal(item.amount, 1, 'COMMA', 2, 'POINT') + ' USD'}"></td>
+                    </tr>
+
+                    <!-- Aucun résultat -->
+                    <tr th:if="${#lists.isEmpty(quotationItems)}">
+                        <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                            Aucun article trouvé pour ce devis.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <a th:href="@{/quotation-items(parentId=${parentId}, page=${currentPage - 1}, size=${pageSize})}"
+                       th:if="${currentPage > 0}"
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Précédent
+                    </a>
+                    <span class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-gray-100 rounded-md">
+                        Page <span th:text="${currentPage + 1}" class="ml-1 font-semibold"></span>
+                    </span>
+                    <a th:href="@{/quotation-items(parentId=${parentId}, page=${currentPage + 1}, size=${pageSize})}"
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Suivant
+                        <svg class="h-5 w-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function editRate(button) {
+        if (button.disabled) {
+            return;
+        }
+
+        const form = button.closest('form');
+        if (form) {
+            form.submit();
+        }
+    }
+</script>

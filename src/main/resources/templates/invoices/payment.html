@@ -1,0 +1,268 @@
+<div class="max-w-4xl mx-auto mt-6">
+    <form id="paymentForm" th:action="@{/payments/process}" method="post" th:object="${paymentDTO}">
+        <input type="hidden" th:field="*{outstandingAmount}" th:value="${invoice.outstandingAmount}">
+        <input type="hidden" th:field="*{invoiceName}" th:value="${invoice.name}">
+        <input type="hidden" name="references[0].referenceName" th:value="${invoice.name}">
+        <input type="hidden" name="references[0].referenceDoctype" value="Purchase Invoice">
+        <input type="hidden" name="references[0].allocatedAmount" th:value="${invoice.outstandingAmount}">
+
+        
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">Paiement de Facture</h1>
+                <p class="text-sm text-gray-500 mt-1">Référence: <span class="font-medium" th:text="${invoice.name}"></span></p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="invoices" class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-gray-700 rounded-md shadow-sm text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Annuler
+                </a>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent bg-blue-600 text-white rounded-md shadow-sm text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+
+        <!-- Messages d'alerte -->
+        <div class="mb-6 space-y-4">
+            <div th:if="${success}" id="success-message" class="bg-green-50 border-l-4 border-green-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-green-700">
+                            <span th:text="${success}"></span>
+                        </p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button onclick="closeMessage('success-message')" class="-mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-100 inline-flex h-8 w-8">
+                            <span class="sr-only">Fermer</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${error}" id="error-message" class="bg-red-50 border-l-4 border-red-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700">
+                            <span th:text="${error}"></span>
+                        </p>
+                    </div>
+                    <div class="ml-auto pl-3">
+                        <button onclick="closeMessage('error-message')" class="-mx-1.5 -my-1.5 bg-red-50 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-100 inline-flex h-8 w-8">
+                            <span class="sr-only">Fermer</span>
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte principale -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
+            <!-- Section Informations de base -->
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-800 mb-4">Informations de paiement</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="paymentType" class="block text-sm font-medium text-gray-700 mb-1">Type de paiement</label>
+                            <select id="paymentType" th:field="*{paymentType}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option value="Pay">Payer</option>
+                                <option value="Receive">Recevoir</option>
+                                <option value="Internal Transfer">Transfert interne</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Société</label>
+                            <select id="company" th:field="*{company}" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option th:each="companyItem : ${companies}" 
+                                        th:value="${companyItem.name}" 
+                                        th:text="${companyItem.name}" 
+                                        th:selected="${invoice.company == companyItem.name}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="postingDate" class="block text-sm font-medium text-gray-700 mb-1">Date de comptabilisation</label>
+                            <input type="date" id="postingDate" th:field="*{postingDate}" th:value="${invoice.postingDate}" 
+                                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                        </div>
+                        
+                        <div>
+                            <label for="paidAmount" class="block text-sm font-medium text-gray-700 mb-1">Montant payé</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                <input type="number" step="0.01" id="paidAmount" th:field="*{paidAmount}" 
+                                       th:max="${invoice.outstandingAmount}"
+                                       class="block w-full pl-7 pr-12 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm" th:text="${invoice.currency}"></span>
+                                </div>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-500">Montant restant: <span class="font-medium" th:text="${invoice.outstandingAmount + ' ' + invoice.currency}"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Références -->
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-800 mb-4">Références</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Référence</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dû</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alloué</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    Facture d'achat
+                                    <input type="hidden" th:field="*{invoiceType}" value="Purchase Invoice">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${invoice.name}">
+                                    <input type="hidden" th:field="*{invoiceName}" th:value="${invoice.name}">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${invoice.postingDate}"></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${invoice.outstandingAmount + ' ' + invoice.currency}"></td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="relative rounded-md shadow-sm">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">$</span>
+                                        </div>
+                                        <input type="number" id="allocateAmountInput" step="0.01" th:field="*{allocatedAmount}"
+                                               th:max="${invoice.outstandingAmount}"
+                                               class="block w-full pl-7 pr-12 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm" th:text="${invoice.currency}"></span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <br>
+                <hr>
+                <br>
+                <h3 class="text-lg font-medium text-gray-800 mb-4">Identifiant de Transaction</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="referenceNo" class="block text-sm font-medium text-gray-700 mb-1">Chèque/N° de Référence</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input type="text" id="referenceNo" th:field="*{referenceNo}" 
+                                   class="block w-full pl-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="referenceDate" class="block text-sm font-medium text-gray-700 mb-1">Chèque/Date de Référence</label>
+                        <input type="date" id="referenceDate" th:field="*{referenceDate}" th:value="${invoice.postingDate}" 
+                               class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- Section Comptes -->
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-800 mb-4">Comptes bancaires</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="paidFrom" class="block text-sm font-medium text-gray-700 mb-1">Compte Payé Du</label>
+                            <select id="paidFrom" th:field="*{paidFrom}"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option value="Bank Account - ED" selected>Bank Account - ED</option>
+                                <option value="Cash - ED">Cash - ED</option>
+                                <option value="Bank Account - ED" selected>Bank Account - E</option>
+                                <option value="Cash - ED">Cash - E</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="paidFromAccountCurrency" class="block text-sm font-medium text-gray-700 mb-1">Devise du cpte client</label>
+                            <select id="paidFromAccountCurrency" th:field="*{paidFromAccountCurrency}"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option value="USD" selected>USD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label for="paidTo" class="block text-sm font-medium text-gray-700 mb-1">Compte Payé Au</label>
+                            <select id="paidTo" th:field="*{paidTo}"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option value="Creditors - ED" selected>Creditors - ED</option>
+                                <option value="Creditors - ED" selected>Creditors - E</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="paidToAccountCurrency" class="block text-sm font-medium text-gray-700 mb-1">Devise du compte</label>
+                            <select id="paidToAccountCurrency" th:field="*{paidToAccountCurrency}"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option value="USD" selected>USD</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+       
+        <!-- Champs cachés -->
+        <input type="hidden" th:field="*{party}" th:value="${invoice.supplier}">
+        <input type="hidden" th:field="*{currency}" th:value="${invoice.currency}">
+    </form>
+</div>
+
+<script>
+    function closeMessage(messageId) {
+        document.getElementById(messageId).style.display = 'none';
+    }
+
+    const paidAmount = document.getElementById("paidAmount");
+    const allocateAmountInput = document.getElementById("allocateAmountInput");
+
+    // Mettre la valeur initiale au chargement de la page
+    window.addEventListener("DOMContentLoaded", () => {
+        if (paidAmount && allocateAmountInput) {
+            allocateAmountInput.value = paidAmount.value;
+        }
+    });
+
+    // Mettre à jour la valeur si l'utilisateur modifie paidAmount
+    paidAmount.addEventListener("input", (e) => {
+        allocateAmountInput.value = e.target.value;
+    });
+</script>

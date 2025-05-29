@@ -1,0 +1,160 @@
+<script>
+    // Fonction de filtrage améliorée avec recherche instantanée et délai
+    let searchTimer;
+    function filterSuppliers() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            let searchTerm = document.getElementById("search-input").value.toLowerCase();
+            let supplierRows = document.querySelectorAll(".supplier-row");
+            let noResults = document.getElementById("no-results");
+
+            let hasVisibleRows = false;
+            
+            supplierRows.forEach(row => {
+                let supplierName = row.querySelector(".supplier-name").textContent.toLowerCase();
+                if (supplierName.includes(searchTerm)) {
+                    row.style.display = "";
+                    hasVisibleRows = true;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            noResults.style.display = hasVisibleRows ? "none" : "block";
+        }, 300);
+    }
+
+    // Fonction pour ouvrir le formulaire de création
+    function newSupplier() {
+        // Ici vous pourriez ouvrir un modal ou rediriger vers une page de création
+        console.log("Ouvrir formulaire nouveau fournisseur");
+        // window.location.href = "/suppliers/new";
+    }
+</script>
+
+<!-- Page Header with Actions -->
+<div class="bg-white border-b border-gray-200 mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="mb-4 sm:mb-0">
+                <h1 class="text-2xl font-semibold text-gray-800">Fournisseurs</h1>
+                <p class="text-sm text-gray-500 mt-1">Liste de tous vos fournisseurs enregistrés</p>
+            </div>
+            
+
+        </div>
+        
+        <!-- Search and Filter Bar -->
+        <div class="mt-6 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+            <div class="relative w-full md:w-96">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <form action="suppliers" method="get" class="flex items-center space-x-2">
+                    <div class="relative flex-1">
+                        <input type="text" name="search" id="search-input"
+                               placeholder="Rechercher des fournisseurs..."
+                               class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <!-- Icône de recherche (optionnelle) -->
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Rechercher
+                    </button>
+                </form>
+                
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+        </div>
+
+    <!-- Suppliers Table -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                         <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <!-- Boucle Thymeleaf pour lister les fournisseurs -->
+                    <tr th:each="supplier : ${suppliers}" class="supplier-row hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <span class="text-blue-600 font-medium" th:text="${supplier.name.substring(0, 1)}"></span>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900 supplier-name" th:text="${supplier.name}"></div>
+                                    
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a th:href="@{/requests-for-quotation(supplierName=${supplier.name})}" class="text-blue-600 hover:text-blue-900 mr-3">Voir demandes devis</a>
+                            <a th:href="@{/orders(supplierId=${supplier.name})}" class="text-indigo-600 hover:text-indigo-900">Voir commandes</a>
+                        </td>
+                    </tr>
+                    
+                    <!-- Aucun résultat -->
+                    <tr id="no-results" style="display: none;">
+                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
+                            Aucun fournisseur ne correspond à votre recherche
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <div class="flex items-center space-x-2">
+                        <a th:href="@{/suppliers(page=${currentPage - 1}, size=${pageSize})}" 
+                           th:if="${currentPage > 0}"
+                           class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Précédent
+                        </a>
+                        
+                        <!-- Numéro de page actuel -->
+                        <span class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-gray-100 rounded-md">
+                            Page <span th:text="${currentPage + 1}" class="ml-1 font-semibold"></span>
+                        </span>
+                        
+                        <a th:href="@{/suppliers(page=${currentPage + 1}, size=${pageSize})}"
+                           class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Suivant
+                            <svg class="h-5 w-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        
+        
+    </div>
+</div>

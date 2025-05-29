@@ -1,0 +1,105 @@
+<!-- Page Header with Actions -->
+<div class="bg-white border-b border-gray-200 mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="mb-4 sm:mb-0">
+                <h1 class="text-2xl font-semibold text-gray-800">Bons de commande</h1>
+                <p class="text-sm text-gray-500 mt-1">Liste des bons de commande pour le fournisseur <b th:text="${supplier}"></b></p>
+            </div>
+        </div>
+
+
+        <!-- Filter Bar for Status -->
+    <div class="mt-6 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+        <div class="relative w-full md:w-96">
+            <form th:action="@{/orders}" method="get" class="flex items-center space-x-2">
+                <input type="hidden" name="supplierId" th:value="${supplier}">
+                <div class="relative flex-1">
+                    <select id="status" name="status" class="block w-full pl-3 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">-- Tous les statuts --</option>
+                        <tr th:each="status : ${purchaseStatus}">
+                            <option th:value="${status.key}" th:text="${status.label}"></option>
+                        </tr>
+                    </select>
+                </div>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Filtrer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    </div>
+
+    
+</div>
+
+<!-- Purchase Orders Table -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom du BC</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fournisseur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date de transaction</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <!-- Boucle Thymeleaf pour lister les bons de commande -->
+                    <tr th:each="order : ${purchaseOrders}" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${order.name}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${order.supplierName}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${order.transactionDate}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                            th:text="${#numbers.formatDecimal(order.grandTotal, 1, 'COMMA', 2, 'POINT') + ' USD'}">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${order.status}"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a th:href="@{/orders/details/{id}(id=${order.name})}" class="text-blue-600 hover:text-blue-900">Voir détails</a>
+                        </td>
+                    </tr>
+
+                    <!-- Aucun résultat -->
+                    <tr th:if="${#lists.isEmpty(purchaseOrders)}">
+                        <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                            Aucun bon de commande trouvé pour ce fournisseur.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <a th:href="@{/orders(supplierId=${supplier}, page=${currentPage - 1}, size=${pageSize})}"
+                       th:if="${currentPage > 0}"
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Précédent
+                    </a>
+                    
+                    <span class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-gray-100 rounded-md">
+                        Page <span th:text="${currentPage + 1}" class="ml-1 font-semibold"></span>
+                    </span>
+
+                    <a th:href="@{/orders(supplierId=${supplier}, page=${currentPage + 1}, size=${pageSize})}"
+                       class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        Suivant
+                        <svg class="h-5 w-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
