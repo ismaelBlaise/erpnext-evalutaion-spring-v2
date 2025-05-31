@@ -1,0 +1,113 @@
+<div class="bg-white border-b border-gray-200 mb-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+      <div class="mb-4 sm:mb-0">
+        <h1 class="text-2xl font-semibold text-gray-800">Paies</h1>
+        <p class="text-sm text-gray-500 mt-1">Liste de toutes les fiches de paie de :<b th:text="${filter.employee}"></b></p>
+      </div>
+    </div>
+
+    <!-- Barre de filtre stylée -->
+    <div class="mt-6 bg-white shadow-sm rounded-lg px-6 py-5 max-w-7xl mx-auto">
+      <form action="payrolls" method="get" class="flex flex-wrap gap-6 items-end justify-between">
+
+        
+          <input type="hidden" name="employee" id="employee" placeholder="Nom complet"
+                 th:value="${filter.employee}"
+                 class="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+       
+
+        <!-- Date début -->
+        <div class="flex flex-col w-full sm:w-40">
+          <label for="month" class="mb-1 text-xs font-semibold text-gray-500 uppercase">Mois</label>
+          <input type="month" name="month" id="month"
+                 
+                 class="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+        </div>
+
+        
+
+        <div class="flex items-center w-full sm:w-auto">
+          <button type="submit"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Filtrer
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+  <!-- Table des paies -->
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200" style="font-size:15px;">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employé</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Période</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant (€)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+            <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr th:each="slip : ${salarySlips}" class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap" th:text="${slip.employeeName}"></td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span th:text="${slip.startDate} + ' - ' + ${slip.endDate}"></span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap" th:text="${slip.netPay}"></td>
+             <td class="px-6 py-4 whitespace-nowrap" th:text="${slip.status}"></td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <a th:href="@{/payrolls/pdf(name=${slip.name})}"
+                class="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 4v16m8-8H4" />
+                </svg>
+                Exporter PDF
+            </a>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <div class="flex items-center space-x-2">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/payrolls(page=${currentPage - 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
+               class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+              <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Précédent
+            </a>
+
+            <span class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-gray-100 rounded-md">
+              Page <span th:text="${currentPage + 1}" class="ml-1 font-semibold"></span>
+            </span>
+
+            <a th:href="@{/payrolls(page=${currentPage + 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
+               class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+              Suivant
+              <svg class="h-5 w-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+  </div>
+</div>

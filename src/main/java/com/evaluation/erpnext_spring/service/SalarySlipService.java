@@ -58,6 +58,7 @@ public class SalarySlipService {
             urlBuilder.append(filtersParam);
         }
 
+        System.out.println(urlBuilder.toString());
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
