@@ -81,19 +81,21 @@ public class SalarySlipController {
         return modelAndView;
     }
 
-    @GetMapping("/{id}/export")
-    public void exportFicheDePaie(@PathVariable String id, HttpSession session,HttpServletResponse response) {
+    @GetMapping("/export")
+    public void exportFicheDePaie(@RequestParam("id") String id, HttpSession session, HttpServletResponse response) {
         try {
-            SalarySlipDto salaire = salarySlipService.getSalarySlipByName(session,id).getData();
+            SalarySlipDto salaire = salarySlipService.getSalarySlipByName(session, id).getData();
             response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "attachment; filename=fiche_de_paie_" + id + ".pdf");
 
-            
+            // Changer attachment en inline pour afficher dans le navigateur
+            response.setHeader("Content-Disposition", "inline; filename=fiche_de_paie_" + id + ".pdf");
+
             export.exporterFicheDePaiePDF(salaire, response.getOutputStream());
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 }
