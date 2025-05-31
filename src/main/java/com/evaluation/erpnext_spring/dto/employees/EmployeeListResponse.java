@@ -1,24 +1,20 @@
-package com.evaluation.erpnext_spring.dto.suppliers;
+package com.evaluation.erpnext_spring.dto.employees;
 
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Data;
 
 @Data
-public class SupplierListResponse {
+public class EmployeeListResponse {
     @JsonProperty("data")
-    private List<SupplierDto> data;
+    private List<EmployeeDto> data;
     @JsonIgnore
     private int total;
 
-    public SupplierListResponse() {}
+    public EmployeeListResponse() {}
 
-    public SupplierListResponse(List<SupplierDto> data) {
+    public EmployeeListResponse(List<EmployeeDto> data) {
         this.data = data;
     }
-
-   
 }

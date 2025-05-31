@@ -34,6 +34,7 @@ public class AuthController {
         LoginResponseDTO response = authService.login(loginRequest);
         
         if (response.isSuccess()) {
+            
             session.setAttribute("sid", response.getSessionId());
             session.setAttribute("fullName", response.getFullName());
             modelAndView.setViewName("redirect:/dashboard");
