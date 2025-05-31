@@ -14,27 +14,31 @@
             <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Nom complet</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.employeeName}">John Doe</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.employeeName}"></dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Prénom</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.firstName}">John</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.firstName}"></dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Nom</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.lastName}">Doe</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.lastName}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Date d'anniversaire</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.birthDate}"></dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Sexe</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.gender}">Masculin</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.gender}"></dd>
                 </div>
-                <!-- <div>
+                <div>
                     <dt class="text-sm font-medium text-gray-500">Email professionnel</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.companyEmail}">john.doe@company.com</dd>
-                </div> -->
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.email}"></dd>
+                </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Date d'embauche</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.hireDate}">2023-05-12</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.hireDate}"></dd>
                 </div>
             </dl>
         </div>
@@ -46,35 +50,42 @@
             <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Poste</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.position}">Développeur</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.position}"></dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Département</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.department}">Informatique</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.department}"></dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Type de contrat</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.employmentType}">CDI</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.employmentType}"></dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Société</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.company}">ABC SARL</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.company}"></dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Agence / Succursale</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.branch}">Antananarivo</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.branch}"></dd>
                 </div>
                 <div>
                     <dt class="text-sm font-medium text-gray-500">Statut</dt>
-                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.status}">Actif</dd>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.status}"></dd>
                 </div>
             </dl>
         </div>
 
-        <div class="px-6 py-4 bg-gray-50 text-right">
-            <a th:href="@{/employees}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100">
-                Retour à la liste
+        <div class="px-6 py-4 bg-gray-50 flex justify-between sm:justify-end gap-3">
+            <a th:href="@{/employees}"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100 transition">
+                ← Retour à la liste
+            </a>
+
+            <a th:href="@{/payrolls(employeeName=${employee.employeeName})}"
+            class="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition">
+                🧾 Voir les fiches de paie
             </a>
         </div>
+
     </div>
 </div>

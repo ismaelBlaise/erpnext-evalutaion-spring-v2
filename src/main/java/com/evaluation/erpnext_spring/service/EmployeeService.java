@@ -34,7 +34,7 @@ public class EmployeeService {
         if (sid == null || sid.isEmpty()) {
             throw new RuntimeException("Session not authenticated");
         }
-        String fields = "[\"name\",\"employee_name\",\"first_name\",\"last_name\",\"status\",\"company\",\"department\",\"designation\",\"gender\",\"date_of_joining\",\"employment_type\",\"branch\",\"company_email\"]";
+        String fields = "[\"name\",\"employee_name\",\"first_name\",\"last_name\",\"status\",\"company\",\"department\",\"designation\",\"gender\",\"date_of_joining\",\"date_of_birth\",\"employment_type\",\"branch\",\"company_email\"]";
 
         String filtre=buildFilters(filter);
         StringBuilder urlBuilder = new StringBuilder(erpnextApiUrl + "/api/resource/Employee?");
