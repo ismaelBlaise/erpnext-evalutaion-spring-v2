@@ -1,0 +1,91 @@
+<div class="bg-white border-b border-gray-200 mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-2xl font-bold text-gray-800">Fiche de l'employé</h1>
+        <p class="text-sm text-gray-500 mt-1">Détails complets de l'employé</p>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-700">Informations personnelles</h2>
+        </div>
+        <div class="px-6 py-6">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Nom complet</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.employeeName}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Prénom</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.firstName}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Nom</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.lastName}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Date d'anniversaire</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.birthDate}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Sexe</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.gender}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Email professionnel</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.email}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Date d'embauche</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.hireDate}"></dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="px-6 py-5 border-t border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-700">Informations professionnelles</h2>
+        </div>
+        <div class="px-6 py-6">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Poste</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.position}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Département</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.department}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Type de contrat</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.employmentType}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Société</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.company}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Agence / Succursale</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.branch}"></dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.status}"></dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="px-6 py-4 bg-gray-50 flex justify-between sm:justify-end gap-3">
+            <a th:href="@{/employees}"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100 transition">
+                ← Retour à la liste
+            </a>
+
+            <a th:href="@{/payrolls(employeeName=${employee.employeeName})}"
+            class="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition">
+                🧾 Voir les fiches de paie
+            </a>
+        </div>
+
+    </div>
+</div>

@@ -97,7 +97,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Département</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Société</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'embauche</th>
-                        <!-- <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th> -->
+                        <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -107,9 +107,9 @@
                         <td class="px-6 py-4 whitespace-nowrap" th:text="${employee.department}"></td>
                         <td class="px-6 py-4 whitespace-nowrap" th:text="${employee.company}"></td>
                         <td class="px-6 py-4 whitespace-nowrap" th:text="${employee.hireDate}"></td>
-                        <!-- <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a th:href="@{/orders(employeeId=${employee.name})}" class="text-indigo-600 hover:text-indigo-900">Voir commandes</a>
-                        </td> -->
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a th:href="@{/employees/view(name=${employee.name})}" class="text-indigo-600 hover:text-indigo-900">Voir fiche</a>
+                        </td>
                     </tr>
                 </tbody>
 
