@@ -1,0 +1,80 @@
+<div class="bg-white border-b border-gray-200 mb-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-2xl font-bold text-gray-800">Fiche de l'employé</h1>
+        <p class="text-sm text-gray-500 mt-1">Détails complets de l'employé</p>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-6 py-5 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-700">Informations personnelles</h2>
+        </div>
+        <div class="px-6 py-6">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Nom complet</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.employeeName}">John Doe</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Prénom</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.firstName}">John</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Nom</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.lastName}">Doe</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Sexe</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.gender}">Masculin</dd>
+                </div>
+                <!-- <div>
+                    <dt class="text-sm font-medium text-gray-500">Email professionnel</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.companyEmail}">john.doe@company.com</dd>
+                </div> -->
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Date d'embauche</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.hireDate}">2023-05-12</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="px-6 py-5 border-t border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-700">Informations professionnelles</h2>
+        </div>
+        <div class="px-6 py-6">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Poste</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.position}">Développeur</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Département</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.department}">Informatique</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Type de contrat</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.employmentType}">CDI</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Société</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.company}">ABC SARL</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Agence / Succursale</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.branch}">Antananarivo</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">Statut</dt>
+                    <dd class="mt-1 text-sm text-gray-900" th:text="${employee.status}">Actif</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="px-6 py-4 bg-gray-50 text-right">
+            <a th:href="@{/employees}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100">
+                Retour à la liste
+            </a>
+        </div>
+    </div>
+</div>

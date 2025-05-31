@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.evaluation.erpnext_spring.dto.employees.EmployeeDetail;
 import com.evaluation.erpnext_spring.dto.employees.EmployeeFilter;
 import com.evaluation.erpnext_spring.dto.employees.EmployeeListResponse;
 
@@ -117,6 +118,41 @@ public class EmployeeService {
         return ""; // aucun filtre
     }
 
-    
+
+
+    public EmployeeDetail getEmployeeByName(HttpSession session, String name) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session not authenticated");
+        }
+
+        String fields = "[\"name\",\"employee_name\",\"first_name\",\"last_name\",\"status\",\"company\",\"department\",\"designation\",\"gender\",\"date_of_joining\",\"employment_type\",\"branch\",\"company_email\"]";
+
+        String url = erpnextApiUrl + "/api/resource/Employee/" + name;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Cookie", "sid=" + sid);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<EmployeeDetail> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                EmployeeDetail.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Employee not found: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error while fetching employee: " + e.getMessage(), e);
+        }
+    }
+
     
 }

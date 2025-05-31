@@ -68,4 +68,27 @@ public class EmployeeController {
         
         return modelAndView;
     }
+
+
+    @GetMapping("/view")
+    public ModelAndView getEmployeeDetails(HttpSession session, @RequestParam("name") String employeeName) {
+        ModelAndView modelAndView = new ModelAndView("template");
+
+        try {
+            modelAndView.addObject("page", "employees/view");
+
+            
+            EmployeeDto employee = employeeService.getEmployeeByName(session, employeeName).getData();
+
+            
+            modelAndView.addObject("employee", employee);
+
+        } catch (Exception e) {
+            modelAndView.addObject("error", e.getMessage());
+            modelAndView.addObject("page", "error");
+        }
+
+        return modelAndView;
+    }
+
 }
