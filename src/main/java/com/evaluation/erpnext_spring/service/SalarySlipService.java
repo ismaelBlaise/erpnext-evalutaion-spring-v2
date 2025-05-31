@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
+import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
 
 @Service
@@ -28,7 +29,38 @@ public class SalarySlipService {
     @Value("${erpnext.api.secret}")
     private String erpnextApiSecret;
 
-    
+    public String fields(){
+        return
+        "[\n"
+            + "\"name\",\n"
+            + "\"employee\",\n"
+            + "\"employee_name\",\n"
+            + "\"company\",\n"
+            + "\"department\",\n"
+            + "\"designation\",\n"
+            + "\"start_date\",\n"
+            + "\"end_date\",\n"
+            + "\"posting_date\",\n"
+            + "\"status\",\n"
+            + "\"currency\",\n"
+            + "\"payroll_frequency\",\n"
+            + "\"salary_structure\",\n"
+            + "\"mode_of_payment\",\n"
+            + "\"total_working_days\",\n"
+            + "\"payment_days\",\n"
+            + "\"gross_pay\",\n"
+            + "\"base_gross_pay\",\n"
+            + "\"total_deduction\",\n"
+            + "\"base_total_deduction\",\n"
+            + "\"net_pay\",\n"
+            + "\"base_net_pay\",\n"
+            + "\"rounded_total\",\n"
+            + "\"total_in_words\",\n"
+            + "\"ctc\",\n"
+            + "\"total_income_tax\",\n"
+            + "\"earnings\"\n"
+            + "]";
+    }
      
     public SalarySlipListResponse getSalarySlips(HttpSession session, int start, int pageLength, SalarySlipFilter filter) {
         String sid = (String) session.getAttribute("sid");
@@ -36,7 +68,7 @@ public class SalarySlipService {
             throw new RuntimeException("Session non authentifiée");
         }
 
-        String fields = "[\"name\",\"employee\",\"employee_name\",\"start_date\",\"end_date\",\"net_pay\",\"status\"]";
+        String fields = fields();
 
         String filtersParam = buildFilters(filter);
 
@@ -58,7 +90,7 @@ public class SalarySlipService {
             urlBuilder.append(filtersParam);
         }
 
-        System.out.println(urlBuilder.toString());
+       
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
@@ -111,5 +143,38 @@ public class SalarySlipService {
         }
 
         return "";
+    }
+
+
+    public SalarySlipDetail getSalarySlipByName(HttpSession session, String name) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session not authenticated");
+        }
+
+        String url = erpnextApiUrl + "/api/resource/Salary Slip/" + name;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Cookie", "sid=" + sid);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<SalarySlipDetail> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                SalarySlipDetail.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Salary slip not found: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error while fetching salary slip: " + e.getMessage(), e);
+        }
     }
 }

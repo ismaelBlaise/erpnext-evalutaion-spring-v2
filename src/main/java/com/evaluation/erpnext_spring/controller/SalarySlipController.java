@@ -3,6 +3,7 @@ package com.evaluation.erpnext_spring.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -10,8 +11,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
+import com.evaluation.erpnext_spring.service.ExportPdfService;
 import com.evaluation.erpnext_spring.service.SalarySlipService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
@@ -21,6 +24,9 @@ public class SalarySlipController {
 
     @Autowired
     private SalarySlipService salarySlipService;
+
+    @Autowired
+    private ExportPdfService export;
 
     @GetMapping
     public ModelAndView listSalarySlips(HttpSession session,
@@ -74,4 +80,22 @@ public class SalarySlipController {
 
         return modelAndView;
     }
+
+    @GetMapping("/export")
+    public void exportFicheDePaie(@RequestParam("id") String id, HttpSession session, HttpServletResponse response) {
+        try {
+            SalarySlipDto salaire = salarySlipService.getSalarySlipByName(session, id).getData();
+            response.setContentType("application/pdf");
+
+            // Changer attachment en inline pour afficher dans le navigateur
+            response.setHeader("Content-Disposition", "inline; filename=fiche_de_paie_" + id + ".pdf");
+
+            export.exporterFicheDePaiePDF(salaire, response.getOutputStream());
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 }
