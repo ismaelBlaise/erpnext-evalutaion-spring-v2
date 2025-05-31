@@ -31,7 +31,7 @@ public class EmployeeController {
     public ModelAndView listEmployees(HttpSession session,
                                     @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "5") int size,
-                                    @RequestParam(required = false) EmployeeFilter filter) {
+                                    EmployeeFilter filter) {
         ModelAndView modelAndView = new ModelAndView("template");
         EmployeeListResponse response = null;
         DataListReponse dataListReponse=null;

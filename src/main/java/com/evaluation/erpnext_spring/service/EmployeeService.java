@@ -35,20 +35,19 @@ public class EmployeeService {
         }
         String fields = "[\"name\",\"employee_name\",\"first_name\",\"last_name\",\"status\",\"company\",\"department\",\"designation\",\"gender\",\"date_of_joining\",\"employment_type\",\"branch\",\"company_email\"]";
 
+        String filtre=buildFilters(filter);
         StringBuilder urlBuilder = new StringBuilder(erpnextApiUrl + "/api/resource/Employee?");
-        urlBuilder.append("limit_start=").append(start)
-                .append("&limit_page_length=").append(pageLength)
-                .append("&fields=").append(fields);
+        
 
-         
-        urlBuilder.append(buildFilters(filter));
+        if(filtre.isBlank()){
+            urlBuilder.append("limit_start=").append(start)
+                .append("&limit_page_length=").append(pageLength);
+        }
+        
+        urlBuilder.append("&fields=").append(fields);
+        urlBuilder.append(filtre);
 
-        System.out.println();
-        System.out.println();
-        System.out.println(urlBuilder.toString());
-        System.out.println();
-        System.out.println();
-
+       
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
