@@ -126,6 +126,7 @@ public class EmployeeService {
             throw new RuntimeException("Session not authenticated");
         }
 
+        @SuppressWarnings("unused")
         String fields = "[\"name\",\"employee_name\",\"first_name\",\"last_name\",\"status\",\"company\",\"department\",\"designation\",\"gender\",\"date_of_joining\",\"employment_type\",\"branch\",\"company_email\"]";
 
         String url = erpnextApiUrl + "/api/resource/Employee/" + name;
