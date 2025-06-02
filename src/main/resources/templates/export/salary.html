@@ -1,27 +1,235 @@
-<div class="container mx-auto px-4 py-8 max-w-6xl">
-    <div class="flex justify-between items-center mb-6">
-         <a th:href="@{'/payrolls/export?id=' + ${salary.name}}"
-           class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
-            Télécharger PDF
-        </a>
-        
-    </div>
 
-    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+    
+    
+    <style>
+        
+    
+        .container {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            width: 100%;
+            max-width: 72rem;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        
+        
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+        
        
-        <div class="bg-blue-800 text-white px-6 py-4 border-b border-blue-900">
+        .card-header {
+            background-color: #1e40af;
+            color: #ffffff;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #1e3a8a;
+        }
+        
+        
+        .flex {
+            display: flex;
+        }
+        
+        .justify-between {
+            justify-content: space-between;
+        }
+        
+        .items-center {
+            align-items: center;
+        }
+        
+         
+        .badge {
+            background-color: #1d4ed8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+        }
+        
+        
+        .section {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            text-align: left;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            color: #374151;
+            background-color: #f9fafb;
+        }
+        
+        .table td {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #e5e7eb;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+         
+        .grid {
+            display: grid;
+        }
+        
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        
+        .gap-6 {
+            gap: 1.5rem;
+        }
+        
+        /* Espacement */
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Typographie */
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+        }
+        
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+        
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+        
+        .font-bold {
+            font-weight: 700;
+        }
+        
+        .font-semibold {
+            font-weight: 600;
+        }
+        
+        .font-medium {
+            font-weight: 500;
+        }
+        
+        /* Couleurs */
+        .text-blue-700 {
+            color: #1d4ed8;
+        }
+        
+        .text-red-600 {
+            color: #dc2626;
+        }
+        
+        .text-gray-700 {
+            color: #374151;
+        }
+        
+        .text-gray-800 {
+            color: #1f2937;
+        }
+        
+        .text-gray-900 {
+            color: #111827;
+        }
+        
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+        
+        .bg-gray-100 {
+            background-color: #f3f4f6;
+        }
+        
+        /* Utilitaires */
+        .rounded-md {
+            border-radius: 0.375rem;
+        }
+        
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        
+        .overflow-x-auto {
+            overflow-x: auto;
+        }
+        
+        .w-full {
+            width: 100%;
+        }
+        
+        .w-1\/4 {
+            width: 25%;
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .md\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            
+            .md\:grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+    </style>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
             <div class="flex justify-between items-center">
                 <h1 class="text-2xl font-bold">Slip de salaire</h1>
-                <div class="bg-blue-700 px-3 py-1 rounded-md">
+                <div class="badge">
                     <span th:text="${salary.name}" class="font-medium"></span>
                 </div>
             </div>
         </div>
 
-        
-        <div class="p-6 border-b border-gray-200">
+        <div class="section">
             <div class="mb-6 overflow-x-auto">
-                <table class="w-full">
+                <table class="table">
                     <tr class="bg-gray-50">
                         <th class="text-left py-2 px-4 font-medium text-gray-700">Employé:</th>
                         <td class="py-2 px-4" th:text="${salary.employee}"></td>
@@ -69,11 +277,11 @@
             </div>
         </div>
 
-        <!-- Section jours travaillés -->
-        <div class="p-6 border-b border-gray-200">
+         
+        <div class="section">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">Jours travaillés</h2>
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse">
+                <table class="table table-bordered">
                     <thead>
                         <tr class="bg-gray-100">
                             <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Jours Ouvrables</th>
@@ -96,8 +304,8 @@
             </div>
         </div>
 
-        <!-- Section montants -->
-        <div class="p-6 border-b border-gray-200">
+        
+        <div class="section">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">Montants</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-gray-50 p-4 rounded-md">
@@ -132,11 +340,10 @@
             </div>
         </div>
 
-       
-        <div class="p-6">
+        <div class="section">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">Informations fiscales</h2>
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse">
+                <table class="table">
                     <tbody>
                         <tr class="border-b border-gray-200">
                             <th class="text-left py-3 px-4 font-medium text-gray-700 w-1/4">Total en toutes lettres:</th>
@@ -168,3 +375,4 @@
         </div>
     </div>
 </div>
+</body>

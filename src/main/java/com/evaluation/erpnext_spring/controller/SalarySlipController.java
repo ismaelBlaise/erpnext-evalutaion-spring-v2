@@ -1,8 +1,13 @@
 package com.evaluation.erpnext_spring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -11,12 +16,15 @@ import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
-import com.evaluation.erpnext_spring.service.ExportPdfService;
+import com.evaluation.erpnext_spring.service.PdfService;
 import com.evaluation.erpnext_spring.service.SalarySlipService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/payrolls")
@@ -26,7 +34,7 @@ public class SalarySlipController {
     private SalarySlipService salarySlipService;
 
     @Autowired
-    private ExportPdfService export;
+    private PdfService pdfGeneratorService;
 
     @GetMapping
     public ModelAndView listSalarySlips(HttpSession session,
@@ -104,18 +112,28 @@ public class SalarySlipController {
     }
 
     @GetMapping("/export")
-    public void exportFicheDePaie(@RequestParam("id") String id, HttpSession session, HttpServletResponse response) {
-        try {
-            SalarySlipDto salaire = salarySlipService.getSalarySlipByName(session, id).getData();
-            response.setContentType("application/pdf");
+    public ResponseEntity<byte[]> exportFichePaiePdf(
+             @RequestParam("id") String id, HttpSession session) {
 
-            // Changer attachment en inline pour afficher dans le navigateur
-            response.setHeader("Content-Disposition", "inline; filename=fiche_de_paie_" + id + ".pdf");
-
-            export.exporterFicheDePaiePDF(salaire, response.getOutputStream());
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        String sessionCookie = (String) session.getAttribute("sid");
+        if (sessionCookie == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
+        SalarySlipDetail response = null;
+        response=salarySlipService.getSalarySlipByName(session, id);
+        SalarySlipDto salarySlipDto=response.getData();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("salary",salarySlipDto );
+
+        byte[] pdfBytes = pdfGeneratorService.generatePdfFromThymeleaf("export/salary", data);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "Fiche_Paie_" + salarySlipDto.getEmployeeName() + ".pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
 
