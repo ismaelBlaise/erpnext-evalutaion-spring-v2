@@ -96,6 +96,55 @@
             </div>
         </div>
 
+         <!-- Section Gains -->
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Gains</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Composante</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Code</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Montant</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Année à ce jour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="earning : ${salary.earnings}">
+                            <td class="py-2 px-4 border border-gray-300" th:text="${earning.salaryComponent}"></td>
+                            <td class="py-2 px-4 border border-gray-300" th:text="${earning.abbr}"></td>
+                            <td class="py-2 px-4 border border-gray-300 text-right" th:text="${#numbers.formatDecimal(earning.amount, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                            <td class="py-2 px-4 border border-gray-300 text-right" th:text="${#numbers.formatDecimal(earning.yearToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Déductions -->
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Déductions</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Composante</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Code</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Montant</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Année à ce jour</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="deduction : ${salary.deductions}">
+                            <td class="py-2 px-4 border border-gray-300" th:text="${deduction.salaryComponent}"></td>
+                            <td class="py-2 px-4 border border-gray-300" th:text="${deduction.abbr}"></td>
+                            <td class="py-2 px-4 border border-gray-300 text-right" th:text="${#numbers.formatDecimal(deduction.amount, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                            <td class="py-2 px-4 border border-gray-300 text-right" th:text="${#numbers.formatDecimal(deduction.yearToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <!-- Section montants -->
         <div class="p-6 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-800 mb-4">Montants</h2>

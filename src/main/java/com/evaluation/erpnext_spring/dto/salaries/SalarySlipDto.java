@@ -31,8 +31,6 @@ public class SalarySlipDto {
     
     @JsonProperty("month_to_date") private String monthToDate;
     
-
-    
     
     @JsonProperty("status") private String status;
     @JsonProperty("currency") private String currency;
@@ -79,8 +77,8 @@ public class SalarySlipDto {
     
     
     @JsonProperty("timesheets") private List<Object> timesheets;
-    @JsonProperty("earnings") private List<Object> earnings;
-    @JsonProperty("deductions") private List<Object> deductions;
+    @JsonProperty("earnings") private List<SalaryEarning> earnings;
+    @JsonProperty("deductions") private List<SalaryDeduction> deductions;
     @JsonProperty("leave_details") private List<Object> leaveDetails;
     @JsonProperty("non_taxable_earnings") private double nonTaxableEarnings;
     @JsonProperty("tax_exemption_declaration") private double taxExemptionDeclaration;
