@@ -1,0 +1,170 @@
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="flex justify-between items-center mb-6">
+         <a th:href="@{'/payrolls/export?id=' + ${salary.name}}"
+           class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+            Télécharger PDF
+        </a>
+        
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+       
+        <div class="bg-blue-800 text-white px-6 py-4 border-b border-blue-900">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Slip de salaire</h1>
+                <div class="bg-blue-700 px-3 py-1 rounded-md">
+                    <span th:text="${salary.name}" class="font-medium"></span>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="p-6 border-b border-gray-200">
+            <div class="mb-6 overflow-x-auto">
+                <table class="w-full">
+                    <tr class="bg-gray-50">
+                        <th class="text-left py-2 px-4 font-medium text-gray-700">Employé:</th>
+                        <td class="py-2 px-4" th:text="${salary.employee}"></td>
+                        <th class="text-left py-2 px-4 font-medium text-gray-700">Date de Comptabilisation:</th>
+                        <td class="py-2 px-4" th:text="${salary.postingDate}"></td>
+                        <th class="text-left py-2 px-4 font-medium text-gray-700">Statut:</th>
+                        <td class="py-2 px-4" th:text="${salary.status}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="space-y-2">
+                    <p class="font-medium text-gray-700">Nom de l'Employé:</p>
+                    <p th:text="${salary.employeeName}" class="text-gray-900"></p>
+
+                    <p class="font-medium text-gray-700">Société:</p>
+                    <p th:text="${salary.company}" class="text-gray-900"></p>
+
+                    <p class="font-medium text-gray-700">Département:</p>
+                    <p th:text="${salary.department}" class="text-gray-900"></p>
+                </div>
+
+                <div class="space-y-2">
+                    <p class="font-medium text-gray-700">Désignation:</p>
+                    <p th:text="${salary.designation}" class="text-gray-900"></p>
+
+                    <p class="font-medium text-gray-700">Fréquence de la Paie:</p>
+                    <p th:text="${salary.payrollFrequency}" class="text-gray-900"></p>
+
+                    <p class="font-medium text-gray-700">Grille des Salaires:</p>
+                    <p th:text="${salary.salaryStructure}" class="text-gray-900"></p>
+                </div>
+
+                <div class="space-y-2">
+                    <p class="font-medium text-gray-700">Date de Début:</p>
+                    <p th:text="${salary.startDate}" class="text-gray-900"></p>
+
+                    <p class="font-medium text-gray-700">Mode de Paiement:</p>
+                    <p th:text="${salary.modeOfPayment}" class="text-gray-900"></p>
+
+                    <p class="font-medium text-gray-700">Date de Fin:</p>
+                    <p th:text="${salary.endDate}" class="text-gray-900"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section jours travaillés -->
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Jours travaillés</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Jours Ouvrables</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Jours d'absence</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Jours non marqués</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Jours de paiement</th>
+                            <th class="py-2 px-4 border border-gray-300 font-medium text-gray-700">Congé Sans Solde</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="py-2 px-4 border border-gray-300 text-center" th:text="${salary.totalWorkingDays}"></td>
+                            <td class="py-2 px-4 border border-gray-300 text-center" th:text="${salary.absentDays}"></td>
+                            <td class="py-2 px-4 border border-gray-300 text-center" th:text="${salary.unmarkedDays}"></td>
+                            <td class="py-2 px-4 border border-gray-300 text-center" th:text="${salary.paymentDays}"></td>
+                            <td class="py-2 px-4 border border-gray-300 text-center" th:text="${salary.leaveWithoutPay}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section montants -->
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Montants</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <table class="w-full">
+                        <tr>
+                            <th class="text-left py-2 font-medium text-gray-700">Salaire brut</th>
+                            <td class="text-right py-2 font-medium" th:text="${#numbers.formatDecimal(salary.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                        <tr>
+                            <th class="text-left py-2 font-medium text-gray-700">Déduction totale</th>
+                            <td class="text-right py-2 font-medium" th:text="${#numbers.formatDecimal(salary.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                        <tr>
+                            <th class="text-left py-2 font-medium text-gray-700">Salaire net</th>
+                            <td class="text-right py-2 font-bold text-blue-700" th:text="${#numbers.formatDecimal(salary.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-md">
+                    <table class="w-full">
+                        <tr>
+                            <th class="text-left py-2 font-medium text-gray-700">Année à ce jour</th>
+                            <td class="text-right py-2" th:text="${#numbers.formatDecimal(salary.yearToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                        <tr>
+                            <th class="text-left py-2 font-medium text-gray-700">Mois à ce jour</th>
+                            <td class="text-right py-2" th:text="${#numbers.formatDecimal(salary.monthToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section basse avec les totaux -->
+        <div class="p-6">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Informations fiscales</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <tbody>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 font-medium text-gray-700 w-1/4">Total en toutes lettres:</th>
+                            <td class="py-3 px-4" th:text="${salary.totalInWords}"></td>
+                            <th class="text-left py-3 px-4 font-medium text-gray-700 w-1/4">Gains non imposables:</th>
+                            <td class="py-3 px-4 text-right" th:text="${#numbers.formatDecimal(salary.nonTaxableEarnings, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 font-medium text-gray-700">CTC:</th>
+                            <td class="py-3 px-4 text-right" th:text="${#numbers.formatDecimal(salary.ctc, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                            <th class="text-left py-3 px-4 font-medium text-gray-700">Déclaration d'exemption fiscale:</th>
+                            <td class="py-3 px-4 text-right" th:text="${#numbers.formatDecimal(salary.taxExemptionDeclaration, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 font-medium text-gray-700">Revenus provenant d'autres sources:</th>
+                            <td class="py-3 px-4 text-right" th:text="${#numbers.formatDecimal(salary.incomeFromOtherSources, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                            <th class="text-left py-3 px-4 font-medium text-gray-700">Impôts futurs sur le revenu:</th>
+                            <td class="py-3 px-4 text-right" th:text="${#numbers.formatDecimal(salary.futureIncomeTaxDeductions, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                        <tr>
+                            <th class="text-left py-3 px-4 font-medium text-gray-700">Montant annuel imposable:</th>
+                            <td class="py-3 px-4 text-right" th:text="${#numbers.formatDecimal(salary.annualTaxableAmount, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                            <th class="text-left py-3 px-4 font-medium text-gray-700">Impôt total sur le revenu:</th>
+                            <td class="py-3 px-4 text-right font-medium text-red-600" th:text="${#numbers.formatDecimal(salary.totalIncomeTax, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
