@@ -7,19 +7,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
 import com.evaluation.erpnext_spring.service.PdfService;
 import com.evaluation.erpnext_spring.service.SalarySlipService;
-
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.HashMap;
