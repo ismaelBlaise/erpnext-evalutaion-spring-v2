@@ -31,8 +31,6 @@ public class SalarySlipDto {
     
     @JsonProperty("month_to_date") private String monthToDate;
     
-
-    
     
     @JsonProperty("status") private String status;
     @JsonProperty("currency") private String currency;

@@ -31,35 +31,7 @@ public class SalarySlipService {
 
     public String fields(){
         return
-        "[\n"
-            + "\"name\",\n"
-            + "\"employee\",\n"
-            + "\"employee_name\",\n"
-            + "\"company\",\n"
-            + "\"department\",\n"
-            + "\"designation\",\n"
-            + "\"start_date\",\n"
-            + "\"end_date\",\n"
-            + "\"posting_date\",\n"
-            + "\"status\",\n"
-            + "\"currency\",\n"
-            + "\"payroll_frequency\",\n"
-            + "\"salary_structure\",\n"
-            + "\"mode_of_payment\",\n"
-            + "\"total_working_days\",\n"
-            + "\"payment_days\",\n"
-            + "\"gross_pay\",\n"
-            + "\"base_gross_pay\",\n"
-            + "\"total_deduction\",\n"
-            + "\"base_total_deduction\",\n"
-            + "\"net_pay\",\n"
-            + "\"base_net_pay\",\n"
-            + "\"rounded_total\",\n"
-            + "\"total_in_words\",\n"
-            + "\"ctc\",\n"
-            + "\"total_income_tax\",\n"
-            + "\"earnings\"\n"
-            + "]";
+        "[\"*\"]";
     }
      
     public SalarySlipListResponse getSalarySlips(HttpSession session, int start, int pageLength, SalarySlipFilter filter) {
