@@ -69,8 +69,8 @@
               <span class="text-sm" th:text="${slip.startDate} + ' - ' + ${slip.endDate}"></span>
               <div class="text-xs text-gray-500" th:text="${slip.payrollFrequency}"></div>
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-right font-medium" th:text="${'€' + #numbers.formatDecimal(slip.grossPay, 1, 2, 'COMMA')}"></td>
-            <td class="px-4 py-3 whitespace-nowrap text-right font-bold text-blue-600" th:text="${'€' + #numbers.formatDecimal(slip.netPay, 1, 2, 'COMMA')}"></td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-medium" th:text="${ #numbers.formatDecimal(slip.grossPay, 1, 2, 'COMMA') + ' ' + ${slip.currency}}"></td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-bold text-blue-600" th:text="${ #numbers.formatDecimal(slip.netPay, 1, 2, 'COMMA')  + ' ' + ${slip.currency}}"></td>
             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500" th:text="${slip.status}"></td>
             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500" th:text="${slip.postingDate}"></td>
             <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">

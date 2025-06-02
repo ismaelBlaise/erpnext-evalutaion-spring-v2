@@ -14,6 +14,7 @@ import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
+import com.evaluation.erpnext_spring.dto.salaries.SalaryTotalsResponse;
 import com.evaluation.erpnext_spring.service.PdfService;
 import com.evaluation.erpnext_spring.service.SalarySlipService;
 import jakarta.servlet.http.HttpSession;
@@ -45,7 +46,7 @@ public class SalarySlipController {
 
             SalarySlipFilter filter = new SalarySlipFilter();
             
-             String startDate = null;
+            String startDate = null;
             String endDate = null;
 
             if (month != null && !month.isEmpty()) {
@@ -72,6 +73,7 @@ public class SalarySlipController {
             modelAndView.addObject("salarySlips", salarySlips);
             modelAndView.addObject("currentPage", page);
             modelAndView.addObject("pageSize", size);
+            modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlips));
 
            
             modelAndView.addObject("filter", filter);

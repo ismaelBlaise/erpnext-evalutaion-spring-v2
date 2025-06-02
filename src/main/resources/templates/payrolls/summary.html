@@ -64,9 +64,9 @@
               <span class="text-sm" th:text="${slip.startDate} + ' - ' + ${slip.endDate}"></span>
               <div class="text-xs text-gray-500" th:text="${slip.payrollFrequency}"></div>
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-right font-medium" th:text="${'€' + #numbers.formatDecimal(slip.grossPay, 1, 2, 'COMMA')}"></td>
-            <td class="px-4 py-3 whitespace-nowrap text-right font-bold text-blue-600" th:text="${'€' + #numbers.formatDecimal(slip.totalDeduction, 1, 2, 'COMMA')}"></td>
-            <td class="px-4 py-3 whitespace-nowrap text-right font-bold text-blue-600" th:text="${'€' + #numbers.formatDecimal(slip.netPay, 1, 2, 'COMMA')}"></td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-medium" th:text="${#numbers.formatDecimal(slip.grossPay, 1, 2, 'COMMA') } + ' ' + ${slip.currency}"></td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-bold text-blue-600" th:text="${#numbers.formatDecimal(slip.totalDeduction, 1, 2, 'COMMA') } + ' ' + ${slip.currency}"></td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-bold text-blue-600" th:text="${#numbers.formatDecimal(slip.netPay, 1, 2, 'COMMA') } + ' ' + ${slip.currency}"></td>
             <!-- <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500" th:text="${slip.status}"></td> -->
             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500" th:text="${slip.postingDate}"></td>
             <!-- <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
@@ -86,7 +86,40 @@
         </tbody>
       </table>
     </div>
-    
+    <!-- Section des totaux -->
+    <div class="bg-gray-50 px-6 py-4 mt-6 rounded-lg border border-gray-200 max-w-7xl mx-auto">
+    <div class="flex flex-wrap justify-between items-center">
+        <div class="w-full sm:w-auto mb-4 sm:mb-0">
+        <h3 class="text-lg font-semibold text-gray-800">Récapitulatif des totaux</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-auto">
+        <!-- Total Brut -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div class="text-sm font-medium text-gray-500">Total Brut</div>
+            <div class="text-xl font-semibold text-gray-800 mt-1" 
+                th:text="${#numbers.formatDecimal(totalSalarySlip.totalGrossPay, 1, 2, 'COMMA') } + ' ' + ${totalSalarySlip.currency}">
+            </div>
+        </div>
+        
+        <!-- Total Déductions -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div class="text-sm font-medium text-gray-500">Total Déductions</div>
+            <div class="text-xl font-semibold text-red-600 mt-1" 
+                th:text="${#numbers.formatDecimal(totalSalarySlip.totalDeductions, 1, 2, 'COMMA') } + ' ' + ${totalSalarySlip.currency}">
+            </div>
+        </div>
+        
+        <!-- Total Net -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div class="text-sm font-medium text-gray-500">Net à Payer</div>
+            <div class="text-xl font-semibold text-green-600 mt-1" 
+                th:text="${#numbers.formatDecimal(totalSalarySlip.totalNetPay, 1, 2, 'COMMA') } + ' ' + ${totalSalarySlip.currency}">
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
 
     <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
       <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
