@@ -4,22 +4,48 @@ import com.evaluation.erpnext_spring.dto.imports.EmployeData;
 import com.evaluation.erpnext_spring.dto.imports.RapportErreur;
 import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
 import com.evaluation.erpnext_spring.utils.DateUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmployeeImportService {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value("${erpnext.api.url}")
+    private String erpnextApiUrl;
+
+    @Value("${erpnext.api.key}")
+    private String erpnextApiKey;
+
+    @Value("${erpnext.api.secret}")
+    private String erpnextApiSecret;
 
     @Autowired
     private RapportErreurService rapportErreurService;
@@ -83,5 +109,57 @@ public class EmployeeImportService {
         }
         
         return rapportErreurs; 
+    }
+
+
+
+    @SuppressWarnings("rawtypes")
+    public Map<String, String> createEmployees(HttpSession session, List<EmployeData> employeesData) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session not authenticated");
+        }
+
+        String url = erpnextApiUrl + "/api/method/hrms.evalhr.employee.import_employe";
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Cookie", "sid=" + sid);
+        
+        
+        String employeesJson;
+        try {
+            employeesJson = new ObjectMapper().writeValueAsString(employeesData);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error converting employees data to JSON", e);
+        }
+        
+        HttpEntity<String> request = new HttpEntity<>(employeesJson, headers);
+        
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                Map.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> responseBody = response.getBody();
+                if ("success".equals(responseBody.get("status"))) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> refMapping = (Map<String, String>) responseBody.get("ref_mapping");
+                    return refMapping;
+                } else {
+                    throw new RuntimeException("Failed to create employees: " + responseBody.get("message"));
+                }
+            } else {
+                throw new RuntimeException("Failed to create employees: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error while creating employees: " + e.getMessage(), e);
+        }
     }
 }
