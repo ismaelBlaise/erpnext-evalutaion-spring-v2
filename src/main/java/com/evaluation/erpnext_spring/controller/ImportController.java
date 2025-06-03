@@ -13,7 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.evaluation.erpnext_spring.dto.imports.EmployeData;
 import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
-import com.evaluation.erpnext_spring.service.ImportService;
+import com.evaluation.erpnext_spring.service.imports.EmployeeImportService;
+import com.evaluation.erpnext_spring.service.imports.GrilleImportService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -22,7 +23,10 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/imports")
 public class ImportController {
     @Autowired
-    private ImportService importService;
+    private EmployeeImportService importService;
+
+    @Autowired
+    private GrilleImportService grilleImportService;
 
     @GetMapping
     public ModelAndView form(HttpSession session){
@@ -39,6 +43,7 @@ public class ImportController {
         ResultatImport resultatImport=new ResultatImport();
         try {
             importService.importEmployesFromCSV(resultatImport,file1);
+            grilleImportService.importGrilleSalaireFromCSV(resultatImport, file2);
 
             List<EmployeData> employeDatas=resultatImport.getEmployesValides();
             for (EmployeData employeData : employeDatas) {
