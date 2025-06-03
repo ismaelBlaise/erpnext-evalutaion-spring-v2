@@ -45,6 +45,7 @@ public class ImportController {
     @PostMapping
     public ModelAndView imports(HttpSession session,@RequestParam("file1") MultipartFile file1,@RequestParam("file2") MultipartFile file2,@RequestParam("file3") MultipartFile file3){
         ModelAndView modelAndView=new ModelAndView("template");
+        modelAndView.addObject("page","imports/form");
         ResultatImport resultatImport=new ResultatImport();
         try {
             importService.importEmployesFromCSV(resultatImport,file1);
@@ -52,9 +53,9 @@ public class ImportController {
             salaireImportService.importSalairesFromCSV(resultatImport, file3);
 
             List<EmployeData> employeDatas=resultatImport.getEmployesValides();
-            // Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
+            Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
 
-            modelAndView.addObject("page","imports/form");
+            
 
             modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
             modelAndView.addObject("erreur2", resultatImport.getErreursGrille());

@@ -114,7 +114,7 @@ public class EmployeeImportService {
 
 
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked", "null" })
     public Map<String, String> createEmployees(HttpSession session, List<EmployeData> employeesData) throws Exception {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
@@ -122,24 +122,24 @@ public class EmployeeImportService {
         }
 
         String url = erpnextApiUrl + "/api/method/hrms.evalhr.employee.import_employe";
-        
+
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
-        
-        String employeesJson;
+
+        Map<String, Object> jsonBody = new HashMap<>();
+        jsonBody.put("employees", employeesData);
+
+        String jsonPayload;
         try {
-            employeesJson = new ObjectMapper().writeValueAsString(employeesData);
+            jsonPayload = new ObjectMapper().writeValueAsString(jsonBody);
         } catch (JsonProcessingException e) {
             throw new Exception("Error converting employees data to JSON", e);
         }
-        
-        Map<String, String> body = new HashMap();
-        body.put("employees_json", employeesJson);
-        
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
-        
+
+        HttpEntity<String> request = new HttpEntity<>(jsonPayload, headers);
+
         try {
             ResponseEntity<Map> response = restTemplate.exchange(
                 url,
@@ -149,12 +149,11 @@ public class EmployeeImportService {
             );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                
-                Map<String, Object> responseBody = response.getBody();
-                if ("success".equals(responseBody.get("status"))) {
-                    
-                    Map<String, String> refMapping = (Map<String, String>) responseBody.get("ref_mapping");
-                    return refMapping;
+                Map<String, Object> rawBody = response.getBody();
+                Map<String, Object> responseBody = (Map<String, Object>) rawBody.get("message");
+
+                if (responseBody != null && "success".equals(responseBody.get("status"))) {
+                    return (Map<String, String>) responseBody.get("ref_mapping");
                 } else {
                     throw new Exception("Failed to create employees: " + responseBody.get("message"));
                 }
@@ -165,4 +164,6 @@ public class EmployeeImportService {
             throw new Exception("Error while creating employees: " + e.getMessage(), e);
         }
     }
+
+
 }
