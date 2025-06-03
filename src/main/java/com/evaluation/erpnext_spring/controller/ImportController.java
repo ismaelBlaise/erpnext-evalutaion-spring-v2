@@ -1,5 +1,7 @@
 package com.evaluation.erpnext_spring.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.evaluation.erpnext_spring.dto.imports.EmployeData;
 import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
 import com.evaluation.erpnext_spring.service.ImportService;
 
@@ -37,8 +40,11 @@ public class ImportController {
         try {
             importService.importEmployesFromCSV(resultatImport,file1);
 
+            List<EmployeData> employeDatas=resultatImport.getEmployesValides();
+            for (EmployeData employeData : employeDatas) {
+                System.out.println(employeData.getDateEmbauche());
+            }
             modelAndView.addObject("page","imports/form");
-            
 
             modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
             modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
