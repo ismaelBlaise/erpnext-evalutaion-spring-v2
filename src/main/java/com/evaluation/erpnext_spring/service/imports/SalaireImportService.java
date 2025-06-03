@@ -44,14 +44,14 @@ public class SalaireImportService {
 
             List<SalaireData> salaires = csvToBean.parse();
 
-            int ligne = 1; // ligne 1 = en-tête
+            int ligne = 1; 
             for (SalaireData salaire : salaires) {
                 List<RapportErreur> raison = validateSalaire(salaire, ligne);
                 if (raison.isEmpty()) {
                     validSalaires.add(salaire);
-                    // Normalize date format if needed
+                     
                     if (salaire.getMois() != null) {
-                        salaire.setMois(DateUtils.normalizeToStandardFormat(salaire.getMois().toString()));
+                        salaire.setMois(DateUtils.normalizeToStandardFormat(salaire.getMois()).toString());
                     }
                 } else {
                     erreurs.addAll(raison);

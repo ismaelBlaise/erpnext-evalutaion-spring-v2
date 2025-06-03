@@ -1,7 +1,5 @@
 package com.evaluation.erpnext_spring.dto.imports;
 
-import java.time.LocalDate;
-
 import com.opencsv.bean.CsvBindByName;
 
 import lombok.Data;
@@ -10,7 +8,7 @@ import lombok.Data;
 public class SalaireData {
     
     @CsvBindByName(column = "Mois")
-    private LocalDate mois;    
+    private String mois;    
     @CsvBindByName(column = "Ref Employe")
     private String refEmploye;  
     @CsvBindByName(column = "Salaire Base")
