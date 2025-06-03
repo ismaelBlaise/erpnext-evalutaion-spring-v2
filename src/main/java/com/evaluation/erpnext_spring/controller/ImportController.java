@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.evaluation.erpnext_spring.dto.imports.EmployeData;
+import com.evaluation.erpnext_spring.dto.imports.GrilleSalaireData;
 import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
 import com.evaluation.erpnext_spring.dto.imports.SalaireData;
 import com.evaluation.erpnext_spring.service.imports.EmployeeImportService;
@@ -55,11 +56,13 @@ public class ImportController {
 
             List<EmployeData> employeDatas=resultatImport.getEmployesValides();
             Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
-
+            
+            List<GrilleSalaireData> grilleSalaireDatas=resultatImport.getGrilleSalaireDatas();
+            grilleImportService.importGrilleSalaire(session, grilleSalaireDatas);
             
 
             List<SalaireData> salaireDatas=salaireImportService.transformeEmploye(resultatImport.getSalaireDatas(), refEmp);
-            
+
             
             modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
             modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
