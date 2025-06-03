@@ -3,9 +3,13 @@ package com.evaluation.erpnext_spring.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
 import com.evaluation.erpnext_spring.service.ImportService;
 
 import jakarta.servlet.http.HttpSession;
@@ -20,12 +24,29 @@ public class ImportController {
     @GetMapping
     public ModelAndView form(HttpSession session){
         ModelAndView modelAndView=new ModelAndView("template");
-        // try {
+        
             modelAndView.addObject("page","imports/form");
-        // } catch (Exception e) {
-        //     modelAndView.addObject("error",e.getMessage());
-        //     modelAndView.addObject("page", "error");
-        // }
+       
+        return modelAndView;
+    }
+
+    @PostMapping
+    public ModelAndView imports(HttpSession session,@RequestParam("file1") MultipartFile file1,@RequestParam("file2") MultipartFile file2,@RequestParam("file3") MultipartFile file3){
+        ModelAndView modelAndView=new ModelAndView("template");
+        ResultatImport resultatImport=new ResultatImport();
+        try {
+            importService.importEmployesFromCSV(resultatImport,file1);
+
+            modelAndView.addObject("page","imports/form");
+            modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
+            modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
+            modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
+
+            modelAndView.addObject("successGlobal", "Importation réussi");
+        } catch (Exception e) {
+            modelAndView.addObject("errorGlobal",e.getMessage());
+            
+        }
         return modelAndView;
     }
 }
