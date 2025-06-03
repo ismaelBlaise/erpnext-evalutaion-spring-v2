@@ -52,8 +52,8 @@ public class ImportController {
             salaireImportService.importSalairesFromCSV(resultatImport, file3);
 
             List<EmployeData> employeDatas=resultatImport.getEmployesValides();
-            Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
-            
+            // Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
+
             modelAndView.addObject("page","imports/form");
 
             modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());

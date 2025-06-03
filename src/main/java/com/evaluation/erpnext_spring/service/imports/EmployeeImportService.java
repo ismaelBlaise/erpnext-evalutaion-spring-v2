@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -113,8 +114,8 @@ public class EmployeeImportService {
 
 
 
-    @SuppressWarnings("rawtypes")
-    public Map<String, String> createEmployees(HttpSession session, List<EmployeData> employeesData) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public Map<String, String> createEmployees(HttpSession session, List<EmployeData> employeesData) throws Exception {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
             throw new RuntimeException("Session not authenticated");
@@ -123,19 +124,21 @@ public class EmployeeImportService {
         String url = erpnextApiUrl + "/api/method/hrms.evalhr.employee.import_employe";
         
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
-        
         
         String employeesJson;
         try {
             employeesJson = new ObjectMapper().writeValueAsString(employeesData);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error converting employees data to JSON", e);
+            throw new Exception("Error converting employees data to JSON", e);
         }
         
-        HttpEntity<String> request = new HttpEntity<>(employeesJson, headers);
+        Map<String, String> body = new HashMap();
+        body.put("employees_json", employeesJson);
+        
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
         
         try {
             ResponseEntity<Map> response = restTemplate.exchange(
@@ -146,20 +149,20 @@ public class EmployeeImportService {
             );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                @SuppressWarnings("unchecked")
+                
                 Map<String, Object> responseBody = response.getBody();
                 if ("success".equals(responseBody.get("status"))) {
-                    @SuppressWarnings("unchecked")
+                    
                     Map<String, String> refMapping = (Map<String, String>) responseBody.get("ref_mapping");
                     return refMapping;
                 } else {
-                    throw new RuntimeException("Failed to create employees: " + responseBody.get("message"));
+                    throw new Exception("Failed to create employees: " + responseBody.get("message"));
                 }
             } else {
-                throw new RuntimeException("Failed to create employees: " + response.getStatusCode());
+                throw new Exception("Failed to create employees: " + response.getStatusCode());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error while creating employees: " + e.getMessage(), e);
+            throw new Exception("Error while creating employees: " + e.getMessage(), e);
         }
     }
 }
