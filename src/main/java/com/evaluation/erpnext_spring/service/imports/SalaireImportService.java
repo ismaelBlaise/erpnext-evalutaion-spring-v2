@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SalaireImportService {
@@ -91,4 +92,16 @@ public class SalaireImportService {
         
         return rapportErreurs;
     }
+
+
+    public List<SalaireData> transformeEmploye(List<SalaireData> salaireDatas, Map<String, String> refEmp) {
+        for (SalaireData salaireData : salaireDatas) {
+            String ref = salaireData.getRefEmploye();  
+            if (ref != null && refEmp.containsKey(ref)) {
+                salaireData.setRefEmploye(refEmp.get(ref));  
+            }
+        }
+        return salaireDatas;
+    }
+
 }

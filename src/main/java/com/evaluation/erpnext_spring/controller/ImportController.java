@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.evaluation.erpnext_spring.dto.imports.EmployeData;
 import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
+import com.evaluation.erpnext_spring.dto.imports.SalaireData;
 import com.evaluation.erpnext_spring.service.imports.EmployeeImportService;
 import com.evaluation.erpnext_spring.service.imports.GrilleImportService;
 import com.evaluation.erpnext_spring.service.imports.SalaireImportService;
@@ -57,6 +58,9 @@ public class ImportController {
 
             
 
+            List<SalaireData> salaireDatas=salaireImportService.transformeEmploye(resultatImport.getSalaireDatas(), refEmp);
+            
+            
             modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
             modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
             modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
