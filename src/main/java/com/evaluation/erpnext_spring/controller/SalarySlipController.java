@@ -80,7 +80,7 @@ public class SalarySlipController {
 
         } catch (Exception e) {
             modelAndView.addObject("error", e.getMessage());
-            modelAndView.addObject("page", "error");
+           
         }
 
         return modelAndView;
@@ -133,7 +133,7 @@ public class SalarySlipController {
 
         } catch (Exception e) {
             modelAndView.addObject("error", e.getMessage());
-            modelAndView.addObject("page", "error");
+           
         }
 
         return modelAndView;
@@ -155,7 +155,7 @@ public class SalarySlipController {
 
         } catch (Exception e) {
             modelAndView.addObject("error", e.getMessage());
-            modelAndView.addObject("page", "error");
+           
         }
 
         return modelAndView;

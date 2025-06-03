@@ -52,6 +52,8 @@ public class EmployeeController {
             List<DataDto> companies=dataListReponse.getData();
             
             List<EmployeeDto> employees = response.getData();
+
+           
             
             modelAndView.addObject("designations",designations );
             modelAndView.addObject("departments",departments );
@@ -63,7 +65,7 @@ public class EmployeeController {
             
         } catch (Exception e) {
             modelAndView.addObject("error", e.getMessage());
-            modelAndView.addObject("page", "error");
+            
         }
         
         return modelAndView;
@@ -85,7 +87,7 @@ public class EmployeeController {
 
         } catch (Exception e) {
             modelAndView.addObject("error", e.getMessage());
-            modelAndView.addObject("page", "error");
+            
         }
 
         return modelAndView;

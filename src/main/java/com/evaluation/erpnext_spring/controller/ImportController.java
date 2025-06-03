@@ -1,6 +1,7 @@
 package com.evaluation.erpnext_spring.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,9 +52,8 @@ public class ImportController {
             salaireImportService.importSalairesFromCSV(resultatImport, file3);
 
             List<EmployeData> employeDatas=resultatImport.getEmployesValides();
-            for (EmployeData employeData : employeDatas) {
-                System.out.println(employeData.getDateEmbauche());
-            }
+            Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
+            
             modelAndView.addObject("page","imports/form");
 
             modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
