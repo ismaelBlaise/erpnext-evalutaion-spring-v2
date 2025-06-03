@@ -38,11 +38,16 @@ public class ImportController {
             importService.importEmployesFromCSV(resultatImport,file1);
 
             modelAndView.addObject("page","imports/form");
+            
+
             modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
             modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
             modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
 
-            modelAndView.addObject("successGlobal", "Importation réussi");
+            if(resultatImport.getErreursEmploye().isEmpty() && resultatImport.getErreursGrille().isEmpty() && resultatImport.getErreursSalaire().isEmpty()){ 
+                modelAndView.addObject("successGlobal", "Importation réussi");
+            }
+
         } catch (Exception e) {
             modelAndView.addObject("errorGlobal",e.getMessage());
             
