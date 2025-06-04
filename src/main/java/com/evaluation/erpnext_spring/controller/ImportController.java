@@ -54,21 +54,26 @@ public class ImportController {
             grilleImportService.importGrilleSalaireFromCSV(resultatImport, file2);
             salaireImportService.importSalairesFromCSV(resultatImport, file3);
 
-            List<EmployeData> employeDatas=resultatImport.getEmployesValides();
-            Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
-            
-            List<GrilleSalaireData> grilleSalaireDatas=resultatImport.getGrilleSalaireDatas();
-            grilleImportService.importGrilleSalaire(session, grilleSalaireDatas);
-            
-
-            List<SalaireData> salaireDatas=salaireImportService.transformeEmploye(resultatImport.getSalaireDatas(), refEmp);
+            if(!resultatImport.getErreursEmploye().isEmpty() || !resultatImport.getErreursGrille().isEmpty() || !resultatImport.getErreursSalaire().isEmpty()){ 
+                modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
+                modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
+                modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
+            }
 
             
-            modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
-            modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
-            modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
+            
+           
 
             if(resultatImport.getErreursEmploye().isEmpty() && resultatImport.getErreursGrille().isEmpty() && resultatImport.getErreursSalaire().isEmpty()){ 
+                List<EmployeData> employeDatas=resultatImport.getEmployesValides();
+                Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
+                
+                List<GrilleSalaireData> grilleSalaireDatas=resultatImport.getGrilleSalaireDatas();
+                grilleImportService.importGrilleSalaire(session, grilleSalaireDatas);
+                
+
+                List<SalaireData> salaireDatas=salaireImportService.transformeEmploye(resultatImport.getSalaireDatas(), refEmp);
+                salaireImportService.importSalaireData(session, salaireDatas);
                 modelAndView.addObject("successGlobal", "Importation réussi");
             }
 
