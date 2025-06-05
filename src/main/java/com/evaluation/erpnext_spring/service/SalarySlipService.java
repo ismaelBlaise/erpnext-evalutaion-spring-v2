@@ -3,6 +3,8 @@ package com.evaluation.erpnext_spring.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -211,6 +213,65 @@ public class SalarySlipService {
             }
         } catch (Exception e) {
             throw new RuntimeException("Error while fetching salary slip: " + e.getMessage(), e);
+        }
+    }
+
+
+
+    public Map<String, List<SalarySlipDto>> getSalarySlipsGroupedByMonth(HttpSession session, String year, SalarySlipFilter filter) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session non authentifiée");
+        }
+
+         
+        if (filter == null) {
+            filter = new SalarySlipFilter();
+        }
+        filter.setStartDate(year + "-01-01");
+        filter.setEndDate(year + "-12-31");
+
+        String fields = fields();
+        String filtersParam = buildFilters(filter);
+
+        StringBuilder urlBuilder = new StringBuilder(erpnextApiUrl + "/api/resource/Salary Slip?");
+        urlBuilder.append("&fields=").append(fields);
+        
+        if (!filtersParam.isEmpty()) {
+            urlBuilder.append(filtersParam);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Cookie", "sid=" + sid);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<SalarySlipListResponse> response = restTemplate.exchange(
+                urlBuilder.toString(),
+                HttpMethod.GET,
+                request,
+                SalarySlipListResponse.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                Map<String, List<SalarySlipDto>> slipsByMonth = new TreeMap<>();
+                
+                for (SalarySlipDto slip : response.getBody().getData()) {
+                    if (slip.getPostingDate() != null) {
+                        String month = slip.getPostingDate().substring(0, 7);
+                        
+                        slipsByMonth.computeIfAbsent(month, k -> new ArrayList<>()).add(slip);
+                    }
+                }
+                
+                return slipsByMonth;
+            } else {
+                throw new RuntimeException("Échec de la récupération des fiches de paie : " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des fiches de paie : " + e.getMessage(), e);
         }
     }
 }
