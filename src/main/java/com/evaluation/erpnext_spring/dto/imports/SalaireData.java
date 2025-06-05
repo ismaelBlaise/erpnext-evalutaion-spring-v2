@@ -16,7 +16,7 @@ public class SalaireData {
     @JsonProperty("salaire_base")
     @CsvBindByName(column = "Salaire Base")
     private Double salaireBase; 
-    @JsonProperty("salaire")
+    @JsonProperty("salary_structure")
     @CsvBindByName(column = "Salaire")
     private String salaryStructure;   
     

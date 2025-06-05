@@ -142,6 +142,7 @@ public class SalaireImportService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
+        // headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
 
         Map<String, Object> jsonBody = new HashMap<>();
         jsonBody.put("salaries", salairesData);  
