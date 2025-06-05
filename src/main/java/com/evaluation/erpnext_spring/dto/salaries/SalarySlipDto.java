@@ -86,7 +86,7 @@ public class SalarySlipDto {
     @JsonProperty("future_income_tax_deductions") private double futureIncomeTaxDeductions;
     @JsonProperty("annual_taxable_amount") private double annualTaxableAmount;
     
-    
+    String mois;
     List<Double> componentsDef=new ArrayList<>();
     
 

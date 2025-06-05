@@ -1,7 +1,10 @@
 package com.evaluation.erpnext_spring.utils;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
@@ -22,6 +25,22 @@ public class DateUtils {
 
     public static boolean isValidDate(String dateStr) {
         return normalizeToStandardFormat(dateStr) != null;
+    }
+
+    public static String getMonthName(String yearMonth) {
+        try {
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+            
+            
+            YearMonth date = YearMonth.parse(yearMonth, formatter);
+            
+            return date.getMonth()
+                      .getDisplayName(TextStyle.FULL, Locale.FRENCH) 
+                   + " " + date.getYear();
+        } catch (Exception e) {
+            return "Date invalide";
+        }
     }
 
     public static LocalDate normalizeToStandardFormat(String dateStr) {

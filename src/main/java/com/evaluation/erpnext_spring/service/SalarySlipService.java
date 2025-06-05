@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryTotalsResponse;
+import com.evaluation.erpnext_spring.utils.DateUtils;
 import com.evaluation.erpnext_spring.dto.data.DataDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryDeduction;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryEarning;
@@ -255,6 +256,7 @@ public class SalarySlipService {
                 
             SalarySlipDto monthlySlip = new SalarySlipDto();
             monthlySlip.setPostingDate(month);
+            monthlySlip.setMois(DateUtils.getMonthName(month));
 
             monthlySlip.setCurrency(slips.get(0).getCurrency());
 
