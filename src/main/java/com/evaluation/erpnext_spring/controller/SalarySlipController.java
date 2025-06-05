@@ -91,6 +91,7 @@ public class SalarySlipController {
 
            
             modelAndView.addObject("filter", filter);
+            modelAndView.addObject("month",month);
 
         } catch (Exception e) {
             modelAndView.addObject("error", e.getMessage());
@@ -105,6 +106,42 @@ public class SalarySlipController {
                                         @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().getYear()}") String year) {
         ModelAndView modelAndView = new ModelAndView("template");
         modelAndView.addObject("page", "payrolls/stat");
+        modelAndView.addObject("selectedYear", year);
+
+        try {
+            List<DataDto> salaryComponents = dataService.getAllData(session, "Salary Component").getData();
+            Map<String, SalarySlipDto> groupedSalarySlips = salarySlipService.getSalarySlipsGroupedByMonth(session, year, salaryComponents);
+            List<SalarySlipDto> salarySlipDtos=new ArrayList<>();
+            for (Map.Entry<String, SalarySlipDto> entry : groupedSalarySlips.entrySet()) {
+               
+                SalarySlipDto salarySlipDto = entry.getValue(); // Les données pour ce mois
+                
+                salarySlipDtos.add(salarySlipDto);
+               
+                
+            }
+            modelAndView.addObject("salaryComponents", salaryComponents);
+            modelAndView.addObject("groupedSalarySlips", groupedSalarySlips);
+            modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlipDtos,salaryComponents));
+
+            
+            if (groupedSalarySlips.isEmpty()) {
+                modelAndView.addObject("info", "Aucune donnée disponible pour l'année " + year);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            modelAndView.addObject("error", "Erreur lors de la récupération des données: " + e.getMessage());
+        }
+
+        return modelAndView;
+    }
+
+
+    @GetMapping("/graph")
+    public ModelAndView groupedSalarySummaryGraph(HttpSession session,
+                                        @RequestParam(defaultValue = "#{T(java.time.LocalDate).now().getYear()}") String year) {
+        ModelAndView modelAndView = new ModelAndView("template");
+        modelAndView.addObject("page", "payrolls/graph");
         modelAndView.addObject("selectedYear", year);
 
         try {

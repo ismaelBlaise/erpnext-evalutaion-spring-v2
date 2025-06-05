@@ -228,8 +228,10 @@ public class SalarySlipService {
         }
 
         SalarySlipFilter filter = new SalarySlipFilter();
-        filter.setStartDate(year + "-01-01");
-        filter.setEndDate(year + "-12-31");
+        if(year!=null){
+            filter.setStartDate(year + "-01-01");
+            filter.setEndDate(year + "-12-31");
+        }
 
         List<SalarySlipDto> salarySlipDtos=getSalarySlips(session, 0, 0, filter).getData();
         Map<String, List<SalarySlipDto>> grouped = new TreeMap<>();
@@ -248,7 +250,7 @@ public class SalarySlipService {
 
             List<SalarySlipDto> enriched = getRapport(session,salarySlipListResponse).getData();
                 
-            enriched = getComponents(slips, dataDtos);
+            enriched = getComponents(enriched, dataDtos);
 
                 
             SalarySlipDto monthlySlip = new SalarySlipDto();
