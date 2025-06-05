@@ -51,7 +51,7 @@ public class EmployeeImportService {
     @Autowired
     private RapportErreurService rapportErreurService;
 
-    public ResultatImport importEmployesFromCSV(ResultatImport resultatImport, MultipartFile file) throws IOException {
+    public ResultatImport   importEmployesFromCSV(ResultatImport resultatImport, MultipartFile file) throws IOException {
         if (!file.getContentType().equals("text/csv")) {
             throw new IllegalArgumentException("Seuls les fichiers CSV sont acceptés");
         }

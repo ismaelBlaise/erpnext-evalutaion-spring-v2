@@ -83,13 +83,14 @@ public class ImportController {
             }
 
         } catch (Exception e) {
+            String erreur=e.getMessage();
             try {
                 resetService.resetData(session);
             } catch (Exception e1) {
-                 modelAndView.addObject("errorGlobal",e1.getMessage());
-                 return modelAndView;
+                erreur+="\n"+e1.getMessage();
             }
-            modelAndView.addObject("errorGlobal",e.getMessage());
+            e.printStackTrace();
+            modelAndView.addObject("errorGlobal",erreur);
             
         }
         return modelAndView;

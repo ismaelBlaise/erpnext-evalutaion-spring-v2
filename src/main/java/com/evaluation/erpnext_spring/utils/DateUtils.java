@@ -9,83 +9,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class DateUtils {
 
-    // private static final List<String> DATE_FORMATS = Arrays.asList(
-    //     "dd/MM/yyyy",
-    //     "dd-MM-yyyy",
-    //     "yyyy/MM/dd",
-    //     "yyyy-MM-dd",
-    //     "MM/dd/yyyy",
-    //     "MM-dd-yyyy",
-    //     "dd.MM.yyyy",
-    //     "yyyy.MM.dd",
-    //     "MMM dd, yyyy",
-    //     "dd MMM yyyy",
-    //     "MMMM dd, yyyy",
-    //     "dd MMMM yyyy"
-    // );
 
-    // public static boolean isValidDate(String dateStr) {
-    //     if (dateStr == null || dateStr.trim().isEmpty()) {
-    //         return false;
-    //     }
+    private static final DateTimeFormatter FORMAT_DDMMYYYY_SLASH = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter FORMAT_DDMMYYYY_DASH = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter FORMAT_YYYYMMDD_SLASH = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private static final DateTimeFormatter FORMAT_YYYYMMDD_DASH = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    //     for (String format : DATE_FORMATS) {
-    //         try {
-    //             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format)
-    //                     .withResolverStyle(ResolverStyle.STRICT);
-    //             LocalDate.parse(dateStr, formatter);
-    //             return true;
-    //         } catch (DateTimeParseException e) {
-    //             // Continue to next format
-    //         }
-    //     }
-    //     return false;
-    // }
-
-    // public static String normalizeDate(String dateStr) throws DateTimeParseException {
-    //     if (dateStr == null || dateStr.trim().isEmpty()) {
-    //         throw new IllegalArgumentException("Date string cannot be null or empty");
-    //     }
-
-    //     for (String format : DATE_FORMATS) {
-    //         try {
-    //             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format)
-    //                     .withResolverStyle(ResolverStyle.STRICT);
-    //             LocalDate date = LocalDate.parse(dateStr, formatter);
-    //             return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    //         } catch (DateTimeParseException e) {
-    //             // Continue to next format
-    //         }
-    //     }
-    //     throw new DateTimeParseException("Unable to parse date: " + dateStr, dateStr, 0);
-    // }
-
-    // // Exemple d'utilisation
-    // public static void main(String[] args) {
-    //     String[] testDates = {
-    //         "31/12/2023", "12-31-2023", "2023.12.31",
-    //         "Dec 31, 2023", "31 December 2023", "invalid"
-    //     };
-
-    //     for (String date : testDates) {
-    //         System.out.println("Date: " + date);
-    //         System.out.println("Valid: " + isValidDate(date));
-    //         if (isValidDate(date)) {
-    //             try {
-    //                 System.out.println("Normalized: " + normalizeDate(date));
-    //             } catch (Exception e) {
-    //                 System.out.println("Normalization failed: " + e.getMessage());
-    //             }
-    //         }
-    //         System.out.println("-----");
-    //     }
-    // }
-
-    private static final DateTimeFormatter FORMAT_DDMMYYYY = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final DateTimeFormatter FORMAT_YYYYMMDD = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-
-    private static final Pattern PATTERN_DDMMYYYY = Pattern.compile("^(\\d{2})/(\\d{2})/(\\d{4})$");
-    private static final Pattern PATTERN_YYYYMMDD = Pattern.compile("^(\\d{4})/(\\d{2})/(\\d{2})$");
+    private static final Pattern PATTERN_DDMMYYYY_SLASH = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}$");
+    private static final Pattern PATTERN_DDMMYYYY_DASH = Pattern.compile("^\\d{2}-\\d{2}-\\d{4}$");
+    private static final Pattern PATTERN_YYYYMMDD_SLASH = Pattern.compile("^\\d{4}/\\d{2}/\\d{2}$");
+    private static final Pattern PATTERN_YYYYMMDD_DASH = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
 
     public static boolean isValidDate(String dateStr) {
         return normalizeToStandardFormat(dateStr) != null;
@@ -93,48 +26,52 @@ public class DateUtils {
 
     public static LocalDate normalizeToStandardFormat(String dateStr) {
         try {
-            if (PATTERN_DDMMYYYY.matcher(dateStr).matches()) {
-                return validateAndParseDDMMYYYY(dateStr);
+            if(dateStr==null){
+                return null;
             }
-            else if (PATTERN_YYYYMMDD.matcher(dateStr).matches()) {
-                return validateAndParseYYYYMMDD(dateStr);
+            if (PATTERN_DDMMYYYY_SLASH.matcher(dateStr).matches()) {
+                return validateAndParse(dateStr, FORMAT_DDMMYYYY_SLASH, "DMY", "/");
+            } else if (PATTERN_DDMMYYYY_DASH.matcher(dateStr).matches()) {
+                return validateAndParse(dateStr, FORMAT_DDMMYYYY_DASH, "DMY", "-");
+            } else if (PATTERN_YYYYMMDD_SLASH.matcher(dateStr).matches()) {
+                return validateAndParse(dateStr, FORMAT_YYYYMMDD_SLASH, "YMD", "/");
+            } else if (PATTERN_YYYYMMDD_DASH.matcher(dateStr).matches()) {
+                return validateAndParse(dateStr, FORMAT_YYYYMMDD_DASH, "YMD", "-");
             }
             return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
-    private static LocalDate validateAndParseDDMMYYYY(String dateStr) {
-        String[] parts = dateStr.split("/");
-        int day = Integer.parseInt(parts[0]);
-        int month = Integer.parseInt(parts[1]);
-        int year = Integer.parseInt(parts[2]);
+    private static LocalDate validateAndParse(String dateStr, DateTimeFormatter formatter, String order, String separator) {
+        String[] parts = dateStr.split(Pattern.quote(separator));
+        int day, month, year;
+
+        switch (order) {
+            case "DMY":
+                day = Integer.parseInt(parts[0]);
+                month = Integer.parseInt(parts[1]);
+                year = Integer.parseInt(parts[2]);
+                break;
+            case "YMD":
+                year = Integer.parseInt(parts[0]);
+                month = Integer.parseInt(parts[1]);
+                day = Integer.parseInt(parts[2]);
+                break;
+            default:
+                return null;
+        }
 
         if (!isValidDateComponents(year, month, day)) {
             return null;
         }
-        return LocalDate.parse(dateStr, FORMAT_DDMMYYYY);
-    }
 
-    private static LocalDate validateAndParseYYYYMMDD(String dateStr) {
-        String[] parts = dateStr.split("/");
-        int year = Integer.parseInt(parts[0]);
-        int month = Integer.parseInt(parts[1]);
-        int day = Integer.parseInt(parts[2]);
-
-        if (!isValidDateComponents(year, month, day)) {
-            return null;
-        }
-
-        return LocalDate.parse(dateStr, FORMAT_YYYYMMDD);
+        return LocalDate.parse(dateStr, formatter);
     }
 
     private static boolean isValidDateComponents(int year, int month, int day) {
-        if (month < 1 || month > 12 || day < 1) {
-            return false;
-        }
+        if (month < 1 || month > 12 || day < 1) return false;
 
         int maxDay;
         switch (month) {
@@ -148,6 +85,11 @@ public class DateUtils {
 
     private static boolean isLeapYear(int year) {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    }
+
+    public static String normalizeToString(String dateStr) {
+        LocalDate date = normalizeToStandardFormat(dateStr);
+        return date != null ? date.format(FORMAT_YYYYMMDD_SLASH) : null;
     }
 }
 

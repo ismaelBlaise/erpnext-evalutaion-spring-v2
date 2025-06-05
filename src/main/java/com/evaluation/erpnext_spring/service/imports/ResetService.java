@@ -54,18 +54,18 @@ public class ResetService {
                 request,
                 Map.class
             );
+            return null;
+            // if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            //     Map<String, Object> body = response.getBody();
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                Map<String, Object> body = response.getBody();
-
-                if ("success".equals(body.get("status"))) {
-                    return body;
-                } else {
-                    throw new Exception("Échec de la réinitialisation : " + body.get("message"));
-                }
-            } else {
-                throw new Exception("Erreur HTTP " + response.getStatusCode() + " lors de la réinitialisation.");
-            }
+            //     // if ("success".equals(body.get("status"))) {
+            //     //     return body;
+            //     // } else {
+            //     //     throw new Exception("Échec de la réinitialisation : " + body.get("message"));
+            //     // }
+            // } else {
+            //     throw new Exception("Erreur HTTP " + response.getStatusCode() + " lors de la réinitialisation.");
+            // }
         } catch (Exception e) {
             throw new Exception("Erreur pendant la réinitialisation des données de paie : " + e.getMessage(), e);
         }
