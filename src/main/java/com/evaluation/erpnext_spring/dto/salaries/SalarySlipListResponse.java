@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class SalarySlipListResponse {
+    
     @JsonProperty("data")
     List<SalarySlipDto> data;
 }
