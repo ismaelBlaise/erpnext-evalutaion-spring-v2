@@ -18,6 +18,7 @@ import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
 import com.evaluation.erpnext_spring.dto.imports.SalaireData;
 import com.evaluation.erpnext_spring.service.imports.EmployeeImportService;
 import com.evaluation.erpnext_spring.service.imports.GrilleImportService;
+import com.evaluation.erpnext_spring.service.imports.ResetService;
 import com.evaluation.erpnext_spring.service.imports.SalaireImportService;
 
 import jakarta.servlet.http.HttpSession;
@@ -34,6 +35,9 @@ public class ImportController {
 
     @Autowired
     private SalaireImportService salaireImportService;
+
+    @Autowired
+    private ResetService resetService;
 
     @GetMapping
     public ModelAndView form(HttpSession session){
@@ -65,6 +69,7 @@ public class ImportController {
            
 
             if(resultatImport.getErreursEmploye().isEmpty() && resultatImport.getErreursGrille().isEmpty() && resultatImport.getErreursSalaire().isEmpty()){ 
+                
                 List<EmployeData> employeDatas=resultatImport.getEmployesValides();
                 Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
                 
@@ -78,6 +83,12 @@ public class ImportController {
             }
 
         } catch (Exception e) {
+            try {
+                resetService.resetData(session);
+            } catch (Exception e1) {
+                 modelAndView.addObject("errorGlobal",e1.getMessage());
+                 return modelAndView;
+            }
             modelAndView.addObject("errorGlobal",e.getMessage());
             
         }
