@@ -1,0 +1,143 @@
+<div class="bg-white border-b border-gray-200 mb-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+      <div class="mb-4 sm:mb-0">
+        <h1 class="text-2xl font-semibold text-gray-800">Récapitulatif des paies par mois</h1>
+      </div>
+    </div>
+
+    <div th:if="${error != null}" class="mt-4 bg-red-50 border-l-4 border-red-500 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-red-700" th:text="${error}"></p>
+        </div>
+      </div>
+    </div>
+
+    <div th:if="${info != null}" class="mt-4 bg-blue-50 border-l-4 border-blue-500 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-blue-700" th:text="${info}"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 bg-white shadow-sm rounded-lg px-6 py-5 max-w-7xl mx-auto">
+      <form action="/payrolls/stat" method="get" class="flex flex-wrap gap-6 items-end justify-between">
+        <div class="flex flex-col w-full sm:w-40">
+          <label for="year" class="mb-1 text-xs font-semibold text-gray-500 uppercase">Année</label>
+          <input type="number" name="year" id="year" th:value="${selectedYear}"
+                 class="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+        </div>
+
+        <div class="flex items-center w-full sm:w-auto">
+          <button type="submit"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Filtrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div th:if="${not #maps.isEmpty(groupedSalarySlips)}">
+    <div class="mb-12">
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200" style="font-size:14px;">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mois</th>
+                
+                <th th:each="component : ${salaryComponents}" 
+                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    th:text="${component.name}">
+                </th>
+                
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salaire Brut</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Déduction</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net à Payer</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr th:each="entry : ${groupedSalarySlips.entrySet()}" class="hover:bg-gray-50">
+                <td class="px-4 py-3 whitespace-nowrap">
+                <a th:href="@{/payrolls/summary(month=${entry.value.postingDate})}" 
+                    class="font-medium text-blue-600 hover:text-blue-800 hover:underline">
+                    <span th:text="${entry.key}"></span>
+                </a>
+                </td>
+                
+                <td th:each="component : ${entry.value.componentsDef}" 
+                    class="px-4 py-3 whitespace-nowrap text-sm text-gray-500"
+                    th:text="${#numbers.formatDecimal(component, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}">
+                </td>
+                
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500" 
+                    th:text="${#numbers.formatDecimal(entry.value.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500" 
+                    th:text="${#numbers.formatDecimal(entry.value.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-blue-600" 
+                    th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 px-6 py-4 mt-6 rounded-lg border border-gray-200 max-w-7xl mx-auto">
+    <div class="flex flex-wrap justify-between items-center">
+        <div class="w-full sm:w-auto mb-4 sm:mb-0">
+        <h3 class="text-lg font-semibold text-gray-800">Récapitulatif des totaux</h3>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full sm:w-auto">
+        <div th:each="component, stat : ${salaryComponents}" class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div class="text-sm font-medium text-gray-500" th:text="${component.name}"></div>
+
+            <div class="text-xl font-semibold text-gray-800 mt-1"
+                th:text="${#numbers.formatDecimal(totalSalarySlip.componentsSum[stat.index], 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}">
+            </div>
+        </div>
+
+        <!-- Total Brut -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div class="text-sm font-medium text-gray-500">Total Brut</div>
+            <div class="text-xl font-semibold text-gray-800 mt-1" 
+                th:text="${#numbers.formatDecimal(totalSalarySlip.totalGrossPay, 1, 'POINT', 2, 'COMMA') } + ' ' + ${totalSalarySlip.currency}">
+            </div>
+        </div>
+        
+        <!-- Total Déductions -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div class="text-sm font-medium text-gray-500">Total Déductions</div>
+            <div class="text-xl font-semibold text-red-600 mt-1" 
+                th:text="${#numbers.formatDecimal(totalSalarySlip.totalDeductions, 1, 'POINT', 2, 'COMMA') } + ' ' + ${totalSalarySlip.currency}">
+            </div>
+        </div>
+        
+        <!-- Total Net -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div class="text-sm font-medium text-gray-500">Net à Payer</div>
+            <div class="text-xl font-semibold text-green-600 mt-1" 
+                th:text="${#numbers.formatDecimal(totalSalarySlip.totalNetPay, 1, 'POINT', 2, 'COMMA') } + ' ' + ${totalSalarySlip.currency}">
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+    </div>
+  </div>
+</div>
