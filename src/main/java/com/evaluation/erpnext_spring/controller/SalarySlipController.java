@@ -10,11 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.evaluation.erpnext_spring.dto.data.DataDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryTotalsResponse;
+import com.evaluation.erpnext_spring.service.DataService;
 import com.evaluation.erpnext_spring.service.PdfService;
 import com.evaluation.erpnext_spring.service.SalarySlipService;
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +35,9 @@ public class SalarySlipController {
 
     @Autowired
     private PdfService pdfGeneratorService;
+
+    @Autowired
+    private DataService dataService;
 
     @GetMapping("/summary")
     public ModelAndView summarySlip(HttpSession session,
@@ -70,12 +76,17 @@ public class SalarySlipController {
                 response =  salarySlipService.getRapport(session, response);
             }
 
-            List<SalarySlipDto> salarySlips = response.getData();
+            List<DataDto> salaryComponents=dataService.getAllData(session,"Salary Component").getData();
 
+            List<SalarySlipDto> salarySlips = salarySlipService.getComponents(response.getData(), salaryComponents);
+            
+            
+            
+            modelAndView.addObject("salaryComponents", salaryComponents);
             modelAndView.addObject("salarySlips", salarySlips);
             modelAndView.addObject("currentPage", page);
             modelAndView.addObject("pageSize", size);
-            modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlips));
+            modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlips,salaryComponents));
 
            
             modelAndView.addObject("filter", filter);

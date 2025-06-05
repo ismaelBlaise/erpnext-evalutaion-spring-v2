@@ -3,6 +3,7 @@ package com.evaluation.erpnext_spring.dto.salaries;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -86,8 +87,9 @@ public class SalarySlipDto {
     @JsonProperty("annual_taxable_amount") private double annualTaxableAmount;
     
     
+    List<Double> componentsDef=new ArrayList<>();
     
-    
+
     @JsonProperty("salary_slip_based_on_timesheet") private int salarySlipBasedOnTimesheet;
     @JsonProperty("deduct_tax_for_unclaimed_employee_benefits") private int deductTaxForUnclaimedEmployeeBenefits;
     @JsonProperty("deduct_tax_for_unsubmitted_tax_exemption_proof") private int deductTaxForUnsubmittedTaxExemptionProof;

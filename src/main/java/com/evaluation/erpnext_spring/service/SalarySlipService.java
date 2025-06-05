@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
+import com.evaluation.erpnext_spring.dto.data.DataDto;
+import com.evaluation.erpnext_spring.dto.salaries.SalaryDeduction;
+import com.evaluation.erpnext_spring.dto.salaries.SalaryEarning;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
@@ -133,6 +136,50 @@ public class SalarySlipService {
         return salarySlipListResponse2;
 
     }
+
+    public List<SalarySlipDto> getComponents(List<SalarySlipDto> salarySlipDtos, List<DataDto> dataDtos) {
+        List<SalarySlipDto> salarySlipDtos2 = new ArrayList<>();
+
+        for (SalarySlipDto salarySlipDto : salarySlipDtos) {
+            List<Double> componentsData = new ArrayList<>();
+
+            for (DataDto dataDto : dataDtos) {
+                boolean found = false;
+
+                // Recherche dans les earnings
+                for (SalaryEarning salaryEarning : salarySlipDto.getEarnings()) {
+                    if (salaryEarning.getSalaryComponent().equals(dataDto.getName())) {
+                        componentsData.add(salaryEarning.getAmount());
+                        found = true;
+                        break;
+                    }
+                }
+
+                // Recherche dans les deductions si non trouvé dans earnings
+                if (!found) {
+                    for (SalaryDeduction salaryDeduction : salarySlipDto.getDeductions()) {
+                        if (salaryDeduction.getSalaryComponent().equals(dataDto.getName())) {
+                            componentsData.add(salaryDeduction.getAmount());
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Si toujours pas trouvé, ajouter 0
+                if (!found) {
+                    componentsData.add(0.0);
+                }
+            }
+
+            salarySlipDto.setComponentsDef(componentsData);
+            salarySlipDtos2.add(salarySlipDto);
+        }
+
+        return salarySlipDtos2;
+    }
+
+    
 
 
     public SalarySlipDetail getSalarySlipByName(HttpSession session, String name) {
