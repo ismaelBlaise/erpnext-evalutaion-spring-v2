@@ -1,6 +1,8 @@
 package com.evaluation.erpnext_spring.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -12,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
+import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
 
 @Service
@@ -115,6 +118,20 @@ public class SalarySlipService {
         }
 
         return "";
+    }
+
+
+    public SalarySlipListResponse getRapport(HttpSession session,SalarySlipListResponse salarySlipListResponse){
+        List<SalarySlipDto> salarySlipDtos=salarySlipListResponse.getData();
+        SalarySlipListResponse salarySlipListResponse2=new SalarySlipListResponse();
+        List<SalarySlipDto> salarySlipDtos2=new ArrayList<>();
+        for (SalarySlipDto salarySlipDto : salarySlipDtos) {
+            SalarySlipDto salarySlipDto2=getSalarySlipByName(session, salarySlipDto.getName()).getData();
+            salarySlipDtos2.add(salarySlipDto2);
+        }
+        salarySlipListResponse2.setData(salarySlipDtos2);
+        return salarySlipListResponse2;
+
     }
 
 
