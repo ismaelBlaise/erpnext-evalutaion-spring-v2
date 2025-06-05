@@ -63,9 +63,11 @@ public class SalarySlipController {
             
             if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
                 response = salarySlipService.getSalarySlips(session, 0, 0, filter); 
+                response =salarySlipService.getRapport(session, response);
             } else {
                 
                 response = salarySlipService.getSalarySlips(session, start, size, filter);
+                response =  salarySlipService.getRapport(session, response);
             }
 
             List<SalarySlipDto> salarySlips = response.getData();
