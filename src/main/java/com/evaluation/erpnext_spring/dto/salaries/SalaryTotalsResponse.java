@@ -13,6 +13,10 @@ public class SalaryTotalsResponse {
     private String currency;
 
     private List<Double> componentsSum=new ArrayList<>();
+
+    
+
+
     public SalaryTotalsResponse(List<SalarySlipDto> salarySlipDtos,List<DataDto> dataDtos) {
         for (int i = 0; i < dataDtos.size(); i++) {
                 componentsSum.add(0.0);

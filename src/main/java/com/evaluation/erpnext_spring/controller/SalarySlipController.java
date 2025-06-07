@@ -150,16 +150,17 @@ public class SalarySlipController {
             List<SalarySlipDto> salarySlipDtos=new ArrayList<>();
             for (Map.Entry<String, SalarySlipDto> entry : groupedSalarySlips.entrySet()) {
                
-                SalarySlipDto salarySlipDto = entry.getValue(); // Les données pour ce mois
+                SalarySlipDto salarySlipDto = entry.getValue(); 
                 
                 salarySlipDtos.add(salarySlipDto);
                
                 
             }
+            
             modelAndView.addObject("salaryComponents", salaryComponents);
-            modelAndView.addObject("groupedSalarySlips", groupedSalarySlips);
-            modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlipDtos,salaryComponents));
+            modelAndView.addObject("groupedSalarySlips", salarySlipDtos);
 
+           
             
             if (groupedSalarySlips.isEmpty()) {
                 modelAndView.addObject("info", "Aucune donnée disponible pour l'année " + year);
