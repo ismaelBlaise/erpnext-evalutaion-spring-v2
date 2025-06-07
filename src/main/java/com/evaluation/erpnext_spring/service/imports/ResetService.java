@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ public class ResetService {
     @Value("${erpnext.api.secret}")
     private String erpnextApiSecret;
 
-    @SuppressWarnings({ "rawtypes", "unchecked", "null" })
+    @SuppressWarnings({ "rawtypes", "null" })
     public Map<String, Object> resetData(HttpSession session) throws Exception {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
@@ -48,6 +47,7 @@ public class ResetService {
         HttpEntity<String> request = new HttpEntity<>(headers);
 
         try {
+            @SuppressWarnings("unused")
             ResponseEntity<Map> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,

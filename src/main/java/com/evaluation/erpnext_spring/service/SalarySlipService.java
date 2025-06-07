@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
+import com.evaluation.erpnext_spring.dto.salaries.SalaryTotalsResponse;
+import com.evaluation.erpnext_spring.utils.DateUtils;
 import com.evaluation.erpnext_spring.dto.data.DataDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryDeduction;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryEarning;
@@ -149,16 +151,18 @@ public class SalarySlipService {
                 boolean found = false;
 
                 // Recherche dans les earnings
-                for (SalaryEarning salaryEarning : salarySlipDto.getEarnings()) {
+                if(salarySlipDto.getEarnings()!=null){
+                    for (SalaryEarning salaryEarning : salarySlipDto.getEarnings()) {
                     if (salaryEarning.getSalaryComponent().equals(dataDto.getName())) {
                         componentsData.add(salaryEarning.getAmount());
                         found = true;
                         break;
                     }
                 }
+                }
 
                 // Recherche dans les deductions si non trouvé dans earnings
-                if (!found) {
+                if (!found && salarySlipDto.getDeductions()!=null) {
                     for (SalaryDeduction salaryDeduction : salarySlipDto.getDeductions()) {
                         if (salaryDeduction.getSalaryComponent().equals(dataDto.getName())) {
                             componentsData.add(salaryDeduction.getAmount());
@@ -218,60 +222,66 @@ public class SalarySlipService {
 
 
 
-    public Map<String, List<SalarySlipDto>> getSalarySlipsGroupedByMonth(HttpSession session, String year, SalarySlipFilter filter) {
+    public Map<String, SalarySlipDto> getSalarySlipsGroupedByMonth(HttpSession session, String year, List<DataDto> dataDtos) {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
             throw new RuntimeException("Session non authentifiée");
         }
 
-         
-        if (filter == null) {
-            filter = new SalarySlipFilter();
-        }
-        filter.setStartDate(year + "-01-01");
-        filter.setEndDate(year + "-12-31");
-
-        String fields = fields();
-        String filtersParam = buildFilters(filter);
-
-        StringBuilder urlBuilder = new StringBuilder(erpnextApiUrl + "/api/resource/Salary Slip?");
-        urlBuilder.append("&fields=").append(fields);
-        
-        if (!filtersParam.isEmpty()) {
-            urlBuilder.append(filtersParam);
+        SalarySlipFilter filter = new SalarySlipFilter();
+        if(year!=null){
+            filter.setStartDate(year + "-01-01");
+            filter.setEndDate(year + "-12-31");
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
+        List<SalarySlipDto> salarySlipDtos=getSalarySlips(session, 0, 0, filter).getData();
+        Map<String, List<SalarySlipDto>> grouped = new TreeMap<>();
 
-        HttpEntity<String> request = new HttpEntity<>(headers);
+        for (SalarySlipDto slip : salarySlipDtos) {
+            String month = slip.getPostingDate().substring(0, 7);
+            grouped.computeIfAbsent(month, k -> new ArrayList<>()).add(slip);
+        }
 
-        try {
-            ResponseEntity<SalarySlipListResponse> response = restTemplate.exchange(
-                urlBuilder.toString(),
-                HttpMethod.GET,
-                request,
-                SalarySlipListResponse.class
-            );
+        Map<String, SalarySlipDto> consolidated = new TreeMap<>();
+        for (Map.Entry<String, List<SalarySlipDto>> entry : grouped.entrySet()) {
+            String month = entry.getKey();
+            List<SalarySlipDto> slips = entry.getValue();
+            SalarySlipListResponse salarySlipListResponse=new SalarySlipListResponse();
+            salarySlipListResponse.setData(slips);
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                Map<String, List<SalarySlipDto>> slipsByMonth = new TreeMap<>();
+            List<SalarySlipDto> enriched = getRapport(session,salarySlipListResponse).getData();
                 
-                for (SalarySlipDto slip : response.getBody().getData()) {
-                    if (slip.getPostingDate() != null) {
-                        String month = slip.getPostingDate().substring(0, 7);
-                        
-                        slipsByMonth.computeIfAbsent(month, k -> new ArrayList<>()).add(slip);
-                    }
-                }
+            enriched = getComponents(enriched, dataDtos);
+
                 
-                return slipsByMonth;
-            } else {
-                throw new RuntimeException("Échec de la récupération des fiches de paie : " + response.getStatusCode());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la récupération des fiches de paie : " + e.getMessage(), e);
+            SalarySlipDto monthlySlip = new SalarySlipDto();
+            monthlySlip.setPostingDate(month);
+            monthlySlip.setMois(DateUtils.getMonthName(month));
+
+            monthlySlip.setCurrency(slips.get(0).getCurrency());
+
+            double totalGross = 0;
+            double totalDeduction = 0;
+            double totalNet = 0;
+            List<Double> totalComponents = new ArrayList<>();
+            for (int i = 0; i < dataDtos.size(); i++) totalComponents.add(0.0);
+
+            SalaryTotalsResponse salaryTotalsResponse=new SalaryTotalsResponse(enriched, dataDtos);
+
+            totalGross+=salaryTotalsResponse.getTotalGrossPay();
+            totalDeduction+=salaryTotalsResponse.getTotalDeductions();
+            totalNet+=salaryTotalsResponse.getTotalNetPay();
+            totalComponents=salaryTotalsResponse.getComponentsSum();
+
+            monthlySlip.setGrossPay(totalGross);
+            monthlySlip.setTotalDeduction(totalDeduction);
+            monthlySlip.setNetPay(totalNet);
+            monthlySlip.setComponentsDef(totalComponents);
+
+            consolidated.put(month, monthlySlip);
         }
+
+        return consolidated;
     }
+
 }
