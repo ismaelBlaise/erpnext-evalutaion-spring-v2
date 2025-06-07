@@ -52,6 +52,7 @@ public class EmployeeService {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
+        // headers.add("Authorization", erpnextApiKey+":"+erpnextApiSecret);
     
     
         HttpEntity<String> request = new HttpEntity<>(headers);

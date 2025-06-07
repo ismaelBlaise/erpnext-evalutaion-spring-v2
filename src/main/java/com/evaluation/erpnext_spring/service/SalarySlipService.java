@@ -232,10 +232,12 @@ public class SalarySlipService {
         }
 
         SalarySlipFilter filter = new SalarySlipFilter();
+        
         if(year!=null){
             filter.setStartDate(year + "-01-01");
             filter.setEndDate(year + "-12-31");
         }
+
 
         List<SalarySlipDto> salarySlipDtos=getSalarySlips(session, 0, 0, filter).getData();
         Map<String, List<SalarySlipDto>> grouped = new TreeMap<>();
