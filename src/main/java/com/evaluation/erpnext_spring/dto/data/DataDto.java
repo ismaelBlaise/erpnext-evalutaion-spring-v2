@@ -8,4 +8,10 @@ import lombok.Data;
 public class DataDto {
     @JsonProperty("name")
     private String name;
+
+    @JsonProperty("salary_component_abbr")
+    private String abbr;
+
+    @JsonProperty("default_currency")
+    private String currency;
 }

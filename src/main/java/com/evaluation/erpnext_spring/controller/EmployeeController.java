@@ -44,11 +44,11 @@ public class EmployeeController {
             response =  employeeService.getAllEmployees(session, start, size, filter);
            
 
-            dataListReponse=designationService.getAllData(session,"Designation");
+            dataListReponse=designationService.getAllData(session,"Designation", null);
             List<DataDto> designations=dataListReponse.getData();
-            dataListReponse=designationService.getAllData(session,"Department");
+            dataListReponse=designationService.getAllData(session,"Department", null);
             List<DataDto> departments=dataListReponse.getData();
-            dataListReponse=designationService.getAllData(session,"Company");
+            dataListReponse=designationService.getAllData(session,"Company", null);
             List<DataDto> companies=dataListReponse.getData();
             
             List<EmployeeDto> employees = response.getData();

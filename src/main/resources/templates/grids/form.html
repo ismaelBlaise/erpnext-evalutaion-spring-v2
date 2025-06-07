@@ -1,0 +1,326 @@
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Nouvelle grille de salaire</h1>
+        
+        <!-- Error Message -->
+        <div th:if="${error != null}" class="mt-4 bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700" th:text="${error}"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div th:if="${success != null}" class="mt-4 bg-green-50 border-l-4 border-green-500 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414L9 13.414l4.707-4.707z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-green-700" th:text="${success}"></p>
+                </div>
+            </div>
+        </div>
+
+
+        <form id="salaryGridForm" th:action="@{/grids}" th:object="${salaryGridDTO}" method="POST">
+            <!-- Informations de base -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">Informations de base</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Société</label>
+                        <select id="company" th:field="*{company}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Sélectionner une société</option>
+                            <option th:each="company : ${companies.data}" 
+                                    th:value="${company.name}" 
+                                    th:text="${company.name}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nom de la grille</label>
+                        <input type="text" id="name" th:field="*{name}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: Grille Cadres 2023">
+                    </div>
+
+                    <div>
+                        <label for="fromDate" class="block text-sm font-medium text-gray-700 mb-1">Date d'effet</label>
+                        <input type="date" id="fromDate" th:field="*{fromDate}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="paymentFrequency" class="block text-sm font-medium text-gray-700 mb-1">Fréquence de paiement</label>
+                        <select id="paymentFrequency" th:field="*{paymentFrequency}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="Monthly">Mensuel</option>
+                            <option value="Weekly">Hebdomadaire</option>
+                            <option value="Fortnightly">Bimensuel</option>
+                            <option value="Daily">Quotidien</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="isActive" class="block text-sm font-medium text-gray-700 mb-1">Est active</label>
+                        <select id="isActive" th:field="*{isActive}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option th:value="Yes">Oui</option>
+                            <option th:value="No">Non</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Composants de gains -->
+            <div class="mb-8" x-data="{
+                earnings: [],
+                newEarning: { componentName: '', amount: 0, dependsOnPaymentDays: false, isTaxable: false, amountBasedOnFormula: false, formula: '' },
+                showEarningForm: false,
+                
+                addEarning() {
+                    if (!this.newEarning.componentName) return;
+                    this.earnings.push({...this.newEarning});
+                    this.showEarningForm = false;
+                    this.resetEarningForm();
+                },
+                
+                removeEarning(index) {
+                    this.earnings.splice(index, 1);
+                },
+                
+                resetEarningForm() {
+                    this.newEarning = { componentName: '', amount: 0, dependsOnPaymentDays: false, isTaxable: false, amountBasedOnFormula: false, formula: '' };
+                }
+            }">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h2 class="text-lg font-semibold text-gray-700">Composants de gains</h2>
+                    <button type="button" @click="showEarningForm = true" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Ajouter un gain
+                    </button>
+                </div>
+
+                
+                <div class="mb-4">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Composant</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Abbreviation</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Options</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <template x-for="(earning, index) in earnings" :key="index">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="earning.componentName"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="earning.abbreviation"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="earning.amount"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <span x-show="earning.dependsOnPaymentDays" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Jours payés</span>
+                                            <span x-show="earning.isTaxable" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Imposable</span>
+                                            <span x-show="earning.amountBasedOnFormula" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Formule</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <button type="button" @click="removeEarning(index)" class="text-red-600 hover:text-red-900">Supprimer</button>
+                                        </td>
+                                        <input type="hidden" th:name="|earnings[${index}].componentName|" :name="`earnings[${index}].componentName`" x-model="earning.componentName">
+                                        <input type="hidden" th:name="|earnings[${index}].amount|" :name="`earnings[${index}].amount`" x-model="earning.amount">
+                                        <input type="hidden" th:name="|earnings[${index}].dependsOnPaymentDays|" :name="`earnings[${index}].dependsOnPaymentDays`" x-model="earning.dependsOnPaymentDays">
+                                        <input type="hidden" th:name="|earnings[${index}].isTaxable|" :name="`earnings[${index}].isTaxable`" x-model="earning.isTaxable">
+                                        <input type="hidden" th:name="|earnings[${index}].amountBasedOnFormula|" :name="`earnings[${index}].amountBasedOnFormula`" x-model="earning.amountBasedOnFormula">
+                                        <input type="hidden" th:name="|earnings[${index}].formula|" :name="`earnings[${index}].formula`" x-model="earning.formula">
+                                    </tr>
+                                </template>
+                                <tr x-show="earnings.length === 0">
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Aucun composant de gain ajouté</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Form to add new earning -->
+                <div x-show="showEarningForm" class="bg-gray-50 p-4 rounded-md mb-4 border border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Composant</label>
+                            <select x-model="newEarning.componentName" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Sélectionner un composant</option>
+                                <option th:each="earning : ${earnings.data}" 
+                                        th:value="${earning.name}" 
+                                        th:text="${earning.name}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Montant</label>
+                            <input type="number" x-model="newEarning.amount" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" x-model="newEarning.dependsOnPaymentDays" id="dependsOnPaymentDaysEarning" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="dependsOnPaymentDaysEarning" class="ml-2 block text-sm text-gray-700">Dépend des jours payés</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" x-model="newEarning.isTaxable" id="isTaxableEarning" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="isTaxableEarning" class="ml-2 block text-sm text-gray-700">Imposable</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" x-model="newEarning.amountBasedOnFormula" id="amountBasedOnFormulaEarning" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="amountBasedOnFormulaEarning" class="ml-2 block text-sm text-gray-700">Basé sur formule</label>
+                        </div>
+                    </div>
+                    <div x-show="newEarning.amountBasedOnFormula" class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Formule</label>
+                        <textarea x-model="newEarning.formula" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: base * 0.2"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" @click="showEarningForm = false; resetEarningForm()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Annuler
+                        </button>
+                        <button type="button" @click="addEarning()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Ajouter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Composants de déductions -->
+            <div class="mb-8" x-data="{
+                deductions: [],
+                newDeduction: { componentName: '', amount: 0, dependsOnPaymentDays: false, isTaxable: false, amountBasedOnFormula: false, formula: '' },
+                showDeductionForm: false,
+                
+                addDeduction() {
+                    if (!this.newDeduction.componentName) return;
+                    this.deductions.push({...this.newDeduction});
+                    this.showDeductionForm = false;
+                    this.resetDeductionForm();
+                },
+                
+                removeDeduction(index) {
+                    this.deductions.splice(index, 1);
+                },
+                
+                resetDeductionForm() {
+                    this.newDeduction = { componentName: '', amount: 0, dependsOnPaymentDays: false, isTaxable: false, amountBasedOnFormula: false, formula: '' };
+                }
+            }">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h2 class="text-lg font-semibold text-gray-700">Composants de déductions</h2>
+                    <button type="button" @click="showDeductionForm = true" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Ajouter une déduction
+                    </button>
+                </div>
+
+                <!-- Table of deductions -->
+                <div class="mb-4">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Composant</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Abbreviation</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Options</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <template x-for="(deduction, index) in deductions" :key="index">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="deduction.componentName"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="deduction.abbreviation"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" x-text="deduction.amount"></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <span x-show="deduction.dependsOnPaymentDays" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Jours payés</span>
+                                            <span x-show="deduction.isTaxable" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Imposable</span>
+                                            <span x-show="deduction.amountBasedOnFormula" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Formule</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <button type="button" @click="removeDeduction(index)" class="text-red-600 hover:text-red-900">Supprimer</button>
+                                        </td>
+                                        <input type="hidden" th:name="|deductions[${index}].componentName|" :name="`deductions[${index}].componentName`" x-model="deduction.componentName">
+                                        <input type="hidden" th:name="|deductions[${index}].amount|" :name="`deductions[${index}].amount`" x-model="deduction.amount">
+                                        <input type="hidden" th:name="|deductions[${index}].dependsOnPaymentDays|" :name="`deductions[${index}].dependsOnPaymentDays`" x-model="deduction.dependsOnPaymentDays">
+                                        <input type="hidden" th:name="|deductions[${index}].isTaxable|" :name="`deductions[${index}].isTaxable`" x-model="deduction.isTaxable">
+                                        <input type="hidden" th:name="|deductions[${index}].amountBasedOnFormula|" :name="`deductions[${index}].amountBasedOnFormula`" x-model="deduction.amountBasedOnFormula">
+                                        <input type="hidden" th:name="|deductions[${index}].formula|" :name="`deductions[${index}].formula`" x-model="deduction.formula">
+                                    </tr>
+                                </template>
+                                <tr x-show="deductions.length === 0">
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Aucun composant de déduction ajouté</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Form to add new deduction -->
+                <div x-show="showDeductionForm" class="bg-gray-50 p-4 rounded-md mb-4 border border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Composant</label>
+                            <select x-model="newDeduction.componentName" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Sélectionner un composant</option>
+                                <option th:each="deduction : ${deductions.data}" 
+                                        th:value="${deduction.name}" 
+                                        th:text="${deduction.name}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Montant</label>
+                            <input type="number" x-model="newDeduction.amount" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" x-model="newDeduction.dependsOnPaymentDays" id="dependsOnPaymentDaysDeduction" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="dependsOnPaymentDaysDeduction" class="ml-2 block text-sm text-gray-700">Dépend des jours payés</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" x-model="newDeduction.isTaxable" id="isTaxableDeduction" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="isTaxableDeduction" class="ml-2 block text-sm text-gray-700">Imposable</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" x-model="newDeduction.amountBasedOnFormula" id="amountBasedOnFormulaDeduction" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="amountBasedOnFormulaDeduction" class="ml-2 block text-sm text-gray-700">Basé sur formule</label>
+                        </div>
+                    </div>
+                    <div x-show="newDeduction.amountBasedOnFormula" class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Formule</label>
+                        <textarea x-model="newDeduction.formula" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: base * 0.2"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" @click="showDeductionForm = false; resetDeductionForm()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Annuler
+                        </button>
+                        <button type="button" @click="addDeduction()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Ajouter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end space-x-3 border-t pt-4">
+                <button type="button" onclick="window.history.back()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Annuler
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Alpine JS -->
