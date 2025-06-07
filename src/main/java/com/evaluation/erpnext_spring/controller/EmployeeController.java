@@ -62,6 +62,7 @@ public class EmployeeController {
             modelAndView.addObject("employees", employees);
             modelAndView.addObject("currentPage", page);
             modelAndView.addObject("pageSize", size);
+            modelAndView.addObject("filter", filter);
             
         } catch (Exception e) {
             modelAndView.addObject("error", e.getMessage());

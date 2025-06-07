@@ -151,7 +151,7 @@ public class SalarySlipService {
             for (DataDto dataDto : dataDtos) {
                 boolean found = false;
 
-                // Recherche dans les earnings
+                
                 if(salarySlipDto.getEarnings()!=null){
                     for (SalaryEarning salaryEarning : salarySlipDto.getEarnings()) {
                     if (salaryEarning.getSalaryComponent().equals(dataDto.getName())) {
@@ -162,7 +162,7 @@ public class SalarySlipService {
                 }
                 }
 
-                // Recherche dans les deductions si non trouvé dans earnings
+                 
                 if (!found && salarySlipDto.getDeductions()!=null) {
                     for (SalaryDeduction salaryDeduction : salarySlipDto.getDeductions()) {
                         if (salaryDeduction.getSalaryComponent().equals(dataDto.getName())) {
@@ -173,7 +173,7 @@ public class SalarySlipService {
                     }
                 }
 
-                // Si toujours pas trouvé, ajouter 0
+                
                 if (!found) {
                     componentsData.add(0.0);
                 }

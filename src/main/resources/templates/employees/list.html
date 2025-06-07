@@ -11,7 +11,7 @@
         </div>
         
         <!-- Barre de filtre stylée -->
-        <div class="mt-6 bg-white shadow-sm rounded-lg px-6 py-5 max-w-7xl mx-auto">
+        <div class="mt-6 bg-white  px-6 py-5 max-w-7xl mx-auto">
         <form action="employees" method="get" class="flex flex-wrap gap-6 items-end justify-between">
             
             <!-- Nom complet -->
@@ -128,26 +128,46 @@
             </table>
         </div>
         
-        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+       <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     <div class="flex items-center space-x-2">
-                        <a th:href="@{/employees(page=${currentPage - 1}, size=${pageSize})}" 
-                           th:if="${currentPage > 0}"
-                           class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        <!-- Précédent -->
+                        <a th:href="@{/employees(
+                            page=${currentPage - 1},
+                            size=${pageSize},
+                            employeeName=${filter.employeeName},
+                            position=${filter.position},
+                            department=${filter.department},
+                            company=${filter.company},
+                            hireDateStart=${filter.hireDateStart},
+                            hireDateEnd=${filter.hireDateEnd}
+                        )}" 
+                        th:if="${currentPage > 0}"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                             <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
                             Précédent
                         </a>
-                        
-                        <!-- Numéro de page actuel -->
+
+                        <!-- Page actuelle -->
                         <span class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-gray-100 rounded-md">
                             Page <span th:text="${currentPage + 1}" class="ml-1 font-semibold"></span>
                         </span>
-                        
-                        <a th:href="@{/employees(page=${currentPage + 1}, size=${pageSize})}"
-                           class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+
+                        <!-- Suivant -->
+                        <a th:href="@{/employees(
+                            page=${currentPage + 1},
+                            size=${pageSize},
+                            employeeName=${filter.employeeName},
+                            position=${filter.position},
+                            department=${filter.department},
+                            company=${filter.company},
+                            hireDateStart=${filter.hireDateStart},
+                            hireDateEnd=${filter.hireDateEnd}
+                        )}" 
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                             Suivant
                             <svg class="h-5 w-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -157,6 +177,7 @@
                 </nav>
             </div>
         </div>
+
         
         
     </div>

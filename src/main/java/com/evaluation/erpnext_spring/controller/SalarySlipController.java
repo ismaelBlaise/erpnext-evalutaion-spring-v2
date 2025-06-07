@@ -203,12 +203,12 @@ public class SalarySlipController {
             int start = page * size;
 
             
-            if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
-                response = salarySlipService.getSalarySlips(session, 0, 0, filter); 
-            } else {
+            // if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
+            //     response = salarySlipService.getSalarySlips(session, 0, 0, filter); 
+            // } else {
                 
                 response = salarySlipService.getSalarySlips(session, start, size, filter);
-            }
+            // }
 
             List<SalarySlipDto> salarySlips = response.getData();
 
@@ -218,6 +218,7 @@ public class SalarySlipController {
 
            
             modelAndView.addObject("filter", filter);
+            modelAndView.addObject("month",month);
 
         } catch (Exception e) {
             modelAndView.addObject("error", e.getMessage());

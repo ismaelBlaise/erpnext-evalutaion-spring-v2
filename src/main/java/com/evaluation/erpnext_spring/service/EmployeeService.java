@@ -40,10 +40,10 @@ public class EmployeeService {
         StringBuilder urlBuilder = new StringBuilder(erpnextApiUrl + "/api/resource/Employee?");
         
 
-        if(filtre.isBlank()){
+        // if(filtre.isBlank()){
             urlBuilder.append("limit_start=").append(start)
                 .append("&limit_page_length=").append(pageLength);
-        }
+        // }
         
         urlBuilder.append("&fields=").append(fields);
         urlBuilder.append(filtre);
