@@ -149,7 +149,7 @@ public class SalarySlipController {
             Map<String, SalarySlipDto> groupedSalarySlips = salarySlipService.getSalarySlipsGroupedByMonth(session, year, salaryComponents);
             List<SalarySlipDto> salarySlipDtos=new ArrayList<>();
             for (Map.Entry<String, SalarySlipDto> entry : groupedSalarySlips.entrySet()) {
-               
+                
                 SalarySlipDto salarySlipDto = entry.getValue(); 
                 
                 salarySlipDtos.add(salarySlipDto);
