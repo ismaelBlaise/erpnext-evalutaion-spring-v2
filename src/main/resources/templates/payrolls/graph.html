@@ -1,250 +1,262 @@
-<div class="bg-white border-b border-gray-200 mb-6">
-  <!-- Votre en-tête existant reste inchangé -->
-  <!-- ... -->
-</div>
-
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <div th:if="${not #maps.isEmpty(groupedSalarySlips)}">
-    <div class="mb-12">
-      
-      <!-- Section Graphiques -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Graphique Salaire Brut par mois -->
-        <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution du salaire brut par mois</h3>
-          <canvas id="grossPayChart" height="300"></canvas>
-        </div>
-        
-        <!-- Graphique Répartition des composants -->
-        <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Répartition des composants de salaire</h3>
-          <canvas id="componentsChart" height="300"></canvas>
-        </div>
-        
-        <!-- Graphique Comparaison Brut/Net -->
-        <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Comparaison salaire brut vs net</h3>
-          <canvas id="grossNetChart" height="300"></canvas>
-        </div>
-        
-        <!-- Graphique Déductions par mois -->
-        <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution des déductions par mois</h3>
-          <canvas id="deductionsChart" height="300"></canvas>
-        </div>
+  <!-- Filtre par année -->
+  <div class="bg-white border-b border-gray-200 mb-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+      <div class="mb-4 sm:mb-0">
+        <h1 class="text-xl font-semibold text-gray-800">Évolution des salaires et de leurs composants par année</h1>
       </div>
 
-      <!-- Votre tableau existant reste inchangé -->
-      <!-- ... -->
-      
-      <!-- Votre section de totaux reste inchangée -->
-      <!-- ... -->
+    </div>
+
+    <div th:if="${error != null}" class="mt-4 bg-red-50 border-l-4 border-red-500 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-red-700" th:text="${error}"></p>
+        </div>
+      </div>
+    </div>
+
+    <div th:if="${info != null}" class="mt-4 bg-blue-50 border-l-4 border-blue-500 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-blue-700" th:text="${info}"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 bg-white  px-6 py-5 max-w-7xl mx-auto">
+      <form action="/payrolls/graph" method="get" class="flex flex-wrap gap-6 items-end justify-between">
+        <div class="flex flex-col w-full sm:w-40">
+          <label for="year" class="mb-1 text-xs font-semibold text-gray-500 uppercase">Année</label>
+          <input type="number" name="year" id="year" th:value="${selectedYear}"
+                 class="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" />
+        </div>
+
+        <div class="flex items-center w-full sm:w-auto">
+          <button type="submit"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md shadow focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Filtrer
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
-<!-- Script pour les graphiques Chart.js -->
+  <div th:if="${not #lists.isEmpty(groupedSalarySlips)}">
+    <div class="mb-12">
+      <!-- Section Graphiques simplifiée -->
+      <div class="grid grid-cols-1 gap-6 mb-8">
+        <!-- Graphique Évolution Salaire Brut, Déduction et Net à Payer -->
+        <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution Salaire Brut, Déduction et Net à Payer</h3>
+          <div class="chart-container" style="position: relative; height:300px; width:100%">
+            <canvas id="summaryChart"></canvas>
+          </div>
+        </div>
+        
+        <!-- Graphique Évolution des composantes salariales -->
+        <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Évolution des composantes salariales</h3>
+          <div class="chart-container" style="position: relative; height:300px; width:100%">
+            <canvas id="componentsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Votre HTML existant reste inchangé jusqu'au script -->
+
 <script th:inline="javascript">
-  /*<![CDATA[*/
-  document.addEventListener('DOMContentLoaded', function() {
-    // Préparation des données
-    const months = /*[[${groupedSalarySlips.keySet()}]]*/ [];
-    const grossPayData = /*[[${groupedSalarySlips.values().![grossPay]}]]*/ [];
-    const netPayData = /*[[${groupedSalarySlips.values().![netPay]}]]*/ [];
-    const deductionsData = /*[[${groupedSalarySlips.values().![totalDeduction]}]]*/ [];
-    
-    // Composants de salaire (exemple avec 3 composants)
-    const component1Data = /*[[${groupedSalarySlips.values().![componentsDef[0]]}]]*/ [];
-    const component2Data = /*[[${groupedSalarySlips.values().![componentsDef[1]]}]]*/ [];
-    const component3Data = /*[[${groupedSalarySlips.values().![componentsDef[2]]}]]*/ [];
-    
-    // Configuration des couleurs
-    const colors = {
-      primary: '#3b82f6',
-      secondary: '#10b981',
-      danger: '#ef4444',
-      warning: '#f59e0b',
-      info: '#06b6d4'
+/*<![CDATA[*/
+document.addEventListener('DOMContentLoaded', function() {
+    // Debug: Afficher les données reçues
+    console.log("Données reçues:", {
+        labels: /*[[${groupedSalarySlips.![mois]}]]*/ [],
+        groupedData: /*[[${groupedSalarySlips}]]*/ [],
+        components: /*[[${salaryComponents}]]*/ []
+    });
+
+    const labels = /*[[${groupedSalarySlips.![mois]}]]*/ [];
+    const componentNames = /*[[${salaryComponents.![name]}]]*/ [];
+    const groupedData = /*[[${groupedSalarySlips}]]*/ [];
+    const currency = groupedData[0]?.currency || 'EUR';
+
+     
+    const verifiedData = groupedData.map(slip => ({
+        grossPay: parseFloat(slip.gross_pay) || 0,
+        totalDeduction: parseFloat(slip.total_deduction) || 0,
+        netPay: parseFloat(slip.net_pay) || 0,
+        componentsDef: slip.componentsDef ? slip.componentsDef.map(comp => parseFloat(comp) || 0) : []
+    }));
+
+    console.log("Données vérifiées:", verifiedData);
+
+    const commonChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            intersect: false,
+            mode: 'index'
+        },
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    boxWidth: 12,
+                    padding: 20,
+                    font: {
+                        size: 12
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.dataset.label}: ${context.raw.toFixed(2).replace('.', ',')} ${currency}`;
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return value.toFixed(2).replace('.', ',') + ' ' + currency;
+                    },
+                    padding: 10,
+                    font: {
+                        size: 11
+                    }
+                },
+                grid: {
+                    drawBorder: false,
+                    color: 'rgba(0, 0, 0, 0.05)'
+                }
+            },
+            x: {
+                grid: {
+                    display: false
+                },
+                ticks: {
+                    padding: 10,
+                    font: {
+                        size: 11
+                    }
+                }
+            }
+        },
+        elements: {
+            point: {
+                radius: 3,
+                hoverRadius: 5,
+                hoverBorderWidth: 2
+            },
+            line: {
+                tension: 0.3
+            }
+        }
     };
 
-    // 1. Graphique Salaire Brut par mois
-    new Chart(document.getElementById('grossPayChart'), {
-      type: 'line',
-      data: {
-        labels: months,
-        datasets: [{
-          label: 'Salaire Brut',
-          data: grossPayData,
-          borderColor: colors.primary,
-          backgroundColor: colors.primary + '20',
-          borderWidth: 2,
-          tension: 0.1,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.raw.toLocaleString() + ' ' + /*[[${totalSalarySlip.currency}]]*/ '';
-              }
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return value.toLocaleString() + ' ' + /*[[${totalSalarySlip.currency}]]*/ '';
-              }
-            }
-          }
+    // 1. Création du graphique principal
+    try {
+        const summaryCtx = document.getElementById('summaryChart');
+        if (summaryCtx) {
+            new Chart(summaryCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Salaire Brut',
+                            data: verifiedData.map(slip => slip.grossPay),
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true
+                        },
+                        {
+                            label: 'Déduction',
+                            data: verifiedData.map(slip => slip.totalDeduction),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            fill: true
+                        },
+                        {
+                            label: 'Net à Payer',
+                            data: verifiedData.map(slip => slip.netPay),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: true
+                        }
+                    ]
+                },
+                options: commonChartOptions
+            });
+        } else {
+            console.error("Canvas #summaryChart non trouvé");
         }
-      }
-    });
+    } catch (e) {
+        console.error("Erreur création graphique principal:", e);
+    }
 
-    // 2. Graphique Répartition des composants
-    new Chart(document.getElementById('componentsChart'), {
-      type: 'bar',
-      data: {
-        labels: months,
-        datasets: [
-          {
-            label: /*[[${salaryComponents[0].name}]]*/ 'Composant 1',
-            data: component1Data,
-            backgroundColor: colors.primary + '80',
-            borderColor: colors.primary,
-            borderWidth: 1
-          },
-          {
-            label: /*[[${salaryComponents[1].name}]]*/ 'Composant 2',
-            data: component2Data,
-            backgroundColor: colors.secondary + '80',
-            borderColor: colors.secondary,
-            borderWidth: 1
-          },
-          {
-            label: /*[[${salaryComponents[2].name}]]*/ 'Composant 3',
-            data: component3Data,
-            backgroundColor: colors.warning + '80',
-            borderColor: colors.warning,
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: { stacked: true },
-          y: { 
-            stacked: true,
-            ticks: {
-              callback: function(value) {
-                return value.toLocaleString() + ' ' + /*[[${totalSalarySlip.currency}]]*/ '';
-              }
-            }
-          }
-        },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.raw.toLocaleString() + ' ' + /*[[${totalSalarySlip.currency}]]*/ '';
-              }
-            }
-          }
-        }
-      }
-    });
+    // 2. Création du graphique des composants
+    try {
+        const componentsCtx = document.getElementById('componentsChart');
+        if (componentsCtx && componentNames.length > 0) {
+            const colors = [
+                '#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899',
+                '#14b8a6', '#f97316', '#8b5cf6', '#d946ef', '#0ea5e9'
+            ];
 
-    // 3. Graphique Comparaison Brut/Net
-    new Chart(document.getElementById('grossNetChart'), {
-      type: 'bar',
-      data: {
-        labels: months,
-        datasets: [
-          {
-            label: 'Salaire Brut',
-            data: grossPayData,
-            backgroundColor: colors.primary + '80',
-            borderColor: colors.primary,
-            borderWidth: 1
-          },
-          {
-            label: 'Salaire Net',
-            data: netPayData,
-            backgroundColor: colors.secondary + '80',
-            borderColor: colors.secondary,
-            borderWidth: 1
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return value.toLocaleString() + ' ' + /*[[${totalSalarySlip.currency}]]*/ '';
-              }
-            }
-          }
-        },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.raw.toLocaleString() + ' ' + /*[[${totalSalarySlip.currency}]]*/ '';
-              }
-            }
-          }
+            new Chart(componentsCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: componentNames.map((name, i) => ({
+                        label: name,
+                        data: verifiedData.map(slip => slip.componentsDef[i] || 0),
+                        borderColor: colors[i % colors.length],
+                        backgroundColor: 'transparent',
+                        borderWidth: 2
+                    }))
+                },
+                options: {
+                    ...commonChartOptions,
+                    plugins: {
+                        ...commonChartOptions.plugins,
+                        legend: {
+                            ...commonChartOptions.plugins.legend,
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
         }
-      }
-    });
-
-    // 4. Graphique Déductions par mois
-    new Chart(document.getElementById('deductionsChart'), {
-      type: 'line',
-      data: {
-        labels: months,
-        datasets: [{
-          label: 'Déductions',
-          data: deductionsData,
-          borderColor: colors.danger,
-          backgroundColor: colors.danger + '20',
-          borderWidth: 2,
-          tension: 0.1,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.raw.toLocaleString() + ' ' + /*[[${totalSalarySlip.currency}]]*/ '';
-              }
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return value.toLocaleString() + ' ' + /*[[${totalSalarySlip.currency}]]*/ '';
-              }
-            }
-          }
-        }
-      }
-    });
-  });
-  /*]]>*/
+    } catch (e) {
+        console.error("Erreur création graphique composants:", e);
+    }
+});
+/*]]>*/
 </script>
