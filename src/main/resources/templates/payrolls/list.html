@@ -112,7 +112,7 @@
         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
           <div class="flex items-center space-x-2">
             <a th:if="${currentPage > 0}"
-               th:href="@{/payrolls(page=${currentPage - 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
+               th:href="@{/payrolls(page=${currentPage - 1}, size=${pageSize}, employee=${filter.employee}, month=${month})}"
                class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
               <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -124,7 +124,7 @@
               Page <span th:text="${currentPage + 1}" class="ml-1 font-semibold"></span>
             </span>
 
-            <a th:href="@{/payrolls(page=${currentPage + 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
+            <a th:href="@{/payrolls(page=${currentPage + 1}, size=${pageSize}, employee=${filter.employee}, , month=${month})}"
                class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
               Suivant
               <svg class="h-5 w-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
