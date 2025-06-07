@@ -47,12 +47,15 @@ public class SalarySlipController {
                                        @RequestParam(required = false) String month) {
         ModelAndView modelAndView = new ModelAndView("template");
         SalarySlipListResponse response = null;
+        SalarySlipListResponse salarySlipListResponse=null;
 
         try {
             modelAndView.addObject("page", "payrolls/summary");
 
             SalarySlipFilter filter = new SalarySlipFilter();
             
+            List<DataDto> salaryComponents=dataService.getAllData(session,"Salary Component",null).getData();
+
             String startDate = null;
             String endDate = null;
 
@@ -74,20 +77,25 @@ public class SalarySlipController {
             // } else {
                 
                 response = salarySlipService.getSalarySlips(session, start, size, filter);
+                
                 response =  salarySlipService.getRapport(session, response);
             // }
 
-            List<DataDto> salaryComponents=dataService.getAllData(session,"Salary Component",null).getData();
+           
 
             List<SalarySlipDto> salarySlips = salarySlipService.getComponents(response.getData(), salaryComponents);
             
             
+
+            salarySlipListResponse=salarySlipService.getSalarySlips(session,0, 0, filter);
+            salarySlipListResponse=salarySlipService.getRapport(session, salarySlipListResponse);
+            List<SalarySlipDto> salarySlipDtos=salarySlipService.getComponents(salarySlipListResponse.getData(), salaryComponents);
             
             modelAndView.addObject("salaryComponents", salaryComponents);
             modelAndView.addObject("salarySlips", salarySlips);
             modelAndView.addObject("currentPage", page);
             modelAndView.addObject("pageSize", size);
-            modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlips,salaryComponents));
+            modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlipDtos,salaryComponents));
 
            
             modelAndView.addObject("filter", filter);

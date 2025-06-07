@@ -63,9 +63,11 @@ public class SalarySlipService {
               || (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) );
 
         // if (!hasDateFilter) {
+        if(start!=0 && pageLength!=0){
             urlBuilder.append("limit_start=").append(start)
                       .append("&limit_page_length=").append(pageLength);
-        // }
+    
+        }
 
         urlBuilder.append("&fields=").append(fields);
 
