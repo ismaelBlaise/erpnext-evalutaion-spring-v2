@@ -57,14 +57,15 @@ public class SalarySlipService {
         StringBuilder urlBuilder = new StringBuilder(erpnextApiUrl + "/api/resource/Salary Slip?");
 
         
+        @SuppressWarnings("unused")
         boolean hasDateFilter = filter != null 
             && ( (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) 
               || (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) );
 
-        if (!hasDateFilter) {
+        // if (!hasDateFilter) {
             urlBuilder.append("limit_start=").append(start)
                       .append("&limit_page_length=").append(pageLength);
-        }
+        // }
 
         urlBuilder.append("&fields=").append(fields);
 

@@ -68,14 +68,14 @@ public class SalarySlipController {
             int start = page * size;
 
             
-            if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
-                response = salarySlipService.getSalarySlips(session, 0, 0, filter); 
-                response =salarySlipService.getRapport(session, response);
-            } else {
+            // if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
+            //     response = salarySlipService.getSalarySlips(session, 0, 0, filter); 
+            //     response =salarySlipService.getRapport(session, response);
+            // } else {
                 
                 response = salarySlipService.getSalarySlips(session, start, size, filter);
                 response =  salarySlipService.getRapport(session, response);
-            }
+            // }
 
             List<DataDto> salaryComponents=dataService.getAllData(session,"Salary Component").getData();
 
