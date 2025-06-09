@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignation de structure salariale</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .employee-row { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .form-container { max-width: 900px; margin: 30px auto; }
+    </style>
+</head>
+<body>
+    <div class="container form-container">
+        <h2 class="mb-4">Assignation de structure salariale</h2>
+        
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="company" class="form-label">Entreprise</label>
+                            <select class="form-select" name="company" id="company" required>
+                                <option value="">Sélectionner une entreprise</option>
+                                <option th:each="company : ${companies}" 
+                                        th:value="${company.name}" 
+                                        th:text="${company.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="salaryStructure" class="form-label">Structure salariale</label>
+                            <select class="form-select" name="salaryStructure" id="salaryStructure" required>
+                                <option value="">Sélectionner une structure</option>
+                                <option th:each="structure : ${structures}" 
+                                        th:value="${structure.name}" 
+                                        th:text="${structure.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="fromDate" class="form-label">Date d'effet</label>
+                            <input type="date" name="fromDate" class="form-control" id="fromDate" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="currency" class="form-label">Devise</label>
+                            <input type="text" name="currency" class="form-control" id="currency" value="USD" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Employés</h5>
+                <button type="button" class="btn btn-primary btn-sm" onclick="addEmployeeRow()">
+                    <i class="bi bi-plus"></i> Ajouter un employé
+                </button>
+            </div>
+            <div class="card-body" id="employeesContainer">
+                <!-- Les lignes d'employés seront ajoutées ici dynamiquement -->
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button class="btn btn-success" type="button" onclick="submitAssignments()">Assigner les structures</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        // Compteur pour les IDs uniques
+        let employeeCounter = 0;
+        const employeesData = /*[[${employees}]]*/ [];
+
+        // Ajouter une nouvelle ligne d'employé
+        function addEmployeeRow() {
+            const container = document.getElementById('employeesContainer');
+            const rowId = 'employee-' + employeeCounter++;
+            
+            const rowHtml = `
+                <div class="employee-row" id="${rowId}">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="${rowId}-employee" class="form-label">Employé</label>
+                                <select class="form-select employee-input" name="employee" id="${rowId}-employee" required>
+                                    <option value="">Sélectionner un employé</option>
+                                    ${employeesData.map(emp => 
+                                        `<option value="${emp.name}">${emp.employee_name} (${emp.name})</option>`
+                                    ).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="${rowId}-base" class="form-label">Salaire de base</label>
+                                <input type="number" step="0.01" class="form-control base-input" name="base" id="${rowId}-base" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="${rowId}-variable" class="form-label">Variable</label>
+                                <input type="number" step="0.01" class="form-control variable-input" name="variable" id="${rowId}-variable" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeEmployeeRow('${rowId}')">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', rowHtml);
+        }
+
+        // Supprimer une ligne d'employé
+        function removeEmployeeRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
+            }
+        }
+
+        // Soumettre les assignations
+        function submitAssignments() {
+            const formData = new FormData();
+            formData.append('salaryStructure', document.getElementById('salaryStructure').value);
+            formData.append('company', document.getElementById('company').value);
+            formData.append('fromDate', document.getElementById('fromDate').value);
+            formData.append('currency', document.getElementById('currency').value);
+
+            // Récupérer les données des employés
+            const employeeRows = document.querySelectorAll('.employee-row');
+            if (employeeRows.length === 0) {
+                alert('Veuillez ajouter au moins un employé');
+                return;
+            }
+
+            const structureDetails = [];
+            let hasError = false;
+
+            employeeRows.forEach(row => {
+                const employee = row.querySelector('.employee-input').value;
+                const base = row.querySelector('.base-input').value;
+                const variable = row.querySelector('.variable-input').value;
+
+                if (!employee || !base || !variable) {
+                    hasError = true;
+                    return;
+                }
+
+                structureDetails.push({
+                    employee: employee,
+                    base: parseFloat(base),
+                    variable: parseFloat(variable)
+                });
+            });
+
+            if (hasError) {
+                alert('Veuillez remplir tous les champs pour chaque employé');
+                return;
+            }
+
+            // Convertir structureDetails en JSON
+            formData.append('structureDetails', JSON.stringify(structureDetails));
+
+            // Envoyer les données au serveur
+            fetch('/structures/assign', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Assignation réussie !');
+                    window.location.reload();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur est survenue lors de l\'assignation');
+            });
+        }
+
+        // Ajouter une première ligne d'employé au chargement
+        document.addEventListener('DOMContentLoaded', addEmployeeRow);
+    </script>
+</body>
+</html>

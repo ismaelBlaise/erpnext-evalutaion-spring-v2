@@ -14,4 +14,7 @@ public class DataDto {
 
     @JsonProperty("default_currency")
     private String currency;
+
+    @JsonProperty("currency")
+    private String currencyStructure;
 }

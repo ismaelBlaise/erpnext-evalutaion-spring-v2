@@ -46,6 +46,9 @@ public class DataService {
         else if(type.equals("Company")){
             url = erpnextApiUrl + "/api/resource/Company";
         }
+         else if(type.equals("Salary Structure")){
+            url = erpnextApiUrl + "/api/resource/Salary Structure";
+        }
         else if(type.equals("Salary Component")){
 
             url = erpnextApiUrl + "/api/resource/Salary Component";
