@@ -120,6 +120,14 @@ public class SalarySlipService {
             filters.append("[\"end_date\", \"<=\", \"").append(filter.getEndDate()).append("\"],");
             hasFilter = true;
         }
+        // if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
+        //     filters.append("[\"posting_date\", \">=\", \"").append(filter.getStartDate()).append("\"],");
+        //     hasFilter = true;
+        // }
+        // if (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) {
+        //     filters.append("[\"posting_date\", \"<=\", \"").append(filter.getEndDate()).append("\"],");
+        //     hasFilter = true;
+        // }
 
         if (hasFilter) {
             filters.setLength(filters.length() - 1); // supprime la dernière virgule
