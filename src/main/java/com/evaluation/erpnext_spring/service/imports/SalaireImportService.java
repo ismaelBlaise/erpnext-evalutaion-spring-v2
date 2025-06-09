@@ -109,7 +109,11 @@ public class SalaireImportService {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Référence employé manquante", salaire.getRefEmploye()));
         }
         
-        if (salaire.getSalaireBase() == null || salaire.getSalaireBase() <= 0) {
+        // if (salaire.getSalaireBase() == null || salaire.getSalaireBase() <= 0) {
+        //     rapportErreurs.add(rapportErreurService.createError(ligne, "Salaire base invalide", 
+        //         salaire.getSalaireBase() != null ? salaire.getSalaireBase().toString() : null));
+        // }
+         if (salaire.getSalaireBase() == null) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Salaire base invalide", 
                 salaire.getSalaireBase() != null ? salaire.getSalaireBase().toString() : null));
         }
