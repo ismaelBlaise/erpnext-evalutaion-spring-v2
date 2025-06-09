@@ -1,7 +1,9 @@
 package com.evaluation.erpnext_spring.dto.imports;
 
+import com.evaluation.erpnext_spring.utils.CommaToDotDoubleConverter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
 
 import lombok.Data;
 
@@ -20,7 +22,7 @@ public class SalaireData {
     
     // @CsvBindByPosition(position = 0)
     @JsonProperty("salaire_base")
-    @CsvBindByName(column = "Salaire Base")
+    @CsvCustomBindByName(column = "Salaire Base", converter = CommaToDotDoubleConverter.class)
     private Double salaireBase; 
     
     // @CsvBindByPosition(position = 0)
