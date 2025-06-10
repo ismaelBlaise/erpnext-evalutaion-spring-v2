@@ -1,0 +1,76 @@
+<div class="max-w-2xl mx-auto mt-10 p-8 bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-lg border border-blue-100">
+    <h2 class="text-3xl font-bold mb-8 text-gray-800 text-center">
+        <i class="fas fa-file-invoice-dollar text-blue-500 mr-2"></i>Génération de salaire
+    </h2>
+
+    <!-- Alertes -->
+    <div th:if="${success}"
+         class="mt-6 p-4 text-sm text-green-800 bg-green-50 border-l-4 border-green-500 rounded-lg shadow-inner"
+         th:text="${success}">
+        <i class="fas fa-check-circle mr-2"></i>
+    </div>
+
+    <div th:if="${error}"
+         class="mt-6 p-4 text-sm text-red-800 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-inner"
+         th:text="${error}">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+    </div>
+    <br>
+    <form method="post" th:action="@{/salaire/generer}" class="space-y-6">
+        <!-- Employé -->
+        <div class="space-y-1">
+            <label for="employee" class="block text-sm font-semibold text-gray-700">
+                <i class="fas fa-user-tie text-blue-500 mr-1"></i>Employé
+            </label>
+            <select id="employee" name="employee" required
+                    class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300 transition-all duration-200 bg-white">
+                <option th:each="emp : ${employees}" th:value="${emp.name}" th:text="${emp.employeeName}">Employé</option>
+            </select>
+        </div>
+
+        <!-- Dates -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Date début -->
+            <div class="space-y-1">
+                <label for="startDate" class="block text-sm font-semibold text-gray-700">
+                    <i class="far fa-calendar-alt text-blue-500 mr-1"></i>Date début
+                </label>
+                <input type="date" id="startDate" name="startDate" required
+                       class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300 transition-all duration-200 bg-white" />
+            </div>
+
+            <!-- Date fin -->
+            <div class="space-y-1">
+                <label for="endDate" class="block text-sm font-semibold text-gray-700">
+                    <i class="far fa-calendar-alt text-blue-500 mr-1"></i>Date fin
+                </label>
+                <input type="date" id="endDate" name="endDate" required
+                       class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300 transition-all duration-200 bg-white" />
+            </div>
+        </div>
+
+        <!-- Salaire de base -->
+        <div class="space-y-1">
+            <label for="base" class="block text-sm font-semibold text-gray-700">
+                <i class="fas fa-money-bill-wave text-blue-500 mr-1"></i>Salaire de base (0 pour auto)
+            </label>
+            <div class="relative mt-1 rounded-lg shadow-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">MAD</span>
+                </div>
+                <input type="number" id="base" name="base" step="0.01" value="0" required
+                       class="block w-full py-2 pl-16 pr-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-300 transition-all duration-200 bg-white" />
+            </div>
+        </div>
+
+        <!-- Bouton -->
+        <div class="pt-4">
+            <button type="submit"
+                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+                <i class="fas fa-cogs mr-2"></i>Générer le bulletin
+            </button>
+        </div>
+    </form>
+
+    
+</div>

@@ -8,7 +8,7 @@ public class StructureAssignement {
     private String salary_structure;
     private String currency;
     private String employee;
-    private String from_date; 
+    private String from_date;
     private Double base;
     private Double variable;
     

@@ -6,17 +6,17 @@
     <title>Dashboard - ERPNext</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
         }
         
         .sidebar {
-            background: linear-gradient(180deg, #2c3e50 0%, #1a2530 100%);
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
         
         .sidebar-collapsed {
@@ -24,76 +24,53 @@
         }
         
         .sidebar-expanded {
-            width: 280px;
+            width: 260px;
         }
         
         .active-menu {
-            background: rgba(255, 255, 255, 0.15);
-            border-left: 4px solid #e74c3c;
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 4px solid #3b82f6;
             color: white !important;
         }
         
         .active-menu i {
-            color: #e74c3c !important;
+            color: #93c5fd !important;
         }
         
         .user-avatar {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .header {
             background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            border-bottom: none;
-        }
-        
-        .main-content {
-            background: transparent;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         
         .menu-item {
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             border-radius: 6px;
-            margin: 0 10px;
+            margin: 0 8px;
         }
         
         .menu-item:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-        
-        .notification-btn {
-            position: relative;
         }
         
         .notification-btn::after {
-            content: '';
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 8px;
-            height: 8px;
-            background: #e74c3c;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-        
-        .logo {
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            background: #3b82f6;
+            border-color: white;
         }
         
         .section-title {
-            letter-spacing: 1px;
-            font-weight: 600;
+            color: #bfdbfe;
         }
         
-        .toggle-btn {
-            transition: all 0.3s ease;
-        }
-        
-        .toggle-btn:hover {
-            transform: rotate(180deg);
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
         }
     </style>
 </head>
@@ -101,91 +78,70 @@
     <div class="flex h-full">
         <!-- Sidebar -->
         <div class="sidebar sidebar-expanded flex flex-col text-white">
-            <div class="flex items-center justify-between p-6 border-b border-gray-700">
+            <div class="flex items-center justify-between p-5 border-b border-blue-900">
                 <div class="flex items-center space-x-3">
-                    <i class="fas fa-cubes text-2xl text-red-500"></i>
-                    <span class="text-xl font-bold whitespace-nowrap logo">Frappe HR</span>
+                    <i class="fas fa-cubes text-2xl text-blue-300"></i>
+                    <span class="text-xl font-semibold whitespace-nowrap">Frappe HR</span>
                 </div>
-                <button id="toggle-sidebar" class="text-gray-400 hover:text-white toggle-btn">
-                    <i class="fas fa-chevron-left"></i>
+                <button id="toggle-sidebar" class="text-blue-200 hover:text-white">
+                    <i class="fas fa-chevron-left text-sm"></i>
                 </button>
             </div>
 
-            <div class="p-5 border-b border-gray-700 flex items-center space-x-4">
-                <div class="user-avatar w-10 h-10 rounded-full flex items-center justify-center text-white font-bold">
+            <div class="p-4 border-b border-blue-900 flex items-center space-x-3">
+                <div class="user-avatar w-9 h-9 rounded-full flex items-center justify-center text-white font-medium">
                     <span th:text="${session.fullName.substring(0, 1)}"></span>
                 </div>
                 <div>
-                    <div class="font-semibold text-white" th:text="${session.fullName}"></div>
-                    <div class="text-xs text-gray-400">Administrateur</div>
+                    <div class="font-medium text-white" th:text="${session.fullName}"></div>
+                    <div class="text-xs text-blue-200">Administrateur</div>
                 </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto py-4">
-                <div class="space-y-2 px-3">
-                    <a href="/dashboard" data-menu="dashboard" class="flex items-center px-4 py-3 text-sm font-medium text-gray-300 menu-item">
-                        <i class="fas fa-tachometer-alt w-6 mr-3 text-center text-gray-400"></i>
+            <div class="flex-1 overflow-y-auto py-3">
+                <div class="space-y-1 px-2">
+                    <a href="/dashboard" data-menu="dashboard" class="flex items-center px-3 py-2.5 text-sm font-medium text-blue-100 menu-item">
+                        <i class="fas fa-tachometer-alt w-5 mr-3 text-center text-blue-200"></i>
                         <span>Tableau de bord</span>
                     </a>
                     
-                    <a href="/employees" data-menu="employees" class="flex items-center px-4 py-3 text-sm font-medium text-gray-300 menu-item">
-                        <i class="fas fa-user-tie w-6 mr-3 text-center text-gray-400"></i>
+                    <a href="/employees" data-menu="employees" class="flex items-center px-3 py-2.5 text-sm font-medium text-blue-100 menu-item">
+                        <i class="fas fa-user-tie w-5 mr-3 text-center text-blue-200"></i>
                         <span>Employés</span>
                     </a>
 
-                    <a href="/payrolls/summary" data-menu="table" class="flex items-center px-4 py-3 text-sm font-medium text-gray-300 menu-item">
-                        <i class="fas fa-table w-6 mr-3 text-center text-gray-400"></i>
-                        <span>Tableau recapitulatif</span>
+                    <a href="/payrolls/summary" data-menu="table" class="flex items-center px-3 py-2.5 text-sm font-medium text-blue-100 menu-item">
+                        <i class="fas fa-table w-5 mr-3 text-center text-blue-200"></i>
+                        <span>Tableau récapitulatif</span>
                     </a>
 
-                    <a href="/payrolls/stat" data-menu="stat" class="flex items-center px-4 py-3 text-sm font-medium text-gray-300 menu-item">
-                        <i class="fas fa-chart-bar w-6 mr-3 text-center text-gray-400"></i> 
+                    <a href="/payrolls/stat" data-menu="stat" class="flex items-center px-3 py-2.5 text-sm font-medium text-blue-100 menu-item">
+                        <i class="fas fa-chart-bar w-5 mr-3 text-center text-blue-200"></i> 
                         <span>Statistiques</span>
                     </a>
 
-                    <a href="/payrolls/graph" data-menu="graphe" class="flex items-center px-4 py-3 text-sm font-medium text-gray-300 menu-item">
-                        <i class="fas fa-chart-line w-6 mr-3 text-center text-gray-400"></i>
-                        <span>Graphique d'evolution</span>
+                    <a href="/payrolls/graph" data-menu="graphe" class="flex items-center px-3 py-2.5 text-sm font-medium text-blue-100 menu-item">
+                        <i class="fas fa-chart-line w-5 mr-3 text-center text-blue-200"></i>
+                        <span>Graphique d'évolution</span>
                     </a>
 
-                    <!-- <a href="/grids"
-                    data-menu="grille"
-                    class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                    <i class="fas fa-file-invoice w-6 mr-3 text-center"></i>
-                    <span>Grille</span>
-                    </a>
-
-                <a href="/structures/assignment"
-                    data-menu="ok"
-                    class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                    <i class="fas fa-file-invoice w-6 mr-3 text-center"></i>
-                    <span>Structure</span>
-                    </a> -->
-
-                    <a href="/imports" data-menu="imports" class="flex items-center px-4 py-3 text-sm font-medium text-gray-300 menu-item">
-                        <i class="fas fa-file-import w-6 mr-3 text-center text-gray-400"></i>
+                    <a href="/imports" data-menu="imports" class="flex items-center px-3 py-2.5 text-sm font-medium text-blue-100 menu-item">
+                        <i class="fas fa-file-import w-5 mr-3 text-center text-blue-200"></i>
                         <span>Import</span>
                     </a>
 
-                    <a href="/payrolls/payroll-entry" data-menu="payroll" class="flex items-center px-4 py-3 text-sm font-medium text-gray-300 menu-item">
-                        <i class="fas fa-file-import w-6 mr-3 text-center text-gray-400"></i>
-                        <span>Generer paiement</span>
+                    <a href="/salaire/generation" data-menu="payroll" class="flex items-center px-3 py-2.5 text-sm font-medium text-blue-100 menu-item">
+                        <i class="fas fa-file-invoice w-5 mr-3 text-center text-blue-200"></i>
+                        <span>Générer paiements</span>
                     </a>
-
-                     <!-- <a href="/payrolls/payroll-entry"
-                    data-menu="payroll"
-                    class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                    <i class="fas fa-file-invoice w-6 mr-3 text-center"></i>
-                    <span>Payroll</span>
-                    </a> -->
                 </div>
 
-                <div class="px-5 pt-8 pb-3">
-                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider section-title">Outils</div>
+                <div class="px-4 pt-6 pb-2">
+                    <div class="text-xs font-medium text-blue-300 uppercase tracking-wider">Outils</div>
                 </div>
-                <div class="space-y-2 px-3">
-                    <a th:href="@{/logout}" class="flex items-center px-4 py-3 text-sm font-medium text-gray-300 menu-item">
-                        <i class="fas fa-sign-out-alt w-6 mr-3 text-center text-gray-400"></i>
+                <div class="space-y-1 px-2">
+                    <a th:href="@{/logout}" class="flex items-center px-3 py-2.5 text-sm font-medium text-blue-100 menu-item">
+                        <i class="fas fa-sign-out-alt w-5 mr-3 text-center text-blue-200"></i>
                         <span>Déconnexion</span>
                     </a>
                 </div>
@@ -195,43 +151,42 @@
         <!-- Main Content -->
         <div class="flex flex-col flex-1 overflow-hidden">
             <header class="header">
-                <div class="flex items-center justify-between px-6 py-4">
-                    <div class="flex items-center space-x-4">
-                        <button id="mobile-toggle-sidebar" class="text-gray-600 lg:hidden">
-                            <i class="fas fa-bars text-xl"></i>
+                <div class="flex items-center justify-between px-5 py-3">
+                    <div class="flex items-center space-x-3">
+                        <button id="mobile-toggle-sidebar" class="text-gray-500 lg:hidden">
+                            <i class="fas fa-bars"></i>
                         </button>
-                        <h1 class="text-xl font-bold text-gray-800">Tableau de bord</h1>
+                        <h1 class="text-lg font-semibold text-gray-800">Tableau de bord</h1>
                     </div>
-                    <div class="flex items-center space-x-5">
-                        <button class="p-2 text-gray-600 hover:text-red-500 notification-btn">
-                            <i class="fas fa-bell text-xl"></i>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-gray-500 hover:text-blue-600 notification-btn">
+                            <i class="fas fa-bell"></i>
                         </button>
-                        <button class="p-2 text-gray-600 hover:text-red-500">
-                            <i class="fas fa-question-circle text-xl"></i>
+                        <button class="p-2 text-gray-500 hover:text-blue-600">
+                            <i class="fas fa-question-circle"></i>
                         </button>
                     </div>
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-8 main-content">
-                <div class="bg-white rounded-xl shadow-lg p-6" th:replace="${page}"></div>
+            <main class="flex-1 overflow-y-auto p-6">
+                <div class="card p-5" th:replace="${page}"></div>
             </main>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Menu actif
             const savedMenu = localStorage.getItem("activeMenu");
             const menuItems = document.querySelectorAll("[data-menu]");
-    
+            
             menuItems.forEach(item => {
                 item.classList.remove("active-menu");  
                 if (item.getAttribute("data-menu") === savedMenu) {
                     item.classList.add("active-menu");
                 }
-            });
-    
-            menuItems.forEach(item => {
+                
                 item.addEventListener("click", function () {
                     localStorage.setItem("activeMenu", this.getAttribute("data-menu"));
                 });
@@ -246,10 +201,16 @@
                 btn?.addEventListener('click', () => {
                     sidebar.classList.toggle('sidebar-collapsed');
                     sidebar.classList.toggle('sidebar-expanded');
+                    
+                    // Animation du bouton
+                    if (sidebar.classList.contains('sidebar-collapsed')) {
+                        toggleBtn.innerHTML = '<i class="fas fa-chevron-right text-sm"></i>';
+                    } else {
+                        toggleBtn.innerHTML = '<i class="fas fa-chevron-left text-sm"></i>';
+                    }
                 });
             });
         });
     </script>
 </body>
 </html>
-

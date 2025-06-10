@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.evaluation.erpnext_spring.dto.structures.StructureAssignement;
+import com.evaluation.erpnext_spring.dto.structures.StructureAssignementResponse;
 import com.evaluation.erpnext_spring.dto.structures.StructureDetail;
 
 import jakarta.servlet.http.HttpSession;
@@ -67,4 +68,31 @@ public class StructureService {
         }
         assignSalaryStructureBloc(session, structureAssignements);
     }
+
+
+    public StructureAssignement getLastStructureAssignementBeforeDate(HttpSession session, String employeeId, String beforeDate) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session non authentifiée");
+        }
+
+        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment?fields=[\"name\",\"employee\",\"salary_structure\",\"from_date\"]"
+                + "&filters=[[\"employee\",\"=\",\"" + employeeId + "\"],[\"from_date\",\"<\",\"" + beforeDate + "\"]]"
+                + "&order_by=from_date desc&limit_page_length=1";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Cookie", "sid=" + sid);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<StructureAssignementResponse> response = restTemplate
+                .exchange(url, org.springframework.http.HttpMethod.GET, entity, StructureAssignementResponse.class);
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && !response.getBody().getData().isEmpty()) {
+            return response.getBody().getData().get(0);
+        }
+
+        return null;  
+    }
+
 }
