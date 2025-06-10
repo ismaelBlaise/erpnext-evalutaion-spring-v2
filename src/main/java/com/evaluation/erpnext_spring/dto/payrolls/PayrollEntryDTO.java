@@ -11,6 +11,9 @@ public class PayrollEntryDTO {
     private String posting_date;
     private String currency;
     private String payroll_frequency;
+    private Double exchange_rate=1.0;
+    private String payroll_payable_account;
+    private String cost_center;
     private String start_date;
     private String end_date;
     private List<PayrollEmployeeDetail> employees;

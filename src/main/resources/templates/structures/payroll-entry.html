@@ -86,7 +86,8 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-check form-switch mt-4 pt-3">
-                            
+                            <label for="payroll_payable_account" class="form-label">Cost center</label>
+                            <input type="text" name="payroll_payable_account" value="Paie à Payer - MY" class="form-control" id="payroll_payable_account"  required>
                         </div>
                     </div>
                 </div>
@@ -166,9 +167,12 @@
             formData.append('currency', document.getElementById('currency').value);
             formData.append('cost_center', document.getElementById('cost_center').value);
             formData.append('payroll_frequency', document.getElementById('payroll_frequency').value);
+            formData.append('payroll_payable_account', document.getElementById('payroll_payable_account').value);
             formData.append('start_date', document.getElementById('start_date').value);
             formData.append('end_date', document.getElementById('end_date').value);
             formData.append('draft', document.getElementById('draft').checked);
+
+            
 
             const employeeRows = document.querySelectorAll('.employee-row');
             if (employeeRows.length === 0) {

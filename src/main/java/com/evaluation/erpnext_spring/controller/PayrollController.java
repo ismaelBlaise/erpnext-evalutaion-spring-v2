@@ -57,6 +57,7 @@ public class PayrollController {
             @RequestParam("currency") String currency,
             @RequestParam("cost_center") String costCenter,
             @RequestParam("payroll_frequency") String payroll_frequency,
+            @RequestParam("payroll_payable_account") String payroll_payable_account,
             @RequestParam("start_date") String start_date,
             @RequestParam("end_date") String end_date,
             @RequestParam(value = "draft", defaultValue = "false") boolean draft,
@@ -71,7 +72,7 @@ public class PayrollController {
             
             structureService.createPayrollEntryFromDetails(
                 session, company, posting_date, currency, costCenter,
-                payroll_frequency, start_date, end_date, 
+                payroll_frequency,payroll_payable_account, start_date, end_date,
                 draft, employeeDetails
             );
             
