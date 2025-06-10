@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Création de Payroll Entry</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .employee-row { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .form-container { max-width: 900px; margin: 30px auto; }
+    </style>
+</head>
+<body>
+    <div class="container form-container">
+        <h2 class="mb-4">Création de Payroll Entry</h2>
+        
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="company" class="form-label">Entreprise</label>
+                            <select class="form-select" name="company" id="company" required>
+                                <option value="">Sélectionner une entreprise</option>
+                                <option th:each="company : ${companies}" 
+                                        th:value="${company.name}" 
+                                        th:text="${company.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="payroll_frequency" class="form-label">Fréquence de paie</label>
+                            <select class="form-select" name="payroll_frequency" id="payroll_frequency" required>
+                                <option value="">Sélectionner une fréquence</option>
+                                <option th:each="freq : ${payrollFrequencies}" 
+                                        th:value="${freq}" 
+                                        th:text="${freq}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="posting_date" class="form-label">Date de publication</label>
+                            <input type="date" name="posting_date" class="form-control" id="posting_date" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Date de début</label>
+                            <input type="date" name="start_date" class="form-control" id="start_date" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">Date de fin</label>
+                            <input type="date" name="end_date" class="form-control" id="end_date" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="currency" class="form-label">Devise</label>
+                            <input type="text" name="currency" class="form-control" id="currency" value="EUR" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mt-4 pt-3">
+                            <input class="form-check-input" type="checkbox" id="draft">
+                            <label class="form-check-label" for="draft">Enregistrer comme brouillon</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="cost_center" class="form-label">Cost center</label>
+                            <input type="text" name="cost_center" value="Principal - MY" class="form-control" id="cost_center"  required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mt-4 pt-3">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Employés</h5>
+                <button type="button" class="btn btn-primary btn-sm" onclick="addEmployeeRow()">
+                    <i class="bi bi-plus"></i> Ajouter un employé
+                </button>
+            </div>
+            <div class="card-body" id="employeesContainer">
+                <!-- Les lignes d'employés seront ajoutées ici dynamiquement -->
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button class="btn btn-success" type="button" onclick="submitPayrollEntry()">Créer Payroll Entry</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        let employeeCounter = 0;
+        const employeesData = /*[[${employees}]]*/ [];
+
+        function addEmployeeRow() {
+            const container = document.getElementById('employeesContainer');
+            const rowId = 'employee-' + employeeCounter++;
+            
+            const rowHtml = `
+                <div class="employee-row" id="${rowId}">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="${rowId}-employee" class="form-label">Employé</label>
+                                <select class="form-select employee-input" name="employee" id="${rowId}-employee" required>
+                                    <option value="">Sélectionner un employé</option>
+                                    ${employeesData.map(emp => 
+                                        `<option value="${emp.name}">${emp.employee_name} (${emp.name})</option>`
+                                    ).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 d-flex align-items-center">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input withheld-input" type="checkbox" id="${rowId}-withheld">
+                                <label class="form-check-label" for="${rowId}-withheld">Retenue de salaire</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeEmployeeRow('${rowId}')">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', rowHtml);
+        }
+
+        function removeEmployeeRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                row.remove();
+            }
+        }
+
+        function submitPayrollEntry() {
+            const formData = new FormData();
+            formData.append('company', document.getElementById('company').value);
+            formData.append('posting_date', document.getElementById('posting_date').value);
+            formData.append('currency', document.getElementById('currency').value);
+            formData.append('cost_center', document.getElementById('cost_center').value);
+            formData.append('payroll_frequency', document.getElementById('payroll_frequency').value);
+            formData.append('start_date', document.getElementById('start_date').value);
+            formData.append('end_date', document.getElementById('end_date').value);
+            formData.append('draft', document.getElementById('draft').checked);
+
+            const employeeRows = document.querySelectorAll('.employee-row');
+            if (employeeRows.length === 0) {
+                alert('Veuillez ajouter au moins un employé');
+                return;
+            }
+
+            const employeeDetails = [];
+            let hasError = false;
+
+            employeeRows.forEach(row => {
+                const employee = row.querySelector('.employee-input').value;
+                
+                const withheld = row.querySelector('.withheld-input').checked;
+
+                if (!employee) {
+                    hasError = true;
+                    return;
+                }
+
+                employeeDetails.push({
+                    employee: employee,
+                    is_salary_withheld: withheld
+                });
+            });
+
+            if (hasError) {
+                alert('Veuillez remplir tous les champs pour chaque employé');
+                return;
+            }
+
+            formData.append('employeeDetails', JSON.stringify(employeeDetails));
+
+            fetch('/payrolls/create-payroll-entry', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Payroll Entry créée avec succès !');
+                    window.location.reload();
+                } else {
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur est survenue lors de la création');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', addEmployeeRow);
+    </script>
+</body>
+</html>
