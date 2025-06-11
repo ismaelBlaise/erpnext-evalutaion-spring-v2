@@ -453,7 +453,39 @@ public class SalarySlipService {
                     }
                 }
 
-                // 3. Construire un nouveau Salary Slip basé sur l'original
+                // 3. Cloner earnings avec montant modifié
+                List<SalaryEarning> modifiedEarnings = new ArrayList<>();
+                if (originalSlip.getEarnings() != null) {
+                    for (SalaryEarning earning : originalSlip.getEarnings()) {
+                        double amount = earning.getAmount();
+                        if (earning.getSalaryComponent().equals(componentName)) {
+                            amount = isIncrease
+                                    ? amount * (1 + percentageChange / 100.0)
+                                    : amount * (1 - percentageChange / 100.0);
+                            amount = Math.round(amount * 100.0) / 100.0;
+                        }
+                        earning.setAmount(amount);
+                        modifiedEarnings.add(earning);
+                    }
+                }
+
+                // 4. Cloner deductions avec montant modifié
+                List<SalaryDeduction> modifiedDeductions = new ArrayList<>();
+                if (originalSlip.getDeductions() != null) {
+                    for (SalaryDeduction deduction : originalSlip.getDeductions()) {
+                        double amount = deduction.getAmount();
+                        if (deduction.getSalaryComponent().equals(componentName)) {
+                            amount = isIncrease
+                                    ? amount * (1 + percentageChange / 100.0)
+                                    : amount * (1 - percentageChange / 100.0);
+                            amount = Math.round(amount * 100.0) / 100.0;
+                        }
+                        deduction.setAmount(amount);
+                        modifiedDeductions.add(deduction);
+                    }
+                }
+
+                // 5. Créer la nouvelle fiche avec les montants déjà modifiés + docstatus = 1 (soumis directement)
                 Map<String, Object> newSlipPayload = new HashMap<>();
                 newSlipPayload.put("employee", originalSlip.getEmployee());
                 newSlipPayload.put("start_date", originalSlip.getStartDate());
@@ -461,10 +493,11 @@ public class SalarySlipService {
                 newSlipPayload.put("company", originalSlip.getCompany());
                 newSlipPayload.put("posting_date", originalSlip.getPostingDate());
                 newSlipPayload.put("salary_structure", originalSlip.getSalaryStructure());
-                newSlipPayload.put("earnings", originalSlip.getEarnings());
-                newSlipPayload.put("deductions", originalSlip.getDeductions());
+                newSlipPayload.put("earnings", modifiedEarnings);
+                newSlipPayload.put("deductions", modifiedDeductions);
+                newSlipPayload.put("docstatus", 1); // Soumettre immédiatement
 
-                // 4. Créer le nouveau Salary Slip
+                // 6. Appel API de création
                 String createUrl = erpnextApiUrl + "/api/resource/Salary Slip";
                 HttpEntity<Map<String, Object>> createRequest = new HttpEntity<>(newSlipPayload, headers);
                 ResponseEntity<SalarySlipDetail> createResponse = restTemplate.exchange(
@@ -475,68 +508,10 @@ public class SalarySlipService {
                 );
 
                 if (createResponse.getStatusCode() != HttpStatus.OK) {
-                    throw new RuntimeException("Échec de la création du nouveau Salary Slip.");
+                    throw new RuntimeException("Échec de la création/validation du nouveau Salary Slip.");
                 }
 
                 SalarySlipDto newSlip = createResponse.getBody().getData();
-
-                // 5. Modifier earnings et deductions
-                if (newSlip.getEarnings() != null) {
-                    for (SalaryEarning earning : newSlip.getEarnings()) {
-                        if (earning.getSalaryComponent().equals(componentName)) {
-                            double newAmount = isIncrease
-                                    ? earning.getAmount() * (1 + percentageChange / 100.0)
-                                    : earning.getAmount() * (1 - percentageChange / 100.0);
-                            earning.setAmount(Math.round(newAmount * 100.0) / 100.0);
-                        }
-                    }
-                }
-
-                if (newSlip.getDeductions() != null) {
-                    for (SalaryDeduction deduction : newSlip.getDeductions()) {
-                        if (deduction.getSalaryComponent().equals(componentName)) {
-                            double newAmount = isIncrease
-                                    ? deduction.getAmount() * (1 + percentageChange / 100.0)
-                                    : deduction.getAmount() * (1 - percentageChange / 100.0);
-                            deduction.setAmount(Math.round(newAmount * 100.0) / 100.0);
-                        }
-                    }
-                }
-
-                // 6. Mettre à jour le nouveau Salary Slip avec les nouveaux montants
-                String updateUrl = erpnextApiUrl + "/api/resource/Salary Slip/" + newSlip.getName();
-                Map<String, Object> updatePayload = new HashMap<>();
-                updatePayload.put("earnings", newSlip.getEarnings());
-                updatePayload.put("deductions", newSlip.getDeductions());
-
-                HttpEntity<Map<String, Object>> updateRequest = new HttpEntity<>(updatePayload, headers);
-                ResponseEntity<String> updateResponse = restTemplate.exchange(
-                    updateUrl,
-                    HttpMethod.PUT,
-                    updateRequest,
-                    String.class
-                );
-
-                if (updateResponse.getStatusCode() != HttpStatus.OK) {
-                    throw new RuntimeException("Échec de la mise à jour du nouveau Salary Slip : " + newSlip.getName());
-                }
-
-                // 7. Soumettre (valider) le nouveau Salary Slip
-                Map<String, Object> submitPayload = new HashMap<>();
-                submitPayload.put("docstatus", 1); // Soumis
-
-                HttpEntity<Map<String, Object>> submitRequest = new HttpEntity<>(submitPayload, headers);
-                ResponseEntity<String> submitResponse = restTemplate.exchange(
-                    updateUrl,
-                    HttpMethod.PUT,
-                    submitRequest,
-                    String.class
-                );
-
-                if (submitResponse.getStatusCode() != HttpStatus.OK) {
-                    throw new RuntimeException("Échec de la validation du nouveau Salary Slip : " + newSlip.getName());
-                }
-
                 updatedSlips.add(newSlip);
 
             } catch (Exception e) {
@@ -546,6 +521,7 @@ public class SalarySlipService {
 
         return updatedSlips;
     }
+
 
 
 
