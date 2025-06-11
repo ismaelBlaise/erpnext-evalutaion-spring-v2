@@ -459,10 +459,12 @@ public class SalarySlipService {
                     for (SalaryEarning earning : originalSlip.getEarnings()) {
                         double amount = earning.getAmount();
                         if (earning.getSalaryComponent().equals(componentName)) {
+                            
                             amount = isIncrease
                                     ? amount * (1 + percentageChange / 100.0)
                                     : amount * (1 - percentageChange / 100.0);
                             amount = Math.round(amount * 100.0) / 100.0;
+                            System.out.println(amount);
                         }
                         earning.setAmount(amount);
                         modifiedEarnings.add(earning);
