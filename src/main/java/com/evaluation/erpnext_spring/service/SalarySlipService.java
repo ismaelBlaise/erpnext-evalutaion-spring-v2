@@ -2,6 +2,7 @@ package com.evaluation.erpnext_spring.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -362,6 +363,190 @@ public class SalarySlipService {
 
         return consolidated;
     }
+
+
+    public List<SalarySlipDto> getSalarySlipsByComponentThreshold(HttpSession session, 
+                                                             String componentName, 
+                                                             double threshold, 
+                                                             boolean isGreaterThan) {
+        
+        SalarySlipListResponse response = getSalarySlips(session, 0, 0, null);
+        List<SalarySlipDto> allSlips = response.getData();
+        
+        // System.out.println(allSlips.size());
+        List<SalarySlipDto> filteredSlips = new ArrayList<>();
+        
+        
+        for (SalarySlipDto slip : allSlips) {
+            SalarySlipDetail detail = getSalarySlipByName(session, slip.getName());
+            SalarySlipDto fullSlip = detail.getData();
+            
+            
+            if (fullSlip.getEarnings() != null) {
+                for (SalaryEarning earning : fullSlip.getEarnings()) {
+                    if (earning.getSalaryComponent().equals(componentName)) {
+                        
+                        if ((isGreaterThan && earning.getAmount() > threshold) ||
+                            (!isGreaterThan && earning.getAmount() < threshold)) {
+                           
+                                filteredSlips.add(fullSlip);
+                            break;  
+                        }
+                    }
+                }
+            }
+            
+            
+            if (fullSlip.getDeductions() != null && !filteredSlips.contains(fullSlip)) {
+                for (SalaryDeduction deduction : fullSlip.getDeductions()) {
+                    if (deduction.getSalaryComponent().equals(componentName)) {
+                        if ((isGreaterThan && deduction.getAmount() > threshold) ||
+                            (!isGreaterThan && deduction.getAmount() < threshold)) {
+                           
+                            filteredSlips.add(fullSlip);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return filteredSlips;
+    }
+
+
+
+    public List<SalarySlipDto> cancelAndUpdateSalarySlips(HttpSession session,
+                                     List<SalarySlipDto> salarySlipNames,
+                                     String componentName,
+                                     double percentageChange,
+                                     boolean isIncrease) throws Exception {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session non authentifiée");
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Cookie", "sid=" + sid);
+
+        List<SalarySlipDto> updatedSlips = new ArrayList<>();
+
+        for (SalarySlipDto slipDto : salarySlipNames) {
+            try {
+                // 1. Récupérer le détail du Salary Slip original
+                SalarySlipDetail originalDetail = getSalarySlipByName(session, slipDto.getName());
+                SalarySlipDto originalSlip = originalDetail.getData();
+
+                // 2. Annuler si docstatus == 1 (soumis)
+                if (originalSlip.getDocStatus() == 1) {
+                    String cancelUrl = erpnextApiUrl + "/api/resource/Salary Slip/" + originalSlip.getName();
+                    Map<String, Object> cancelPayload = new HashMap<>();
+                    cancelPayload.put("docstatus", 2); // Annulé
+
+                    HttpEntity<Map<String, Object>> cancelRequest = new HttpEntity<>(cancelPayload, headers);
+                    ResponseEntity<String> cancelResponse = restTemplate.exchange(cancelUrl, HttpMethod.PUT, cancelRequest, String.class);
+
+                    if (cancelResponse.getStatusCode() != HttpStatus.OK) {
+                        throw new RuntimeException("Échec de l'annulation de la fiche de paie : " + originalSlip.getName());
+                    }
+                }
+
+                // 3. Construire un nouveau Salary Slip basé sur l'original
+                Map<String, Object> newSlipPayload = new HashMap<>();
+                newSlipPayload.put("employee", originalSlip.getEmployee());
+                newSlipPayload.put("start_date", originalSlip.getStartDate());
+                newSlipPayload.put("end_date", originalSlip.getEndDate());
+                newSlipPayload.put("company", originalSlip.getCompany());
+                newSlipPayload.put("posting_date", originalSlip.getPostingDate());
+                newSlipPayload.put("salary_structure", originalSlip.getSalaryStructure());
+                newSlipPayload.put("earnings", originalSlip.getEarnings());
+                newSlipPayload.put("deductions", originalSlip.getDeductions());
+
+                // 4. Créer le nouveau Salary Slip
+                String createUrl = erpnextApiUrl + "/api/resource/Salary Slip";
+                HttpEntity<Map<String, Object>> createRequest = new HttpEntity<>(newSlipPayload, headers);
+                ResponseEntity<SalarySlipDetail> createResponse = restTemplate.exchange(
+                    createUrl,
+                    HttpMethod.POST,
+                    createRequest,
+                    SalarySlipDetail.class
+                );
+
+                if (createResponse.getStatusCode() != HttpStatus.OK) {
+                    throw new RuntimeException("Échec de la création du nouveau Salary Slip.");
+                }
+
+                SalarySlipDto newSlip = createResponse.getBody().getData();
+
+                // 5. Modifier earnings et deductions
+                if (newSlip.getEarnings() != null) {
+                    for (SalaryEarning earning : newSlip.getEarnings()) {
+                        if (earning.getSalaryComponent().equals(componentName)) {
+                            double newAmount = isIncrease
+                                    ? earning.getAmount() * (1 + percentageChange / 100.0)
+                                    : earning.getAmount() * (1 - percentageChange / 100.0);
+                            earning.setAmount(Math.round(newAmount * 100.0) / 100.0);
+                        }
+                    }
+                }
+
+                if (newSlip.getDeductions() != null) {
+                    for (SalaryDeduction deduction : newSlip.getDeductions()) {
+                        if (deduction.getSalaryComponent().equals(componentName)) {
+                            double newAmount = isIncrease
+                                    ? deduction.getAmount() * (1 + percentageChange / 100.0)
+                                    : deduction.getAmount() * (1 - percentageChange / 100.0);
+                            deduction.setAmount(Math.round(newAmount * 100.0) / 100.0);
+                        }
+                    }
+                }
+
+                // 6. Mettre à jour le nouveau Salary Slip avec les nouveaux montants
+                String updateUrl = erpnextApiUrl + "/api/resource/Salary Slip/" + newSlip.getName();
+                Map<String, Object> updatePayload = new HashMap<>();
+                updatePayload.put("earnings", newSlip.getEarnings());
+                updatePayload.put("deductions", newSlip.getDeductions());
+
+                HttpEntity<Map<String, Object>> updateRequest = new HttpEntity<>(updatePayload, headers);
+                ResponseEntity<String> updateResponse = restTemplate.exchange(
+                    updateUrl,
+                    HttpMethod.PUT,
+                    updateRequest,
+                    String.class
+                );
+
+                if (updateResponse.getStatusCode() != HttpStatus.OK) {
+                    throw new RuntimeException("Échec de la mise à jour du nouveau Salary Slip : " + newSlip.getName());
+                }
+
+                // 7. Soumettre (valider) le nouveau Salary Slip
+                Map<String, Object> submitPayload = new HashMap<>();
+                submitPayload.put("docstatus", 1); // Soumis
+
+                HttpEntity<Map<String, Object>> submitRequest = new HttpEntity<>(submitPayload, headers);
+                ResponseEntity<String> submitResponse = restTemplate.exchange(
+                    updateUrl,
+                    HttpMethod.PUT,
+                    submitRequest,
+                    String.class
+                );
+
+                if (submitResponse.getStatusCode() != HttpStatus.OK) {
+                    throw new RuntimeException("Échec de la validation du nouveau Salary Slip : " + newSlip.getName());
+                }
+
+                updatedSlips.add(newSlip);
+
+            } catch (Exception e) {
+                throw new Exception("Erreur lors du traitement de la Salary Slip " + slipDto.getName() + " : " + e.getMessage(), e);
+            }
+        }
+
+        return updatedSlips;
+    }
+
 
 
 }
