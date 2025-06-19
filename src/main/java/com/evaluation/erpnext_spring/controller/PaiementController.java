@@ -121,13 +121,7 @@ public class PaiementController {
             boolean isIncrease = "augmentation".equals(modificationType);
             List<SalarySlipDto> updatedSlips = paiementService.cancelAndUpdateSalarySlips(
                 session, 
-                filteredSlips.stream()
-                    .map(slip -> {
-                        SalarySlipDto dto = new SalarySlipDto();
-                        dto.setName(slip.getName());
-                        return dto;
-                    })
-                    .collect(Collectors.toList()),
+                filteredSlips,
                 componentName, 
                 percentageValue, 
                 isIncrease);
