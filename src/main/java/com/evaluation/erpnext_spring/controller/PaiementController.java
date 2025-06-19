@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/salaire")
 public class PaiementController {
 
-    @Autowired
-    private PaiementService generationPaiementService;
+    
 
  
     @Autowired
@@ -66,7 +65,7 @@ public class PaiementController {
             List<EmployeeDto> employees = employeeService.getAllEmployees(session, 0, 0, null).getData();
 
             modelAndView.addObject("employees", employees);
-            generationPaiementService.genererSalaires(session, employee, startDate, endDate, base);
+            paiementService.genererSalaires(session, employee, startDate, endDate, base);
             
             modelAndView.addObject("success", "Salaires générés avec succès !");
         } catch (Exception e) {
@@ -132,7 +131,7 @@ public class PaiementController {
                 percentageValue, 
                 isIncrease);
             
-            // 4. Préparer les données pour la vue
+            
             modelAndView.addObject("selectedComponent", componentName);
             modelAndView.addObject("comparaisonType", comparaisonType);
             modelAndView.addObject("thresholdValue", thresholdValue);
@@ -141,7 +140,6 @@ public class PaiementController {
             
             modelAndView.addObject("success", "Modification appliquée avec succès à " + updatedSlips.size() + " fiches de paie");
             
-            // 5. Récupérer les employés concernés
             List<String> affectedEmployees = updatedSlips.stream()
                 .map(SalarySlipDto::getEmployeeName)
                 .distinct()

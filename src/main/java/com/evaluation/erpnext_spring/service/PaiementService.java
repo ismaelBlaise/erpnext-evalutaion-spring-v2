@@ -88,6 +88,8 @@ public class PaiementService {
 
 
 
+
+
     // public List<SalarySlipDto> cancelAndUpdateSalarySlips(HttpSession session,
     //                                  List<SalarySlipDto> salarySlipNames,
     //                                  String componentName,
@@ -196,17 +198,6 @@ public class PaiementService {
 
     //     return updatedSlips;
     // }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
