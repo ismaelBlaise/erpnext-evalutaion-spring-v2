@@ -1,5 +1,7 @@
 package com.evaluation.erpnext_spring.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -320,10 +322,25 @@ public class SalarySlipService {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<SalarySlipListResponse> response = restTemplate
                 .exchange(url, HttpMethod.GET, entity, SalarySlipListResponse.class);
-        System.out.println("III");
+        
         return response.getStatusCode().is2xxSuccessful()
                 && response.getBody() != null
                 && !response.getBody().getData().isEmpty();
+    }
+
+
+    public boolean isSalarySlipAlreadyCreatedBack(HttpSession session,String employee,LocalDate forDate){
+        List<SalarySlipDto> salarySlipDtos=getSalarySlips(session, 0, 0, null).getData();
+        for (SalarySlipDto salarySlipDto : salarySlipDtos) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate start = LocalDate.parse(salarySlipDto.getStartDate(), formatter).withDayOfMonth(1);
+            LocalDate end = LocalDate.parse(salarySlipDto.getEndDate(), formatter).withDayOfMonth(1);
+            if(salarySlipDto.getEmployee().equals(employee) && start.isAfter(forDate) && end.isBefore(forDate)){
+                return true;
+
+            }
+        }
+        return false;
     }
 
 

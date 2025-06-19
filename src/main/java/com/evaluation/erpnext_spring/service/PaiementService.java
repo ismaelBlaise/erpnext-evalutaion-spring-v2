@@ -59,11 +59,16 @@ public class PaiementService {
         if (lastAssignement == null) {
             throw new RuntimeException("Aucune structure de salaire trouvée pour l’employé " + employeeId + " avant la date " + date);
         }
-
+        // System.out.println(base);
         SalaireData salaireData = new SalaireData();
         salaireData.setMois(date);
         salaireData.setRefEmploye(employeeId);
-        salaireData.setSalaireBase(base == 0 ? lastAssignement.getBase() : base);
+        if(base==0.0){
+            salaireData.setSalaireBase(lastAssignement.getBase());
+        }
+        else{
+            salaireData.setSalaireBase(base);
+        }
         salaireData.setSalaryStructure(lastAssignement.getSalary_structure());
 
         return salaireData;
@@ -75,11 +80,13 @@ public class PaiementService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate start = LocalDate.parse(startDate, formatter).withDayOfMonth(1);
         LocalDate end = LocalDate.parse(endDate, formatter).withDayOfMonth(1);
+        
 
         while (!start.isAfter(end)) {
-            if(salarySlipService.isSalarySlipAlreadyCreated(session, employee, start.toString())==false){
+            if(salarySlipService.isSalarySlipAlreadyCreatedBack(session, employee, start)==false){
                 String dateMois = start.toString(); 
                 SalaireData salaireData = genererSalaireData(session, employee, dateMois, base);
+                System.out.println(salaireData.getSalaireBase());
                 salaireDatas.add(salaireData);
                 start = start.plusMonths(1);
             }

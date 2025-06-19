@@ -1,12 +1,15 @@
 package com.evaluation.erpnext_spring.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -76,7 +79,7 @@ public class StructureService {
             throw new RuntimeException("Session non authentifiée");
         }
 
-        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment?fields=[\"name\",\"employee\",\"salary_structure\",\"from_date\"]"
+        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment?fields=[\"*\"]"
                 + "&filters=[[\"employee\",\"=\",\"" + employeeId + "\"],[\"from_date\",\"<=\",\"" + beforeDate + "\"]]"
                 + "&order_by=from_date desc&limit_page_length=1";
 
@@ -107,30 +110,21 @@ public class StructureService {
             throw new RuntimeException("Session non authentifiée");
         }
 
-        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment/" + assignmentName;
+        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Cookie", "sid=" + sid);
+        headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
 
        
-        ResponseEntity<StructureAssignement> getResponse = restTemplate.exchange(
-                url,
-                org.springframework.http.HttpMethod.GET,
-                new HttpEntity<>(headers),
-                StructureAssignement.class);
+        // Map<String, Object> cancelPayload = new HashMap<>();
+        // cancelPayload.put("docstatus", 2);
 
-        if (!getResponse.getStatusCode().is2xxSuccessful() || getResponse.getBody() == null) {
-            throw new RuntimeException("Assignment non trouvée : " + assignmentName);
-        }
+        HttpEntity<String> request = new HttpEntity<>( headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
 
-        if (deleteIfPossible) {
-            restTemplate.delete(url, new HttpEntity<>(headers));
-        } else {
-            StructureAssignement assignment = getResponse.getBody();
-            assignment.setIs_active(false);
-
-            HttpEntity<StructureAssignement> updateEntity = new HttpEntity<>(assignment, headers);
-            restTemplate.put(url, updateEntity);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new RuntimeException("Échec de l'annulation de la fiche de paie : " + url);
         }
     }
 
