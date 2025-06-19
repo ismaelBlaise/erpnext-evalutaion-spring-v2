@@ -527,6 +527,20 @@ public class SalarySlipService {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public List<SalarySlipDto> cancelAndUpdateSalarySlips(HttpSession session,
                                                            List<SalarySlipDto> salarySlipDtos,
                                                            String componentName,
@@ -667,8 +681,7 @@ public class SalarySlipService {
 
         return response.getBody().getData();
     }
-
-
+    
 
 
 }
