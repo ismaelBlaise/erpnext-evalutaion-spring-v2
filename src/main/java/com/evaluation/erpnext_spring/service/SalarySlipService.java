@@ -458,7 +458,8 @@ public class SalarySlipService {
                 if (originalSlip.getEarnings() != null) {
                     for (SalaryEarning earning : originalSlip.getEarnings()) {
                         double amount = earning.getAmount();
-                        if (earning.getSalaryComponent().equals(componentName)) {
+                        // if (earning.getSalaryComponent().equals(componentName)) {
+                        if (earning.getSalaryComponent().equals("Salaire base")) {
                             
                             amount = isIncrease
                                     ? amount * (1 + percentageChange / 100.0)
@@ -498,7 +499,7 @@ public class SalarySlipService {
                 newSlipPayload.put("earnings", modifiedEarnings);
                 newSlipPayload.put("deductions", modifiedDeductions);
                 newSlipPayload.put("docstatus", 1); // Soumettre immédiatement
-
+                newSlipPayload.put("parent", originalSlip.getName());
                 // 6. Appel API de création
                 String createUrl = erpnextApiUrl + "/api/resource/Salary Slip";
                 HttpEntity<Map<String, Object>> createRequest = new HttpEntity<>(newSlipPayload, headers);
