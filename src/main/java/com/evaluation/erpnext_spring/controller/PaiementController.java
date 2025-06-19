@@ -30,6 +30,7 @@ public class PaiementController {
     @Autowired
     private DataService dataService;
 
+    @SuppressWarnings("unused")
     @Autowired
     private SalarySlipService salarySlipService;
 
@@ -113,7 +114,7 @@ public class PaiementController {
             
             boolean isGreaterThan = "superieur".equals(comparaisonType);
             
-            List<SalarySlipDto> filteredSlips = salarySlipService.getSalarySlipsByComponentThreshold(
+            List<SalarySlipDto> filteredSlips = paiementService.getSalarySlipsByComponentThreshold(
                 session, componentName, thresholdValue, isGreaterThan);
             
            

@@ -23,6 +23,7 @@ import com.evaluation.erpnext_spring.dto.salaries.SalaryDeduction;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryEarning;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
+import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
 import com.evaluation.erpnext_spring.dto.structures.StructureAssignement;
 import com.evaluation.erpnext_spring.service.imports.SalaireImportService;
 
@@ -201,6 +202,54 @@ public class PaiementService {
 
 
 
+     public List<SalarySlipDto> getSalarySlipsByComponentThreshold(HttpSession session, 
+                                                             String componentName, 
+                                                             double threshold, 
+                                                             boolean isGreaterThan) {
+        
+        SalarySlipListResponse response = salarySlipService.getSalarySlips(session, 0, 0, null);
+        List<SalarySlipDto> allSlips = response.getData();
+        
+        // System.out.println(allSlips.size());
+        List<SalarySlipDto> filteredSlips = new ArrayList<>();
+        
+        
+        for (SalarySlipDto slip : allSlips) {
+            SalarySlipDetail detail = salarySlipService.getSalarySlipByName(session, slip.getName());
+            SalarySlipDto fullSlip = detail.getData();
+            
+            
+            if (fullSlip.getEarnings() != null) {
+                for (SalaryEarning earning : fullSlip.getEarnings()) {
+                    if (earning.getSalaryComponent().equals(componentName)) {
+                        
+                        if ((isGreaterThan && earning.getAmount() > threshold) ||
+                            (!isGreaterThan && earning.getAmount() < threshold)) {
+                           
+                                filteredSlips.add(fullSlip);
+                            break;  
+                        }
+                    }
+                }
+            }
+            
+            
+            if (fullSlip.getDeductions() != null && !filteredSlips.contains(fullSlip)) {
+                for (SalaryDeduction deduction : fullSlip.getDeductions()) {
+                    if (deduction.getSalaryComponent().equals(componentName)) {
+                        if ((isGreaterThan && deduction.getAmount() > threshold) ||
+                            (!isGreaterThan && deduction.getAmount() < threshold)) {
+                           
+                            filteredSlips.add(fullSlip);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return filteredSlips;
+    }
 
 
 
