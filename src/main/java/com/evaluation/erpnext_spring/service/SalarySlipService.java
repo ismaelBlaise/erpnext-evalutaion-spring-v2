@@ -234,69 +234,7 @@ public class SalarySlipService {
 
 
 
-    // public Map<String, SalarySlipDto> getSalarySlipsGroupedByMonth(HttpSession session, String year, List<DataDto> dataDtos) {
-    //     String sid = (String) session.getAttribute("sid");
-    //     if (sid == null || sid.isEmpty()) {
-    //         throw new RuntimeException("Session non authentifiée");
-    //     }
-
-    //     SalarySlipFilter filter = new SalarySlipFilter();
-        
-    //     if(year!=null){
-    //         filter.setStartDate(year + "-01-01");
-    //         filter.setEndDate(year + "-12-31");
-    //     }
-
-
-    //     List<SalarySlipDto> salarySlipDtos=getSalarySlips(session, 0, 0, filter).getData();
-    //     Map<String, List<SalarySlipDto>> grouped = new TreeMap<>();
-
-    //     for (SalarySlipDto slip : salarySlipDtos) {
-    //         String month = slip.getPostingDate().substring(0, 7);
-    //         grouped.computeIfAbsent(month, k -> new ArrayList<>()).add(slip);
-    //     }
-
-    //     Map<String, SalarySlipDto> consolidated = new TreeMap<>();
-    //     for (Map.Entry<String, List<SalarySlipDto>> entry : grouped.entrySet()) {
-    //         String month = entry.getKey();
-    //         List<SalarySlipDto> slips = entry.getValue();
-    //         SalarySlipListResponse salarySlipListResponse=new SalarySlipListResponse();
-    //         salarySlipListResponse.setData(slips);
-
-    //         List<SalarySlipDto> enriched = getRapport(session,salarySlipListResponse).getData();
-                
-    //         enriched = getComponents(enriched, dataDtos);
-
-                
-    //         SalarySlipDto monthlySlip = new SalarySlipDto();
-    //         monthlySlip.setPostingDate(month);
-    //         monthlySlip.setMois(DateUtils.getMonthName(month));
-
-    //         monthlySlip.setCurrency(slips.get(0).getCurrency());
-
-    //         double totalGross = 0;
-    //         double totalDeduction = 0;
-    //         double totalNet = 0;
-    //         List<Double> totalComponents = new ArrayList<>();
-    //         for (int i = 0; i < dataDtos.size(); i++) totalComponents.add(0.0);
-
-    //         SalaryTotalsResponse salaryTotalsResponse=new SalaryTotalsResponse(enriched, dataDtos);
-
-    //         totalGross+=salaryTotalsResponse.getTotalGrossPay();
-    //         totalDeduction+=salaryTotalsResponse.getTotalDeductions();
-    //         totalNet+=salaryTotalsResponse.getTotalNetPay();
-    //         totalComponents=salaryTotalsResponse.getComponentsSum();
-
-    //         monthlySlip.setGrossPay(totalGross);
-    //         monthlySlip.setTotalDeduction(totalDeduction);
-    //         monthlySlip.setNetPay(totalNet);
-    //         monthlySlip.setComponentsDef(totalComponents);
-
-    //         consolidated.put(month, monthlySlip);
-    //     }
-
-    //     return consolidated;
-    // }
+    
 
 
     public Map<String, SalarySlipDto> getSalarySlipsGroupedByMonth(HttpSession session, String year, List<DataDto> dataDtos) {
