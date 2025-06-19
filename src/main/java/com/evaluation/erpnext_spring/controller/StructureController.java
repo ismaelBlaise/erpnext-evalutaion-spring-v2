@@ -1,6 +1,6 @@
 package com.evaluation.erpnext_spring.controller;
 
-import com.evaluation.erpnext_spring.dto.structures.StructureDetail;
+import com.evaluation.erpnext_spring.dto.structures.StructureAssignementDetail;
 import com.evaluation.erpnext_spring.service.DataService;
 import com.evaluation.erpnext_spring.service.EmployeeService;
 import com.evaluation.erpnext_spring.service.StructureService;
@@ -35,7 +35,7 @@ public class StructureController {
         modelAndView.addObject("page", "structures/assignment");
         
         try {
-            modelAndView.addObject("structureDetails", new StructureDetail());
+            modelAndView.addObject("structureDetails", new StructureAssignementDetail());
             modelAndView.addObject("companies", dataService.getAllData(session, "Company", null).getData());
             modelAndView.addObject("structures", dataService.getAllData(session, "Salary Structure", null).getData());
             modelAndView.addObject("employees", employeeService.getAllEmployees(session, 0, 0, null).getData());
@@ -59,9 +59,9 @@ public class StructureController {
         try {
             // Convertir le JSON en liste d'objets
             ObjectMapper mapper = new ObjectMapper();
-            List<StructureDetail> structureDetails = mapper.readValue(
+            List<StructureAssignementDetail> structureDetails = mapper.readValue(
                 structureDetailsJson, 
-                new TypeReference<List<StructureDetail>>() {}
+                new TypeReference<List<StructureAssignementDetail>>() {}
             );
             
             structureService.assignToSalaryStructures(session, salaryStructure, company, 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.evaluation.erpnext_spring.dto.payrolls.PayrollEmployeeDetail;
-import com.evaluation.erpnext_spring.dto.payrolls.PayrollEntryDTO;
+import com.evaluation.erpnext_spring.dto.payrolls.PayrollEntryDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -53,7 +53,7 @@ public class PayrollEntryService {
         }
 
         // Préparer le DTO
-        PayrollEntryDTO payrollEntry = new PayrollEntryDTO();
+        PayrollEntryDto payrollEntry = new PayrollEntryDto();
         payrollEntry.setCompany(company);
         payrollEntry.setPosting_date(posting_date);
         payrollEntry.setCurrency(currency);
@@ -78,7 +78,7 @@ public class PayrollEntryService {
     /**
      * Crée un Payroll Entry et retourne son nom
      */
-    public String createPayrollEntry(HttpSession session, PayrollEntryDTO request) {
+    public String createPayrollEntry(HttpSession session, PayrollEntryDto request) {
         String sid = getSessionId(session);
         String url = erpnextApiUrl + "/api/resource/Payroll Entry";
 
@@ -86,7 +86,7 @@ public class PayrollEntryService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Cookie", "sid=" + sid);
 
-        HttpEntity<PayrollEntryDTO> entity = new HttpEntity<>(request, headers);
+        HttpEntity<PayrollEntryDto> entity = new HttpEntity<>(request, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 

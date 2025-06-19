@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.evaluation.erpnext_spring.dto.auth.LoginRequestDTO;
-import com.evaluation.erpnext_spring.dto.auth.LoginResponseDTO;
+import com.evaluation.erpnext_spring.dto.auth.LoginRequestDto;
+import com.evaluation.erpnext_spring.dto.auth.LoginResponseDto;
 import com.evaluation.erpnext_spring.service.AuthService;
 
 import jakarta.servlet.http.HttpSession;
@@ -23,15 +23,15 @@ public class AuthController {
     @GetMapping
     public ModelAndView showLoginForm() {
         ModelAndView modelAndView = new ModelAndView("login");
-        modelAndView.addObject("loginRequest", new LoginRequestDTO());
+        modelAndView.addObject("loginRequest", new LoginRequestDto());
         return modelAndView;
     }
 
 
     @PostMapping("/login")
-    public ModelAndView login(@ModelAttribute LoginRequestDTO loginRequest, HttpSession session) {
+    public ModelAndView login(@ModelAttribute LoginRequestDto loginRequest, HttpSession session) {
         ModelAndView modelAndView = new ModelAndView();
-        LoginResponseDTO response = authService.login(loginRequest);
+        LoginResponseDto response = authService.login(loginRequest);
         
         if (response.isSuccess()) {
             

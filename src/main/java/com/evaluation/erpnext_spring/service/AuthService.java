@@ -7,8 +7,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.evaluation.erpnext_spring.dto.auth.ERPNextAuthResponse;
-import com.evaluation.erpnext_spring.dto.auth.LoginRequestDTO;
-import com.evaluation.erpnext_spring.dto.auth.LoginResponseDTO;
+import com.evaluation.erpnext_spring.dto.auth.LoginRequestDto;
+import com.evaluation.erpnext_spring.dto.auth.LoginResponseDto;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ public class AuthService {
     }
 
     @SuppressWarnings("null")
-    public LoginResponseDTO login(LoginRequestDTO loginRequest) {
+    public LoginResponseDto login(LoginRequestDto loginRequest) {
         String loginUrl = erpnextApiUrl + "/api/method/login";
 
         HttpHeaders headers = new HttpHeaders();
@@ -57,7 +57,7 @@ public class AuthService {
                
                 authResponse.setSid(sid);
                 System.out.println("SID: "+authResponse.getSid());
-                return new LoginResponseDTO(
+                return new LoginResponseDto(
                     true, 
                     "Login successful", 
                     authResponse.getSid(), 
@@ -67,14 +67,14 @@ public class AuthService {
 
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                return new LoginResponseDTO(false, "Invalid username or password");
+                return new LoginResponseDto(false, "Invalid username or password");
             }
-            return new LoginResponseDTO(false, "Login failed: " + e.getMessage());
+            return new LoginResponseDto(false, "Login failed: " + e.getMessage());
         } catch (Exception e) {
-            return new LoginResponseDTO(false, "An error occurred during login: " + e.getMessage());
+            return new LoginResponseDto(false, "An error occurred during login: " + e.getMessage());
         }
 
-        return new LoginResponseDTO(false, "Login failed with unknown error");
+        return new LoginResponseDto(false, "Login failed with unknown error");
     }
 
     private String extractSidFromCookies(List<String> cookies) {

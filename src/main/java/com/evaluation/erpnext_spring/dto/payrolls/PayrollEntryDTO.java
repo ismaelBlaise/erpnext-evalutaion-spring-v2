@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class PayrollEntryDTO {
+public class PayrollEntryDto {
     private String company;
     private String posting_date;
     private String currency;

@@ -5,7 +5,7 @@ import com.evaluation.erpnext_spring.dto.employees.EmployeeDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.service.DataService;
 import com.evaluation.erpnext_spring.service.EmployeeService;
-import com.evaluation.erpnext_spring.service.GenerationPaiementService;
+import com.evaluation.erpnext_spring.service.PaiementService;
 import com.evaluation.erpnext_spring.service.SalarySlipService;
 
 import jakarta.servlet.http.HttpSession;
@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/salaire")
-public class SalaireController {
+public class PaiementController {
 
     @Autowired
-    private GenerationPaiementService generationPaiementService;
+    private PaiementService generationPaiementService;
 
  
     @Autowired
@@ -33,6 +33,9 @@ public class SalaireController {
 
     @Autowired
     private SalarySlipService salarySlipService;
+
+    @Autowired
+    private PaiementService paiementService;
 
     @GetMapping("/generation")
     public ModelAndView afficherFormulaireGeneration(HttpSession session) {
@@ -116,7 +119,7 @@ public class SalaireController {
             
            
             boolean isIncrease = "augmentation".equals(modificationType);
-            List<SalarySlipDto> updatedSlips = salarySlipService.cancelAndUpdateSalarySlips(
+            List<SalarySlipDto> updatedSlips = paiementService.cancelAndUpdateSalarySlips(
                 session, 
                 filteredSlips.stream()
                     .map(slip -> {
