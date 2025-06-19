@@ -96,46 +96,6 @@ public class StructureService {
     }
 
 
-    public StructureAssignement getValidStructureAssignmentForDate(
-            HttpSession session, 
-            String employeeId, 
-            String companyId, 
-            String salarySlipDate) {
-
-        String sid = (String) session.getAttribute("sid");
-        if (sid == null || sid.isEmpty()) {
-            throw new RuntimeException("Session non authentifiée");
-        }
-
-         
-        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment?fields=[\"*\"]" +
-                "&filters=[[\"employee\",\"=\",\"" + employeeId + "\"]," +
-                "[\"company\",\"=\",\"" + companyId + "\"]," +
-                "[\"from_date\",\"<=\",\"" + salarySlipDate + "\"]," +
-                "[\"to_date\",\">=\",\"" + salarySlipDate + "\" OR \"to_date\",\"is\",\"not set\"]," +
-                "[\"is_active\",\"=\",\"1\"]]" +
-                "&order_by=from_date desc&limit_page_length=1";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Cookie", "sid=" + sid);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<StructureAssignementResponse> response = restTemplate.exchange(
-                url, 
-                org.springframework.http.HttpMethod.GET, 
-                entity, 
-                StructureAssignementResponse.class);
-
-        if (response.getStatusCode().is2xxSuccessful() && 
-                response.getBody() != null && 
-                !response.getBody().getData().isEmpty()) {
-            return response.getBody().getData().get(0);
-        }
-
-        return null; 
-    }
-
 
     public void cancelOrDeleteStructureAssignment(
             HttpSession session, 
