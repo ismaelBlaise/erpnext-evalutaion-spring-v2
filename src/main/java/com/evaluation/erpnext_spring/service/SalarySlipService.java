@@ -304,6 +304,28 @@ public class SalarySlipService {
 
    
 
+    public boolean isSalarySlipAlreadyCreated(HttpSession session, String employeeId, String forDate) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session non authentifiée");
+        }
+
+        String url = erpnextApiUrl + "/api/resource/Salary Slip?fields=[\"name\"]"
+                + "&filters=[[\"employee\",\"=\",\"" + employeeId + "\"],[\"start_date\",\"<=\",\"" + forDate + "\"],[\"end_date\",\">=\",\"" + forDate + "\"]]";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Cookie", "sid=" + sid);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<SalarySlipListResponse> response = restTemplate
+                .exchange(url, HttpMethod.GET, entity, SalarySlipListResponse.class);
+        System.out.println("III");
+        return response.getStatusCode().is2xxSuccessful()
+                && response.getBody() != null
+                && !response.getBody().getData().isEmpty();
+    }
+
 
     
     

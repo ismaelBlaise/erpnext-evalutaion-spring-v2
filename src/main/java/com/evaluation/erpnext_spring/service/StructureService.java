@@ -77,7 +77,7 @@ public class StructureService {
         }
 
         String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment?fields=[\"name\",\"employee\",\"salary_structure\",\"from_date\"]"
-                + "&filters=[[\"employee\",\"=\",\"" + employeeId + "\"],[\"from_date\",\"<\",\"" + beforeDate + "\"]]"
+                + "&filters=[[\"employee\",\"=\",\"" + employeeId + "\"],[\"from_date\",\"<=\",\"" + beforeDate + "\"]]"
                 + "&order_by=from_date desc&limit_page_length=1";
 
         HttpHeaders headers = new HttpHeaders();
