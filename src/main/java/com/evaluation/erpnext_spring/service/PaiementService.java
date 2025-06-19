@@ -210,7 +210,7 @@ public class PaiementService {
         SalarySlipListResponse response = salarySlipService.getSalarySlips(session, 0, 0, null);
         List<SalarySlipDto> allSlips = response.getData();
         
-        // System.out.println(allSlips.size());
+        
         List<SalarySlipDto> filteredSlips = new ArrayList<>();
         
         
@@ -268,6 +268,23 @@ public class PaiementService {
 
         for (SalarySlipDto slipDto : salarySlipDtos) {
             try {
+                StructureAssignement structureAssignement=structureService.getLastStructureAssignementBeforeDate(session, slipDto.getEmployee(), slipDto.getStartDate());
+                structureService.cancelOrDeleteStructureAssignment(session, structureAssignement.getName(), true);
+                double amount = structureAssignement.getBase();
+                amount = isIncrease
+                            ? amount * (1 + percentageChange / 100.0)
+                            : amount * (1 - percentageChange / 100.0);
+                amount = Math.round(amount * 100.0) / 100.0;
+                structureAssignement.setBase(amount);
+                List<SalaireData> salaireDatas=new ArrayList<>();
+                SalaireData salaireData=new SalaireData();
+                salaireData.setMois(structureAssignement.getFrom_date());
+                salaireData.setRefEmploye(structureAssignement.getEmployee());
+                salaireData.setSalaireBase(structureAssignement.getBase());
+                salaireData.setSalaryStructure(structureAssignement.getSalary_structure());
+
+                salaireDatas.add(salaireData);
+                salaireImportService.importSalaireData(session, salaireDatas);
                 SalarySlipDto updatedSlip = cancelAndUpdateSalarySlip(session, headers, slipDto.getName(), componentName, percentageChange, isIncrease);
                 updatedSlips.add(updatedSlip);
             } catch (Exception e) {

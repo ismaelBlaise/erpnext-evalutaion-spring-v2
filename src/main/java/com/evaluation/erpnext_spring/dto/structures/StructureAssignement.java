@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class StructureAssignement {
+    private String name;
     private String company;
     private String salary_structure;
     private String currency;

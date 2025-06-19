@@ -104,7 +104,7 @@ public class SalarySlipService {
     private String buildFilters(SalarySlipFilter filter) {
         if (filter == null) return "";
 
-        StringBuilder filters = new StringBuilder("&filters=[[\"docstatus\",\"=\",\"1\"]");
+        StringBuilder filters = new StringBuilder("&filters=[");
 
         boolean hasFilter = false;
 
@@ -130,7 +130,7 @@ public class SalarySlipService {
         // }
 
         if (hasFilter) {
-            filters.setLength(filters.length() - 1); // supprime la dernière virgule
+            filters.setLength(filters.length() - 1);  
             filters.append("]");
             return filters.toString();
         }
@@ -302,55 +302,7 @@ public class SalarySlipService {
     }
 
 
-    public List<SalarySlipDto> getSalarySlipsByComponentThreshold(HttpSession session, 
-                                                             String componentName, 
-                                                             double threshold, 
-                                                             boolean isGreaterThan) {
-        
-        SalarySlipListResponse response = getSalarySlips(session, 0, 0, null);
-        List<SalarySlipDto> allSlips = response.getData();
-        
-        // System.out.println(allSlips.size());
-        List<SalarySlipDto> filteredSlips = new ArrayList<>();
-        
-        
-        for (SalarySlipDto slip : allSlips) {
-            SalarySlipDetail detail = getSalarySlipByName(session, slip.getName());
-            SalarySlipDto fullSlip = detail.getData();
-            
-            
-            if (fullSlip.getEarnings() != null) {
-                for (SalaryEarning earning : fullSlip.getEarnings()) {
-                    if (earning.getSalaryComponent().equals(componentName)) {
-                        
-                        if ((isGreaterThan && earning.getAmount() > threshold) ||
-                            (!isGreaterThan && earning.getAmount() < threshold)) {
-                           
-                                filteredSlips.add(fullSlip);
-                            break;  
-                        }
-                    }
-                }
-            }
-            
-            
-            if (fullSlip.getDeductions() != null && !filteredSlips.contains(fullSlip)) {
-                for (SalaryDeduction deduction : fullSlip.getDeductions()) {
-                    if (deduction.getSalaryComponent().equals(componentName)) {
-                        if ((isGreaterThan && deduction.getAmount() > threshold) ||
-                            (!isGreaterThan && deduction.getAmount() < threshold)) {
-                           
-                            filteredSlips.add(fullSlip);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        
-        return filteredSlips;
-    }
-
+   
 
 
     
