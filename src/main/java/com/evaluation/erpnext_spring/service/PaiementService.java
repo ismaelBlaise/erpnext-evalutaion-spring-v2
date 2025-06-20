@@ -294,7 +294,7 @@ public class PaiementService {
 
                 salaireDatas.add(salaireData);
                 salaireImportService.importSalaireData(session, salaireDatas);
-                 cancelSalarySlip(headers, slipDto.getName());
+                cancelSalarySlip(headers, slipDto.getName());
                 // SalarySlipDto updatedSlip = cancelAndUpdateSalarySlip(session, headers, slipDto.getName(), componentName, percentageChange, isIncrease);
                 updatedSlips.add(slipDto);
             } catch (Exception e) {
