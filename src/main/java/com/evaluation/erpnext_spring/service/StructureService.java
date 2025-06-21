@@ -37,7 +37,7 @@ public class StructureService {
     @Value("${erpnext.api.secret}")
     private String erpnextApiSecret;
 
-    public void assignSalaryStructure(HttpSession session,StructureAssignement request) {
+    public StructureAssignement assignSalaryStructure(HttpSession session,StructureAssignement request) {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
             throw new RuntimeException("Session non authentifiée");
@@ -51,11 +51,12 @@ public class StructureService {
         
         HttpEntity<StructureAssignement> entity = new HttpEntity<>(request, headers);
         
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+        ResponseEntity<StructureAssignement> response = restTemplate.postForEntity(url, entity, StructureAssignement.class);
         
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Échec d’assignation pour " + request.getEmployee());
         }
+        return response.getBody();
     }   
 
     public void assignSalaryStructureBloc(HttpSession session,List<StructureAssignement> structureAssignements){

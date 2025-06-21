@@ -395,6 +395,32 @@ public class SalarySlipService {
 
 
 
+    public SalarySlipDto createSalarySlip(HttpSession session, SalarySlipDto salarySlipDto) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session non authentifiée");
+        }
+
+        String url = erpnextApiUrl + "/api/resource/Salary Slip";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Cookie", "sid=" + sid);
+       
+        Map<String, Object> payload = new HashMap<>();
+
+        payload.put("doc", salarySlipDto);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+        ResponseEntity<SalarySlipDto> response = restTemplate.postForEntity(url, request, SalarySlipDto.class);
+
+        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+            throw new RuntimeException("Erreur lors de la création de la fiche de paie");
+        }
+
+        return response.getBody();
+    }
 
     
     
