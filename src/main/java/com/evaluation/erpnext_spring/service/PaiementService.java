@@ -86,10 +86,11 @@ public class PaiementService {
             if(salarySlipService.isSalarySlipAlreadyCreatedBack(session, employee, start)==false){
                 String dateMois = start.toString(); 
                 SalaireData salaireData = genererSalaireData(session, employee, dateMois, base);
-                System.out.println(salaireData.getSalaireBase());
+               
                 salaireDatas.add(salaireData);
-                start = start.plusMonths(1);
+               
             }
+            start = start.plusMonths(1);
         }
 
         

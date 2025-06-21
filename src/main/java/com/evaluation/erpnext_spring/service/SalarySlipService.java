@@ -329,19 +329,30 @@ public class SalarySlipService {
     }
 
 
-    public boolean isSalarySlipAlreadyCreatedBack(HttpSession session,String employee,LocalDate forDate){
-        List<SalarySlipDto> salarySlipDtos=getSalarySlips(session, 0, 0, null).getData();
-        for (SalarySlipDto salarySlipDto : salarySlipDtos) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate start = LocalDate.parse(salarySlipDto.getStartDate(), formatter).withDayOfMonth(1);
-            LocalDate end = LocalDate.parse(salarySlipDto.getEndDate(), formatter).withDayOfMonth(1);
-            if(salarySlipDto.getEmployee().equals(employee) && start.isAfter(forDate) && end.isBefore(forDate)){
-                return true;
+    public boolean isSalarySlipAlreadyCreatedBack(HttpSession session, String employeeId, LocalDate forDate) {
+       
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+        List<SalarySlipDto> salarySlips = getSalarySlips(session, 0, 0, null).getData();
+
+        for (SalarySlipDto slip : salarySlips) {
+            if (!slip.getEmployee().equals(employeeId)) {
+                continue; 
+            }
+
+            LocalDate startDate = LocalDate.parse(slip.getStartDate(), formatter);
+            LocalDate endDate = LocalDate.parse(slip.getEndDate(), formatter);
+
+            
+            if ((forDate.isEqual(startDate) || forDate.isAfter(startDate)) &&
+                (forDate.isEqual(endDate) || forDate.isBefore(endDate))) {
+                return true;
             }
         }
+
         return false;
     }
+
 
 
     
