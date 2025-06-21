@@ -116,11 +116,11 @@ public class StructureService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
-        headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
+        headers.add("Cookie", "sid=" + sid);    
+        // headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
 
         if (deleteIfPossible) {
-             
+            cancelOrDeleteStructureAssignment(session, assignmentName, false);
             HttpEntity<String> request = new HttpEntity<>(headers);
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
 

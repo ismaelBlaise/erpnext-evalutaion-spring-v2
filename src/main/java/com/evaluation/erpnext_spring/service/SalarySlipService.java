@@ -368,9 +368,10 @@ public class SalarySlipService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
-        headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
+        // headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
 
         if (deleteIfPossible) {
+            cancelOrDeleteSalarySlip(session, slipName, false);
             HttpEntity<String> deleteRequest = new HttpEntity<>(headers);
             ResponseEntity<String> deleteResponse = restTemplate.exchange(url, HttpMethod.DELETE, deleteRequest, String.class);
 
