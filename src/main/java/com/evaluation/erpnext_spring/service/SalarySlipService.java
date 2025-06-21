@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -352,6 +353,45 @@ public class SalarySlipService {
 
         return false;
     }
+
+
+
+    public void cancelOrDeleteSalarySlip(HttpSession session, String slipName, boolean deleteIfPossible) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session non authentifiée");
+        }
+
+        String url = erpnextApiUrl + "/api/resource/Salary Slip/" + slipName;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Cookie", "sid=" + sid);
+        headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
+
+        if (deleteIfPossible) {
+            HttpEntity<String> deleteRequest = new HttpEntity<>(headers);
+            ResponseEntity<String> deleteResponse = restTemplate.exchange(url, HttpMethod.DELETE, deleteRequest, String.class);
+
+            if (!deleteResponse.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Échec de la suppression de la fiche de paie : " + slipName);
+            }
+
+        } else {
+            
+            Map<String, Object> cancelPayload = new HashMap<>();
+            cancelPayload.put("docstatus", 2);
+
+            HttpEntity<Map<String, Object>> cancelRequest = new HttpEntity<>(cancelPayload, headers);
+            ResponseEntity<String> cancelResponse = restTemplate.exchange(url, HttpMethod.PUT, cancelRequest, String.class);
+
+            if (!cancelResponse.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Échec de l'annulation de la fiche de paie : " + slipName);
+            }
+        }
+    }
+
 
 
 

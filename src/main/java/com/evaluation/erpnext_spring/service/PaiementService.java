@@ -3,18 +3,9 @@ package com.evaluation.erpnext_spring.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,6 +22,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Service
 public class PaiementService {
+    @SuppressWarnings("unused")
     @Autowired
     private RestTemplate restTemplate;
 
@@ -274,7 +266,7 @@ public class PaiementService {
         }
 
         List<SalarySlipDto> updatedSlips = new ArrayList<>();
-        HttpHeaders headers = buildHeadersWithSid(sid);
+        
 
         for (SalarySlipDto slipDto : salarySlipDtos) {
             try {
@@ -286,17 +278,22 @@ public class PaiementService {
                             : amount * (1 - percentageChange / 100.0);
                 amount = Math.round(amount * 100.0) / 100.0;
                 structureAssignement.setBase(amount);
+
+                // structureService.assignSalaryStructure(session, structureAssignement);
+
+                salarySlipService.cancelOrDeleteSalarySlip(session, slipDto.getName(),true);
+
                 List<SalaireData> salaireDatas=new ArrayList<>();
                 SalaireData salaireData=new SalaireData();
                 salaireData.setMois(structureAssignement.getFrom_date());
                 salaireData.setRefEmploye(structureAssignement.getEmployee());
                 salaireData.setSalaireBase(structureAssignement.getBase());
                 salaireData.setSalaryStructure(structureAssignement.getSalary_structure());
-
                 salaireDatas.add(salaireData);
                 salaireImportService.importSalaireData(session, salaireDatas);
-                cancelSalarySlip(headers, slipDto.getName());
-                // SalarySlipDto updatedSlip = cancelAndUpdateSalarySlip(session, headers, slipDto.getName(), componentName, percentageChange, isIncrease);
+                
+                
+
                 updatedSlips.add(slipDto);
             } catch (Exception e) {
                 throw new Exception("Erreur lors du traitement de la Salary Slip " + slipDto.getName() + " : " + e.getMessage(), e);
@@ -308,26 +305,9 @@ public class PaiementService {
 
    
 
-    private HttpHeaders buildHeadersWithSid(String sid) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
-        return headers;
-    }
+    
 
-    private void cancelSalarySlip(HttpHeaders headers, String slipName) {
-        String cancelUrl = erpnextApiUrl + "/api/resource/Salary Slip/" + slipName;
-        Map<String, Object> cancelPayload = new HashMap<>();
-        cancelPayload.put("docstatus", 2);
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(cancelPayload, headers);
-        ResponseEntity<String> response = restTemplate.exchange(cancelUrl, HttpMethod.PUT, request, String.class);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("Échec de l'annulation de la fiche de paie : " + slipName);
-        }
-    }
+    
 
     
 }

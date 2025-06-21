@@ -1,7 +1,11 @@
 package com.evaluation.erpnext_spring.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -98,32 +102,46 @@ public class StructureService {
 
 
     public void cancelOrDeleteStructureAssignment(
-            HttpSession session, 
-            String assignmentName, 
-            boolean deleteIfPossible) {
+        HttpSession session,
+        String assignmentName,
+        boolean deleteIfPossible) {
 
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
             throw new RuntimeException("Session non authentifiée");
         }
 
-        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment";
+        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment/" + assignmentName;
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.add("Cookie", "sid=" + sid);
         headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
 
-       
-        // Map<String, Object> cancelPayload = new HashMap<>();
-        // cancelPayload.put("docstatus", 2);
+        if (deleteIfPossible) {
+             
+            HttpEntity<String> request = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
 
-        HttpEntity<String> request = new HttpEntity<>( headers);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, request, String.class);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Échec de la suppression de l'attribution : " + assignmentName);
+            }
 
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("Échec de l'annulation de la fiche de paie : " + url);
+        } else {
+            
+            Map<String, Object> cancelPayload = new HashMap<>();
+            cancelPayload.put("docstatus", 2);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(cancelPayload, headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, request, String.class);
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Échec de l'annulation de l'attribution : " + assignmentName);
+            }
         }
     }
+
 
 
 }
