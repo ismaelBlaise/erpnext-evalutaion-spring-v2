@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class SalaryGridDto {
+public class SalaryStructureDto {
     @JsonProperty("name")
     private String name;
     

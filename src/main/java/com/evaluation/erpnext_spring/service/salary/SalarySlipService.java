@@ -1,4 +1,4 @@
-package com.evaluation.erpnext_spring.service;
+package com.evaluation.erpnext_spring.service.salary;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -326,13 +326,13 @@ public class SalarySlipService {
 
 
 
-    public void cancelOrDeleteSalarySlip(HttpSession session, String slipName, boolean deleteIfPossible) {
+    public SalarySlipDto cancelOrDeleteSalarySlip(HttpSession session, SalarySlipDto slipName, boolean deleteIfPossible) {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
             throw new RuntimeException("Session non authentifiée");
         }
 
-        String url = erpnextApiUrl + "/api/resource/Salary Slip/" + slipName;
+        String url = erpnextApiUrl + "/api/resource/Salary Slip/" + slipName.getName();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -348,6 +348,7 @@ public class SalarySlipService {
             if (!deleteResponse.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException("Échec de la suppression de la fiche de paie : " + slipName);
             }
+            return slipName;
 
         } else {
             
@@ -360,6 +361,8 @@ public class SalarySlipService {
             if (!cancelResponse.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException("Échec de l'annulation de la fiche de paie : " + slipName);
             }
+            return slipName;
+
         }
     }
 
@@ -377,11 +380,11 @@ public class SalarySlipService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Cookie", "sid=" + sid);
        
-        Map<String, Object> payload = new HashMap<>();
+        // Map<String, Object> payload = new HashMap<>();
 
-        payload.put("doc", salarySlipDto);
+        // payload.put("doc", salarySlipDto);
 
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+        HttpEntity<SalarySlipDto> request = new HttpEntity<>(salarySlipDto, headers);
 
         ResponseEntity<SalarySlipDto> response = restTemplate.postForEntity(url, request, SalarySlipDto.class);
 

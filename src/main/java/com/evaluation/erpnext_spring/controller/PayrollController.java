@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.evaluation.erpnext_spring.dto.payrolls.PayrollEmployeeDetail;
-import com.evaluation.erpnext_spring.service.DataService;
-import com.evaluation.erpnext_spring.service.EmployeeService;
-import com.evaluation.erpnext_spring.service.PayrollEntryService;
+import com.evaluation.erpnext_spring.service.data.DataService;
+import com.evaluation.erpnext_spring.service.employee.EmployeeService;
+import com.evaluation.erpnext_spring.service.salary.PayrollEntryService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

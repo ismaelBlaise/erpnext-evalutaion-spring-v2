@@ -1,4 +1,4 @@
-package com.evaluation.erpnext_spring.service;
+package com.evaluation.erpnext_spring.service.salary;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,9 +102,9 @@ public class StructureAssignmentService {
 
 
 
-    public void cancelOrDeleteStructureAssignment(
+    public StructureAssignement cancelOrDeleteStructureAssignment(
         HttpSession session,
-        String assignmentName,
+        StructureAssignement assignmentName,
         boolean deleteIfPossible) {
 
         String sid = (String) session.getAttribute("sid");
@@ -112,7 +112,7 @@ public class StructureAssignmentService {
             throw new RuntimeException("Session non authentifiée");
         }
 
-        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment/" + assignmentName;
+        String url = erpnextApiUrl + "/api/resource/Salary Structure Assignment/" + assignmentName.getName();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -128,7 +128,7 @@ public class StructureAssignmentService {
             if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException("Échec de la suppression de l'attribution : " + assignmentName);
             }
-
+            return assignmentName;
         } else {
             
             Map<String, Object> cancelPayload = new HashMap<>();
@@ -140,6 +140,7 @@ public class StructureAssignmentService {
             if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException("Échec de l'annulation de l'attribution : " + assignmentName);
             }
+            return assignmentName;
         }
     }
 

@@ -1,4 +1,4 @@
-package com.evaluation.erpnext_spring.service;
+package com.evaluation.erpnext_spring.service.auth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;

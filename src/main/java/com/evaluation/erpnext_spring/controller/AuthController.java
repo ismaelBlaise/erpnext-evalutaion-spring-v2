@@ -9,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.evaluation.erpnext_spring.dto.auth.LoginRequestDto;
 import com.evaluation.erpnext_spring.dto.auth.LoginResponseDto;
-import com.evaluation.erpnext_spring.service.AuthService;
+import com.evaluation.erpnext_spring.service.auth.AuthService;
 
 import jakarta.servlet.http.HttpSession;
 

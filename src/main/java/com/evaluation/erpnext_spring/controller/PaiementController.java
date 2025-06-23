@@ -3,10 +3,10 @@ package com.evaluation.erpnext_spring.controller;
 import com.evaluation.erpnext_spring.dto.data.DataDto;
 import com.evaluation.erpnext_spring.dto.employees.EmployeeDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
-import com.evaluation.erpnext_spring.service.DataService;
-import com.evaluation.erpnext_spring.service.EmployeeService;
-import com.evaluation.erpnext_spring.service.PaiementService;
-import com.evaluation.erpnext_spring.service.SalarySlipService;
+import com.evaluation.erpnext_spring.service.data.DataService;
+import com.evaluation.erpnext_spring.service.employee.EmployeeService;
+import com.evaluation.erpnext_spring.service.salary.PaiementService;
+import com.evaluation.erpnext_spring.service.salary.SalarySlipService;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ public class PaiementController {
                                         @RequestParam("employee") String employee,
                                         @RequestParam("startDate") String startDate,
                                         @RequestParam("endDate") String endDate,
-                                        @RequestParam("base") Double base) {
+                                        @RequestParam(required = false) Double base) {
         ModelAndView modelAndView = new ModelAndView("template");
         try {
             modelAndView.addObject("page", "salaires/generation");

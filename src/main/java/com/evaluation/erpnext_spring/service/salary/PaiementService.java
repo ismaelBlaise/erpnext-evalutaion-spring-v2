@@ -1,4 +1,4 @@
-package com.evaluation.erpnext_spring.service;
+package com.evaluation.erpnext_spring.service.salary;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +36,7 @@ public class PaiementService {
     private String erpnextApiSecret;
     
     @Autowired
-    private StructureService structureService;
+    private StructureAssignmentService structureService;
 
     @Autowired
     private SalaireImportService salaireImportService;
@@ -51,7 +51,7 @@ public class PaiementService {
         SalaireData salaireData = new SalaireData();
         salaireData.setMois(date);
         salaireData.setRefEmploye(employeeId);
-        if(base==0.0){
+        if(base==null){
             salaireData.setSalaireBase(lastAssignement.getBase());
         }
         else{
@@ -70,8 +70,11 @@ public class PaiementService {
         LocalDate end = LocalDate.parse(endDate, formatter).withDayOfMonth(1);
         StructureAssignement lastAssignement = structureService.getLastStructureAssignementBeforeDate(session, employee, startDate);
 
-        if (lastAssignement == null) {
+        if (lastAssignement == null && base==null) {
             throw new RuntimeException("Aucune structure de salaire trouvée pour l’employé " + employee + " avant la date " + startDate);
+        }
+        else{
+
         }
 
         while (!start.isAfter(end)) {
@@ -144,7 +147,7 @@ public class PaiementService {
     }
 
 
-
+    @SuppressWarnings("unused")
     public List<SalarySlipDto> cancelAndUpdateSalarySlips(HttpSession session,
                                                            List<SalarySlipDto> salarySlipDtos,
                                                            String componentName,
@@ -161,17 +164,25 @@ public class PaiementService {
         for (SalarySlipDto slipDto : salarySlipDtos) {
             try {
                 StructureAssignement structureAssignement=structureService.getLastStructureAssignementBeforeDate(session, slipDto.getEmployee(), slipDto.getStartDate());
-                structureService.cancelOrDeleteStructureAssignment(session, structureAssignement.getName(), false);
+               
+                StructureAssignement assignement=structureService.cancelOrDeleteStructureAssignment(session, structureAssignement, false);
                 double amount = structureAssignement.getBase();
                 amount = isIncrease
                             ? amount * (1 + percentageChange / 100.0)
                             : amount * (1 - percentageChange / 100.0);
                 amount = Math.round(amount * 100.0) / 100.0;
                 structureAssignement.setBase(amount);
+                structureAssignement.setName(null);
+                
 
-                // structureService.assignSalaryStructure(session, structureAssignement);
 
-                salarySlipService.cancelOrDeleteSalarySlip(session, slipDto.getName(),false);
+                // structureService.assignSalaryStructure(session, assignement);
+
+               
+                SalarySlipDto salarySlipDto=salarySlipService.cancelOrDeleteSalarySlip(session, slipDto,false);
+                // salarySlipDto
+                // salarySlipDto.setName(null);
+                // salarySlipService.createSalarySlip(session, salarySlipDto);
 
                 List<SalaireData> salaireDatas=new ArrayList<>();
                 SalaireData salaireData=new SalaireData();

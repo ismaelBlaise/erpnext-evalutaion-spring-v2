@@ -1,4 +1,4 @@
-package com.evaluation.erpnext_spring.service;
+package com.evaluation.erpnext_spring.service.employee;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

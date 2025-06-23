@@ -1,6 +1,6 @@
-package com.evaluation.erpnext_spring.service;
+package com.evaluation.erpnext_spring.service.salary;
 
-import com.evaluation.erpnext_spring.dto.grilles.SalaryGridDto;
+import com.evaluation.erpnext_spring.dto.grilles.SalaryStructureDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.*;
 
 @Service
-public class SalaryGridService {
+public class StructureService {
 
     @Autowired
     private RestTemplate restTemplate;
@@ -29,7 +29,7 @@ public class SalaryGridService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public ResponseEntity<Map<String, Object>> createSalaryGrid(HttpSession session, SalaryGridDto salaryGridDTO) {
+    public ResponseEntity<Map<String, Object>> createSalaryGrid(HttpSession session, SalaryStructureDto salaryGridDTO) {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
@@ -50,7 +50,7 @@ public class SalaryGridService {
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
             headers.add("Cookie", "sid=" + sid);
 
-            HttpEntity<SalaryGridDto> request = new HttpEntity<>(salaryGridDTO, headers);
+            HttpEntity<SalaryStructureDto> request = new HttpEntity<>(salaryGridDTO, headers);
 
             ResponseEntity<String> response = restTemplate.exchange(
                     erpnextApiUrl + "/api/resource/Salary Structure",

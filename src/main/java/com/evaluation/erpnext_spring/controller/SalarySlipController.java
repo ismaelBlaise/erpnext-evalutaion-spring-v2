@@ -17,9 +17,10 @@ import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipFilter;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryTotalsResponse;
-import com.evaluation.erpnext_spring.service.DataService;
-import com.evaluation.erpnext_spring.service.PdfService;
-import com.evaluation.erpnext_spring.service.SalarySlipService;
+import com.evaluation.erpnext_spring.service.data.DataService;
+import com.evaluation.erpnext_spring.service.pdf.PdfService;
+import com.evaluation.erpnext_spring.service.salary.SalarySlipService;
+
 import jakarta.servlet.http.HttpSession;
 
 import java.util.ArrayList;

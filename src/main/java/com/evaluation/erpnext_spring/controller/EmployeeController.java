@@ -12,8 +12,9 @@ import com.evaluation.erpnext_spring.dto.data.DataListReponse;
 import com.evaluation.erpnext_spring.dto.employees.EmployeeDto;
 import com.evaluation.erpnext_spring.dto.employees.EmployeeFilter;
 import com.evaluation.erpnext_spring.dto.employees.EmployeeListResponse;
-import com.evaluation.erpnext_spring.service.DataService;
-import com.evaluation.erpnext_spring.service.EmployeeService;
+import com.evaluation.erpnext_spring.service.data.DataService;
+import com.evaluation.erpnext_spring.service.employee.EmployeeService;
+
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 

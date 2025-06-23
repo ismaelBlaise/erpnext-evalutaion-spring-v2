@@ -1,74 +1,68 @@
 package com.evaluation.erpnext_spring.controller;
 
-import com.evaluation.erpnext_spring.dto.structures.StructureAssignementDetail;
-import com.evaluation.erpnext_spring.service.DataService;
-import com.evaluation.erpnext_spring.service.EmployeeService;
-import com.evaluation.erpnext_spring.service.StructureService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.evaluation.erpnext_spring.dto.grilles.SalaryStructureDto;
+import com.evaluation.erpnext_spring.service.data.DataService;
+import com.evaluation.erpnext_spring.service.salary.StructureService;
 
 import jakarta.servlet.http.HttpSession;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
-
 @Controller
-@RequestMapping("/structures")
+@RequestMapping("/grids")
 public class StructureController {
 
     @Autowired
-    private StructureService structureService;
+    private StructureService salaryGridService;
 
     @Autowired
     private DataService dataService;
-    
-    @Autowired
-    private EmployeeService employeeService;
 
-    @GetMapping("/assignment")
-    public ModelAndView showAssignmentForm(HttpSession session) {
+    @GetMapping
+    public ModelAndView showSalaryGridForm(HttpSession session) {
         ModelAndView modelAndView = new ModelAndView("template");
-        modelAndView.addObject("page", "structures/assignment");
-        
+
         try {
-            modelAndView.addObject("structureDetails", new StructureAssignementDetail());
-            modelAndView.addObject("companies", dataService.getAllData(session, "Company", null).getData());
-            modelAndView.addObject("structures", dataService.getAllData(session, "Salary Structure", null).getData());
-            modelAndView.addObject("employees", employeeService.getAllEmployees(session, 0, 0, null).getData());
+            modelAndView.addObject("page", "grids/form");
+            modelAndView.addObject("salaryGridDTO", new SalaryStructureDto());
+            modelAndView.addObject("companies", dataService.getAllData(session, "Company", null));
+            modelAndView.addObject("earnings", dataService.getAllData(session, "Salary Component", "earning"));
+            modelAndView.addObject("deductions", dataService.getAllData(session, "Salary Component", "deduction"));
         } catch (Exception e) {
-            modelAndView.addObject("error", e.getMessage());
+            modelAndView.addObject("error", "Erreur : " + e.getMessage());
         }
-        
+
         return modelAndView;
     }
 
-    @PostMapping("/assign")
-    @ResponseBody
-    public String assignSalaryStructures(
-            HttpSession session,
-            @RequestParam("salaryStructure") String salaryStructure,
-            @RequestParam("company") String company,
-            @RequestParam("fromDate") String fromDate,
-            @RequestParam("currency") String currency,
-            @RequestParam("structureDetails") String structureDetailsJson) {
-        
+    @PostMapping
+    public ModelAndView createSalaryGrid(HttpSession session,
+                                         @ModelAttribute SalaryStructureDto salaryGridDTO,
+                                         RedirectAttributes redirectAttributes) {
         try {
-            // Convertir le JSON en liste d'objets
-            ObjectMapper mapper = new ObjectMapper();
-            List<StructureAssignementDetail> structureDetails = mapper.readValue(
-                structureDetailsJson, 
-                new TypeReference<List<StructureAssignementDetail>>() {}
-            );
+            ResponseEntity<Map<String, Object>> response = salaryGridService.createSalaryGrid(session, salaryGridDTO);
             
-            structureService.assignToSalaryStructures(session, salaryStructure, company, 
-                                                    fromDate, currency, structureDetails);
-            return "{\"status\":\"success\", \"message\":\"Assignation réussie\"}";
+            if (response.getStatusCode().is2xxSuccessful()) {
+                salaryGridService.submitSalaryGrid(session, salaryGridDTO.getName());
+                redirectAttributes.addFlashAttribute("success", "Grille de salaire créée avec succès.");
+            } else {
+                String error = response.getBody() != null ? (String) response.getBody().get("error") : "Erreur inconnue";
+                redirectAttributes.addFlashAttribute("error", "Erreur lors de la création : " + error);
+            }
         } catch (Exception e) {
-            return "{\"status\":\"error\", \"message\":\"" + e.getMessage().replace("\"", "\\\"") + "\"}";
+            redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
         }
+
+        return new ModelAndView("redirect:/grids");
     }
 }
