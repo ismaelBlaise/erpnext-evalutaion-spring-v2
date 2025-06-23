@@ -45,12 +45,8 @@ public class PaiementService {
     @Autowired
     private SalarySlipService salarySlipService;
 
-    public SalaireData genererSalaireData(HttpSession session, String employeeId, String date, Double base) {
-        StructureAssignement lastAssignement = structureService.getLastStructureAssignementBeforeDate(session, employeeId, date);
-
-        if (lastAssignement == null) {
-            throw new RuntimeException("Aucune structure de salaire trouvée pour l’employé " + employeeId + " avant la date " + date);
-        }
+    public SalaireData genererSalaireData(StructureAssignement lastAssignement, String employeeId, String date, Double base) {
+        
         // System.out.println(base);
         SalaireData salaireData = new SalaireData();
         salaireData.setMois(date);
@@ -72,12 +68,16 @@ public class PaiementService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate start = LocalDate.parse(startDate, formatter).withDayOfMonth(1);
         LocalDate end = LocalDate.parse(endDate, formatter).withDayOfMonth(1);
-        
+        StructureAssignement lastAssignement = structureService.getLastStructureAssignementBeforeDate(session, employee, startDate);
+
+        if (lastAssignement == null) {
+            throw new RuntimeException("Aucune structure de salaire trouvée pour l’employé " + employee + " avant la date " + startDate);
+        }
 
         while (!start.isAfter(end)) {
             if(salarySlipService.isSalarySlipAlreadyCreatedBack(session, employee, start)==false){
                 String dateMois = start.toString(); 
-                SalaireData salaireData = genererSalaireData(session, employee, dateMois, base);
+                SalaireData salaireData = genererSalaireData(lastAssignement, employee, dateMois, base);
                
                 salaireDatas.add(salaireData);
                
