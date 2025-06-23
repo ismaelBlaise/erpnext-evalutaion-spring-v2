@@ -104,42 +104,37 @@ public class SalarySlipService {
     }
 
        
+    @SuppressWarnings("unused")
     private String buildFilters(SalarySlipFilter filter) {
-        if (filter == null) return "";
-
         StringBuilder filters = new StringBuilder("&filters=[");
+
+        
+        filters.append("[\"docstatus\", \"=\", \"1\"],");
 
         boolean hasFilter = false;
 
-        if (filter.getEmployee() != null && !filter.getEmployee().isEmpty()) {
-            filters.append("[\"employee\", \"=\", \"").append(filter.getEmployee()).append("\"],");
-            hasFilter = true;
-        }
-        if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
-            filters.append("[\"start_date\", \">=\", \"").append(filter.getStartDate()).append("\"],");
-            hasFilter = true;
-        }
-        if (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) {
-            filters.append("[\"end_date\", \"<=\", \"").append(filter.getEndDate()).append("\"],");
-            hasFilter = true;
-        }
-        // if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
-        //     filters.append("[\"posting_date\", \">=\", \"").append(filter.getStartDate()).append("\"],");
-        //     hasFilter = true;
-        // }
-        // if (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) {
-        //     filters.append("[\"posting_date\", \"<=\", \"").append(filter.getEndDate()).append("\"],");
-        //     hasFilter = true;
-        // }
-
-        if (hasFilter) {
-            filters.setLength(filters.length() - 1);  
-            filters.append("]");
-            return filters.toString();
+        if (filter != null) {
+            if (filter.getEmployee() != null && !filter.getEmployee().isEmpty()) {
+                filters.append("[\"employee\", \"=\", \"").append(filter.getEmployee()).append("\"],");
+                hasFilter = true;
+            }
+            if (filter.getStartDate() != null && !filter.getStartDate().isEmpty()) {
+                filters.append("[\"start_date\", \">=\", \"").append(filter.getStartDate()).append("\"],");
+                hasFilter = true;
+            }
+            if (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) {
+                filters.append("[\"end_date\", \"<=\", \"").append(filter.getEndDate()).append("\"],");
+                hasFilter = true;
+            }
         }
 
-        return "";
+        
+        filters.setLength(filters.length() - 1);
+        filters.append("]");
+
+        return filters.toString();
     }
+
 
 
     public SalarySlipListResponse getRapport(HttpSession session,SalarySlipListResponse salarySlipListResponse){
