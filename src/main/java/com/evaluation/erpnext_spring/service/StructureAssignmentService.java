@@ -23,7 +23,7 @@ import com.evaluation.erpnext_spring.dto.structures.StructureAssignementDetail;
 import jakarta.servlet.http.HttpSession;
 
 @Service
-public class StructureService {
+public class StructureAssignmentService {
 
     @Autowired
     private RestTemplate restTemplate;

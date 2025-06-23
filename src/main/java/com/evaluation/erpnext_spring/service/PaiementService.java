@@ -161,7 +161,7 @@ public class PaiementService {
         for (SalarySlipDto slipDto : salarySlipDtos) {
             try {
                 StructureAssignement structureAssignement=structureService.getLastStructureAssignementBeforeDate(session, slipDto.getEmployee(), slipDto.getStartDate());
-                structureService.cancelOrDeleteStructureAssignment(session, structureAssignement.getName(), true);
+                structureService.cancelOrDeleteStructureAssignment(session, structureAssignement.getName(), false);
                 double amount = structureAssignement.getBase();
                 amount = isIncrease
                             ? amount * (1 + percentageChange / 100.0)
@@ -171,7 +171,7 @@ public class PaiementService {
 
                 // structureService.assignSalaryStructure(session, structureAssignement);
 
-                salarySlipService.cancelOrDeleteSalarySlip(session, slipDto.getName(),true);
+                salarySlipService.cancelOrDeleteSalarySlip(session, slipDto.getName(),false);
 
                 List<SalaireData> salaireDatas=new ArrayList<>();
                 SalaireData salaireData=new SalaireData();
