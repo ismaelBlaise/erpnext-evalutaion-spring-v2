@@ -265,13 +265,13 @@ public class SalarySlipService {
             monthlySlip.setMois(DateUtils.getMonthName(monthStr));
 
             if (slips == null || slips.isEmpty()) {
-                // Valeurs par défaut si aucun bulletin ce mois
-                monthlySlip.setCurrency("EUR"); // ou autre valeur par défaut
+                 
+                monthlySlip.setCurrency("EUR");  
                 monthlySlip.setGrossPay(0.0);
                 monthlySlip.setTotalDeduction(0.0);
                 monthlySlip.setNetPay(0.0);
 
-                // Créer une liste de composants tous à 0
+                
                 List<Double> componentsZeros = new ArrayList<>();
                 for (int i = 0; i < dataDtos.size(); i++) {
                     componentsZeros.add(0.0);

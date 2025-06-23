@@ -3,6 +3,7 @@ package com.evaluation.erpnext_spring.dto.structures;
 import java.util.List;
 
 public class StructureAssignementResponse {
+    
     private List<StructureAssignement> data;
 
     public List<StructureAssignement> getData() {

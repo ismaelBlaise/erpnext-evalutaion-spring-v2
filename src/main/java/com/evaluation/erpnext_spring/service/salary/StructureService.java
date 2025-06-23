@@ -1,6 +1,7 @@
 package com.evaluation.erpnext_spring.service.salary;
 
 import com.evaluation.erpnext_spring.dto.grilles.SalaryStructureDto;
+import com.evaluation.erpnext_spring.dto.grilles.SalaryStructureResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -115,6 +116,49 @@ public class StructureService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
+   public SalaryStructureResponse getSalaryStructures(HttpSession session) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session non authentifiée");
+        }
+
+       
+        
+
+        StringBuilder urlBuilder = new StringBuilder(erpnextApiUrl + "/api/resource/Salary Structure?");
+
+        
+       
+       
+        urlBuilder.append("&fields=").append("[\"*\"]");
+
+       
+       
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Cookie", "sid=" + sid);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<SalaryStructureResponse> response = restTemplate.exchange(
+                urlBuilder.toString(),
+                HttpMethod.GET,
+                request,
+                SalaryStructureResponse.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Échec de la récupération des fiches de paie : " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des fiches de paie : " + e.getMessage(), e);
         }
     }
 

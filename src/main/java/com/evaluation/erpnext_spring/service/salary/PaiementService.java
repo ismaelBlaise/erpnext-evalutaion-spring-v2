@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.evaluation.erpnext_spring.dto.grilles.SalaryStructureDto;
 import com.evaluation.erpnext_spring.dto.imports.SalaireData;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryDeduction;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryEarning;
@@ -45,9 +46,12 @@ public class PaiementService {
     @Autowired
     private SalarySlipService salarySlipService;
 
+    @Autowired
+    private StructureService structureServiceGrid;
+
     public SalaireData genererSalaireData(StructureAssignement lastAssignement, String employeeId, String date, Double base) {
         
-        // System.out.println(base);
+          
         SalaireData salaireData = new SalaireData();
         salaireData.setMois(date);
         salaireData.setRefEmploye(employeeId);
@@ -70,10 +74,19 @@ public class PaiementService {
         LocalDate end = LocalDate.parse(endDate, formatter).withDayOfMonth(1);
         StructureAssignement lastAssignement = structureService.getLastStructureAssignementBeforeDate(session, employee, startDate);
 
-        if (lastAssignement == null ) {
+        if (lastAssignement == null && base==null ) {
             throw new RuntimeException("Aucune structure de salaire trouvée pour l’employé " + employee + " avant la date " + startDate);
         }
-        else{
+        else if(lastAssignement==null && base!=null){
+            SalaryStructureDto salaryStructureDto=structureServiceGrid.getSalaryStructures(session).getData().get(0);
+
+            lastAssignement=new StructureAssignement();
+            lastAssignement.setSalary_structure(salaryStructureDto.getName());
+            lastAssignement.setBase(base);
+            lastAssignement.setCompany(salaryStructureDto.getCompany());
+            lastAssignement.setFrom_date(start.toString());
+            lastAssignement.setEmployee(employee);
+
 
         }
 
@@ -89,7 +102,9 @@ public class PaiementService {
         }
 
         
-        salaireImportService.importSalaireData(session, salaireDatas);
+       if(!salaireDatas.isEmpty()){
+         salaireImportService.importSalaireData(session, salaireDatas);
+       }
     }
 
 
@@ -165,7 +180,7 @@ public class PaiementService {
             try {
                 StructureAssignement structureAssignement=structureService.getLastStructureAssignementBeforeDate(session, slipDto.getEmployee(), slipDto.getStartDate());
                
-                StructureAssignement assignement=structureService.cancelOrDeleteStructureAssignment(session, structureAssignement, false);
+                StructureAssignement assignement=structureService.cancelOrDeleteStructureAssignment(session, structureAssignement, true);
                 double amount = structureAssignement.getBase();
                 amount = isIncrease
                             ? amount * (1 + percentageChange / 100.0)
@@ -179,7 +194,7 @@ public class PaiementService {
                 // structureService.assignSalaryStructure(session, assignement);
 
                
-                SalarySlipDto salarySlipDto=salarySlipService.cancelOrDeleteSalarySlip(session, slipDto,false);
+                SalarySlipDto salarySlipDto=salarySlipService.cancelOrDeleteSalarySlip(session, slipDto,true);
                 // salarySlipDto
                 // salarySlipDto.setName(null);
                 // salarySlipService.createSalarySlip(session, salarySlipDto);
