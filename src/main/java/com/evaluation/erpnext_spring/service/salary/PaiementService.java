@@ -70,7 +70,7 @@ public class PaiementService {
         LocalDate end = LocalDate.parse(endDate, formatter).withDayOfMonth(1);
         StructureAssignement lastAssignement = structureService.getLastStructureAssignementBeforeDate(session, employee, startDate);
 
-        if (lastAssignement == null && base==null) {
+        if (lastAssignement == null ) {
             throw new RuntimeException("Aucune structure de salaire trouvée pour l’employé " + employee + " avant la date " + startDate);
         }
         else{
