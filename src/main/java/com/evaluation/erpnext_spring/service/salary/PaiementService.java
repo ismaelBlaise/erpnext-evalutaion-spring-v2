@@ -66,8 +66,10 @@ public class PaiementService {
         return salaireData;
     }
 
-    public void genererSalaires(HttpSession session, String employee, String startDate, String endDate, Double base) throws Exception {
+    public List<SalaireData> genererSalaires(HttpSession session, String employee, String startDate, String endDate, Double base) throws Exception {
         List<SalaireData> salaireDatas = new ArrayList<>();
+        startDate+="-01";
+        endDate+="-01";
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate start = LocalDate.parse(startDate, formatter).withDayOfMonth(1);
@@ -105,6 +107,7 @@ public class PaiementService {
        if(!salaireDatas.isEmpty()){
          salaireImportService.importSalaireData(session, salaireDatas);
        }
+       return salaireDatas;
     }
 
 
@@ -188,15 +191,14 @@ public class PaiementService {
                 amount = Math.round(amount * 100.0) / 100.0;
                 structureAssignement.setBase(amount);
                 structureAssignement.setName(null);
-                
-
+                structureAssignement.setAmended_from(structureAssignement.getName());
 
                 // structureService.assignSalaryStructure(session, assignement);
-
                
                 SalarySlipDto salarySlipDto=salarySlipService.cancelOrDeleteSalarySlip(session, slipDto,true);
-                // salarySlipDto
+                 
                 // salarySlipDto.setName(null);
+                // salarySlipDto.setAmended_from(salarySlipDto.getName());
                 // salarySlipService.createSalarySlip(session, salarySlipDto);
 
                 List<SalaireData> salaireDatas=new ArrayList<>();

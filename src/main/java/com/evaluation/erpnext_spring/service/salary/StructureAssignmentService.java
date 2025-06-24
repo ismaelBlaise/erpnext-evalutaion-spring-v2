@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -144,6 +145,58 @@ public class StructureAssignmentService {
         }
     }
 
+    public boolean isStrustureAssignmentExist(HttpSession session,StructureAssignement structureAssignement){
+        List<StructureAssignement> structureAssignements=getSalaryStructureAssignments(session).getData();
 
+        for (StructureAssignement structureAssignement2 : structureAssignements) {
+            if(structureAssignement.equals(structureAssignement2)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public StructureAssignementResponse getSalaryStructureAssignments(HttpSession session) {
+        String sid = (String) session.getAttribute("sid");
+        if (sid == null || sid.isEmpty()) {
+            throw new RuntimeException("Session non authentifiée");
+        }
+
+       
+        
+
+        StringBuilder urlBuilder = new StringBuilder(erpnextApiUrl + "/api/resource/Salary Structure Assignment?");
+
+        
+       
+       
+        urlBuilder.append("&fields=").append("[\"*\"]");
+
+       
+       
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.add("Cookie", "sid=" + sid);
+
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<StructureAssignementResponse> response = restTemplate.exchange(
+                urlBuilder.toString(),
+                HttpMethod.GET,
+                request,
+                StructureAssignementResponse.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Échec de la récupération des attributions de paie : " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des attributions de paie : " + e.getMessage(), e);
+        }
+    }
 
 }

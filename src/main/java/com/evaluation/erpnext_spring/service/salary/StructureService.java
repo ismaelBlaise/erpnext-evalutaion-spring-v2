@@ -155,10 +155,10 @@ public class StructureService {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 return response.getBody();
             } else {
-                throw new RuntimeException("Échec de la récupération des fiches de paie : " + response.getStatusCode());
+                throw new RuntimeException("Échec de la récupération des grilles de paie : " + response.getStatusCode());
             }
         } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la récupération des fiches de paie : " + e.getMessage(), e);
+            throw new RuntimeException("Erreur lors de la récupération des grilles de paie : " + e.getMessage(), e);
         }
     }
 

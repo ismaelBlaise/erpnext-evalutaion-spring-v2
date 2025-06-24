@@ -2,6 +2,7 @@ package com.evaluation.erpnext_spring.controller;
 
 import com.evaluation.erpnext_spring.dto.data.DataDto;
 import com.evaluation.erpnext_spring.dto.employees.EmployeeDto;
+import com.evaluation.erpnext_spring.dto.imports.SalaireData;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.service.data.DataService;
 import com.evaluation.erpnext_spring.service.employee.EmployeeService;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/salaire")
@@ -66,10 +66,18 @@ public class PaiementController {
             List<EmployeeDto> employees = employeeService.getAllEmployees(session, 0, 0, null).getData();
 
             modelAndView.addObject("employees", employees);
-            paiementService.genererSalaires(session, employee, startDate, endDate, base);
+            List<SalaireData> salaireDatas=paiementService.genererSalaires(session, employee, startDate, endDate, base);
+                
+            if(salaireDatas.isEmpty()){
+                modelAndView.addObject("success", "Aucune fiche de paie generé !");
+
+            }
+            else{
+                modelAndView.addObject("success", salaireDatas.size()+" fiches de paie générés avec succès !");
+
+            }
             
-            modelAndView.addObject("success", "Salaires générés avec succès !");
-        } catch (Exception e) {
+            } catch (Exception e) {
             modelAndView.addObject("error", "Erreur lors de la génération : " + e.getMessage());
         }
 
@@ -135,12 +143,12 @@ public class PaiementController {
             
             modelAndView.addObject("success", "Modification appliquée avec succès à " + updatedSlips.size() + " fiches de paie");
             
-            List<String> affectedEmployees = updatedSlips.stream()
-                .map(SalarySlipDto::getEmployeeName)
-                .distinct()
-                .collect(Collectors.toList());
+            // List<String> affectedEmployees = updatedSlips.stream()
+            //     .map(SalarySlipDto::getEmployeeName)
+            //     .distinct()
+            //     .collect(Collectors.toList());
             
-            modelAndView.addObject("affectedEmployees", affectedEmployees);
+            modelAndView.addObject("affectedEmployees", updatedSlips);
             
         } catch (Exception e) {
             modelAndView.addObject("error", "Erreur lors de la modification : " + e.getMessage());

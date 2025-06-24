@@ -84,15 +84,47 @@
         </form>
 
         <!-- Résultats -->
-        <div th:if="${affectedEmployees != null}" class="mt-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-2">
-                <i class="fas fa-users mr-2"></i>Employés concernés
+        <div th:if="${affectedEmployees != null}" class="mt-10">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">
+                <i class="fas fa-users text-blue-600 mr-2"></i>Employés concernés par la modification
             </h3>
-            <ul class="bg-white shadow rounded-md p-4">
-                <li th:each="emp : ${affectedEmployees}" class="py-1 flex items-center">
-                    <i class="fas fa-user-circle text-blue-400 mr-2"></i>
-                    <span th:text="${emp}"></span>
-                </li>
-            </ul>
+
+            <div class="overflow-x-auto rounded-lg shadow border border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200 bg-white text-sm text-gray-700">
+                    <thead class="bg-blue-50 text-gray-600 uppercase text-xs tracking-wider">
+                        <tr>
+                            <th class="px-5 py-3 text-left">ID</th>
+                            <th class="px-5 py-3 text-left">Employé</th>
+                            <th class="px-5 py-3 text-right">Salaire Brut</th>
+                            <th class="px-5 py-3 text-right">Déduction</th>
+                            <th class="px-5 py-3 text-right">Net à Payer</th>
+                            <th class="px-5 py-3 text-center">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr th:each="slip : ${affectedEmployees}" class="hover:bg-blue-50 transition duration-150">
+                            <td class="px-5 py-3 whitespace-nowrap" th:text="${slip.name}"></td>
+                            <td class="px-5 py-3">
+                                <div class="font-medium text-gray-800" th:text="${slip.employeeName}"></div>
+                                <div class="text-xs text-gray-500 italic" th:text="${slip.department} + ' - ' + ${slip.designation}"></div>
+                            </td>
+                            <td class="px-5 py-3 text-right">
+                                <span th:text="${#numbers.formatDecimal(slip.grossPay, 1, 'POINT', 2, 'COMMA')}"></span>
+                                <span class="ml-1 inline-block text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full" th:text="${slip.currency}"></span>
+                            </td>
+                            <td class="px-5 py-3 text-right text-red-600 font-semibold">
+                                <span th:text="${#numbers.formatDecimal(slip.totalDeduction, 1, 'POINT', 2, 'COMMA')}"></span>
+                                <span class="ml-1 inline-block text-xs px-2 py-0.5 bg-red-100 text-red-600 rounded-full" th:text="${slip.currency}"></span>
+                            </td>
+                            <td class="px-5 py-3 text-right text-green-600 font-semibold">
+                                <span th:text="${#numbers.formatDecimal(slip.netPay, 1, 'POINT', 2, 'COMMA')}"></span>
+                                <span class="ml-1 inline-block text-xs px-2 py-0.5 bg-green-100 text-green-600 rounded-full" th:text="${slip.currency}"></span>
+                            </td>
+                            <td class="px-5 py-3 text-center text-gray-500 text-sm" th:text="${slip.postingDate}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </div>
