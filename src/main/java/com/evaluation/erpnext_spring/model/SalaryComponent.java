@@ -2,8 +2,7 @@ package com.evaluation.erpnext_spring.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.math.BigDecimal;
+ 
 import java.time.LocalDate;
 
 @Data
@@ -82,7 +81,7 @@ public class SalaryComponent {
     private String condition;
 
     @Column(name = "amount")
-    private BigDecimal amount;
+    private Double amount;
 
     @Column(name = "amount_based_on_formula")
     private Integer amountBasedOnFormula;
@@ -94,7 +93,7 @@ public class SalaryComponent {
     private Integer isFlexibleBenefit;
 
     @Column(name = "max_benefit_amount")
-    private BigDecimal maxBenefitAmount;
+    private Double maxBenefitAmount;
 
     @Column(name = "pay_against_benefit_claim")
     private Integer payAgainstBenefitClaim;

@@ -59,14 +59,17 @@ public class PaiementController {
                                         @RequestParam("employee") String employee,
                                         @RequestParam("startDate") String startDate,
                                         @RequestParam("endDate") String endDate,
-                                        @RequestParam(required = false) Double base) {
+                                        @RequestParam(required = false) Double base,
+                                        @RequestParam(value = "ecraser",defaultValue = "false") boolean ecraser,
+                                        @RequestParam(value = "moyenne",defaultValue = "false") boolean moyenne) {
         ModelAndView modelAndView = new ModelAndView("template");
         try {
+            System.out.println(ecraser+" "+moyenne);
             modelAndView.addObject("page", "salaires/generation");
             List<EmployeeDto> employees = employeeService.getAllEmployees(session, 0, 0, null).getData();
 
             modelAndView.addObject("employees", employees);
-            List<SalaireData> salaireDatas=paiementService.genererSalaires(session, employee, startDate, endDate, base);
+            List<SalaireData> salaireDatas=paiementService.genererSalaires(session, employee, startDate, endDate, base,ecraser,moyenne);
                 
             if(salaireDatas.isEmpty()){
                 modelAndView.addObject("success", "Aucune fiche de paie generé !");
@@ -78,6 +81,7 @@ public class PaiementController {
             }
             
             } catch (Exception e) {
+                e.printStackTrace();
             modelAndView.addObject("error", "Erreur lors de la génération : " + e.getMessage());
         }
 
@@ -92,6 +96,22 @@ public class PaiementController {
         ModelAndView modelAndView = new ModelAndView("template");
         try {
             modelAndView.addObject("page", "salaires/modification");
+            
+            // Récupérer les composants salariaux
+            List<DataDto> components = dataService.getAllData(session, "Salary Component", null).getData();
+            modelAndView.addObject("components", components);
+            
+        } catch (Exception e) {
+            modelAndView.addObject("error", e.getMessage());
+        }
+        return modelAndView;
+    }
+
+     @GetMapping("/recherche-composants")
+    public ModelAndView recherche(HttpSession session) {
+        ModelAndView modelAndView = new ModelAndView("template");
+        try {
+            modelAndView.addObject("page", "salaires/recherche");
             
             // Récupérer les composants salariaux
             List<DataDto> components = dataService.getAllData(session, "Salary Component", null).getData();
@@ -149,6 +169,58 @@ public class PaiementController {
             //     .collect(Collectors.toList());
             
             modelAndView.addObject("affectedEmployees", updatedSlips);
+            
+        } catch (Exception e) {
+            modelAndView.addObject("error", "Erreur lors de la modification : " + e.getMessage());
+        }
+        
+        return modelAndView;
+    }
+
+     @PostMapping("/traiter-recherche")
+    public ModelAndView rehcrercher(HttpSession session,
+                                          @RequestParam("selectedComponent") String componentName,
+                                          @RequestParam("comparaisonType") String comparaisonType,
+                                          @RequestParam("thresholdValue") Double thresholdValue) {
+        
+        ModelAndView modelAndView = new ModelAndView("template");
+        modelAndView.addObject("page", "salaires/recherche");
+        
+        try {
+           
+            List<DataDto> components = dataService.getAllData(session, "Salary Component", null).getData();
+            modelAndView.addObject("components", components);
+            
+            
+            boolean isGreaterThan = "superieur".equals(comparaisonType);
+            
+            List<SalarySlipDto> filteredSlips = paiementService.getSalarySlipsByComponentThreshold(
+                session, componentName, thresholdValue, isGreaterThan);
+            
+           
+            // boolean isIncrease = "augmentation".equals(modificationType);
+            // List<SalarySlipDto> updatedSlips = paiementService.cancelAndUpdateSalarySlips(
+            //     session, 
+            //     filteredSlips,
+            //     componentName, 
+            //     percentageValue, 
+            //     isIncrease);
+            
+            
+            modelAndView.addObject("selectedComponent", componentName);
+            modelAndView.addObject("comparaisonType", comparaisonType);
+            modelAndView.addObject("thresholdValue", thresholdValue);
+            // modelAndView.addObject("modificationType", modificationType);
+            // modelAndView.addObject("percentageValue", percentageValue);
+            
+            // modelAndView.addObject("success", "Modification appliquée avec succès à " + updatedSlips.size() + " fiches de paie");
+            
+            // List<String> affectedEmployees = updatedSlips.stream()
+            //     .map(SalarySlipDto::getEmployeeName)
+            //     .distinct()
+            //     .collect(Collectors.toList());
+            
+            modelAndView.addObject("salarySlips", filteredSlips);
             
         } catch (Exception e) {
             modelAndView.addObject("error", "Erreur lors de la modification : " + e.getMessage());

@@ -2,6 +2,7 @@ package com.evaluation.erpnext_spring.service.salary;
 
 import com.evaluation.erpnext_spring.dto.grilles.SalaryStructureDto;
 import com.evaluation.erpnext_spring.dto.grilles.SalaryStructureResponse;
+import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -161,5 +162,11 @@ public class StructureService {
             throw new RuntimeException("Erreur lors de la récupération des grilles de paie : " + e.getMessage(), e);
         }
     }
+
+
+    // public double moyenneSalaireBase(HttpSession session){
+    //     List<SalarySlipDto> salarySlipDtos=sala
+        
+    // }
 
 }

@@ -300,7 +300,7 @@ public class SalarySlipService {
     }
 
 
-    public boolean isSalarySlipAlreadyCreatedBack(HttpSession session, String employeeId, LocalDate forDate) {
+    public SalarySlipDto isSalarySlipAlreadyCreatedBack(HttpSession session, String employeeId, LocalDate forDate) {
        
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -317,11 +317,11 @@ public class SalarySlipService {
             
             if ((forDate.isEqual(startDate) || forDate.isAfter(startDate)) &&
                 (forDate.isEqual(endDate) || forDate.isBefore(endDate))) {
-                return true;
+                return slip;
             }
         }
 
-        return false;
+        return null;
     }
 
 
@@ -397,6 +397,25 @@ public class SalarySlipService {
 
     
     
+    public double moyenneSalaire(HttpSession session,List<DataDto> dataDtos){
+        SalarySlipListResponse salarySlipListResponse=getSalarySlips(session, 0, 0, null);
+        double moyenne=0;
 
+        List<SalarySlipDto> salarySlipDtos=getRapport(session, salarySlipListResponse).getData();
+        // List<DataDto> dataDtos=
+        salarySlipDtos=getComponents(salarySlipDtos,dataDtos);
+
+        for (SalarySlipDto salarySlipDto : salarySlipDtos) {
+            salarySlipDto=getSalarySlipByName(session,salarySlipDto.getName()).getData();
+            if(salarySlipDto.getEarnings()!=null){
+                for (SalaryEarning salaryEarning :salarySlipDto.getEarnings()) {
+                    if(salaryEarning.getAbbr().equals("SB")){
+                        moyenne+=salaryEarning.getAmount();
+                    }
+                }
+            }
+        }
+        return moyenne/salarySlipDtos.size();
+    }
 
 }

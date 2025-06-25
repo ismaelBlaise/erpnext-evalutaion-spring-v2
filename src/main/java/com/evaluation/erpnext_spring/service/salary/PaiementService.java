@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.evaluation.erpnext_spring.dto.data.DataDto;
 import com.evaluation.erpnext_spring.dto.grilles.SalaryStructureDto;
 import com.evaluation.erpnext_spring.dto.imports.SalaireData;
 import com.evaluation.erpnext_spring.dto.salaries.SalaryDeduction;
@@ -17,6 +18,7 @@ import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDetail;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipDto;
 import com.evaluation.erpnext_spring.dto.salaries.SalarySlipListResponse;
 import com.evaluation.erpnext_spring.dto.structures.StructureAssignement;
+import com.evaluation.erpnext_spring.service.data.DataService;
 import com.evaluation.erpnext_spring.service.imports.SalaireImportService;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +28,9 @@ public class PaiementService {
     @SuppressWarnings("unused")
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private DataService dataService;
 
     @Value("${erpnext.api.url}")
     private String erpnextApiUrl;
@@ -66,20 +71,23 @@ public class PaiementService {
         return salaireData;
     }
 
-    public List<SalaireData> genererSalaires(HttpSession session, String employee, String startDate, String endDate, Double base) throws Exception {
+    public List<SalaireData> genererSalaires(HttpSession session, String employee, String startDate, String endDate, Double base,boolean ecraser,boolean moyenne) throws Exception {
         List<SalaireData> salaireDatas = new ArrayList<>();
         startDate+="-01";
         endDate+="-01";
-
+        List<DataDto> dataDtos=dataService.getAllData(session,"Salary Component",null).getData();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate start = LocalDate.parse(startDate, formatter).withDayOfMonth(1);
         LocalDate end = LocalDate.parse(endDate, formatter).withDayOfMonth(1);
         StructureAssignement lastAssignement = structureService.getLastStructureAssignementBeforeDate(session, employee, startDate);
-
-        if (lastAssignement == null && base==null ) {
+         double moy=salarySlipService.moyenneSalaire(session, dataDtos);
+            System.out.println(moy);
+        System.out.println(base);
+            if (lastAssignement == null && base==null && moyenne==false) {
             throw new RuntimeException("Aucune structure de salaire trouvée pour l’employé " + employee + " avant la date " + startDate);
         }
-        else if(lastAssignement==null && base!=null){
+        else if(lastAssignement==null && base!=null && moyenne==false){
+            // structureService.cancelOrDeleteStructureAssignment(session, lastAssignement, true);
             SalaryStructureDto salaryStructureDto=structureServiceGrid.getSalaryStructures(session).getData().get(0);
 
             lastAssignement=new StructureAssignement();
@@ -91,14 +99,60 @@ public class PaiementService {
 
 
         }
+        else if(lastAssignement!=null && base!=null && moyenne==false){
+            structureService.cancelOrDeleteStructureAssignment(session, lastAssignement, true);
+            SalaryStructureDto salaryStructureDto=structureServiceGrid.getSalaryStructures(session).getData().get(0);
+
+            lastAssignement=new StructureAssignement();
+            lastAssignement.setSalary_structure(salaryStructureDto.getName());
+            lastAssignement.setBase(base);
+            lastAssignement.setCompany(salaryStructureDto.getCompany());
+            lastAssignement.setFrom_date(start.toString());
+            lastAssignement.setEmployee(employee);
+
+
+        }
+        else  if(lastAssignement==null && base==null && moyenne==true){
+            // structureService.cancelOrDeleteStructureAssignment(session, lastAssignement, true);
+            SalaryStructureDto salaryStructureDto=structureServiceGrid.getSalaryStructures(session).getData().get(0);
+            
+            lastAssignement=new StructureAssignement();
+            lastAssignement.setSalary_structure(salaryStructureDto.getName());
+            lastAssignement.setBase(moy);
+            lastAssignement.setCompany(salaryStructureDto.getCompany());
+            lastAssignement.setFrom_date(start.toString());
+            lastAssignement.setEmployee(employee);
+        }
+        else  if(lastAssignement!=null && base==null && moyenne==true){
+            structureService.cancelOrDeleteStructureAssignment(session, lastAssignement, true);
+            SalaryStructureDto salaryStructureDto=structureServiceGrid.getSalaryStructures(session).getData().get(0);
+            
+            lastAssignement=new StructureAssignement();
+            lastAssignement.setSalary_structure(salaryStructureDto.getName());
+            lastAssignement.setBase(moy);
+            lastAssignement.setCompany(salaryStructureDto.getCompany());
+            lastAssignement.setFrom_date(start.toString());
+            lastAssignement.setEmployee(employee);
+        }
+        
 
         while (!start.isAfter(end)) {
-            if(salarySlipService.isSalarySlipAlreadyCreatedBack(session, employee, start)==false){
-                String dateMois = start.toString(); 
-                SalaireData salaireData = genererSalaireData(lastAssignement, employee, dateMois, base);
+            SalarySlipDto salarySlipDto=salarySlipService.isSalarySlipAlreadyCreatedBack(session, employee, start);
+            String dateMois = start.toString(); 
+            SalaireData salaireData = genererSalaireData(lastAssignement, employee, dateMois, base);
+            if(salarySlipDto==null){
+                
                
                 salaireDatas.add(salaireData);
                
+            }
+            else if(salarySlipDto!=null && ecraser==true){
+                StructureAssignement lastAssignement2 = structureService.getLastStructureAssignementBeforeDate(session, employee, salarySlipDto.getStartDate());
+                if(lastAssignement2!=null){
+                    structureService.cancelOrDeleteStructureAssignment(session, lastAssignement2, true);
+                }
+                salarySlipService.cancelOrDeleteSalarySlip(session, salarySlipDto,true);
+                salaireDatas.add(salaireData);
             }
             start = start.plusMonths(1);
         }

@@ -3,7 +3,6 @@ package com.evaluation.erpnext_spring.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -40,13 +39,13 @@ public class SalaryDetail {
     private String abbr;
 
     @Column(name = "amount")
-    private BigDecimal amount;
+    private Double amount;
 
     @Column(name = "year_to_date")
-    private BigDecimal yearToDate;
+    private Double yearToDate;
 
     @Column(name = "additional_salary")
-    private BigDecimal additionalSalary;
+    private Double additionalSalary;
 
     @Column(name = "is_recurring_additional_salary")
     private Integer isRecurringAdditionalSalary;
@@ -85,16 +84,16 @@ public class SalaryDetail {
     private String formula;
 
     @Column(name = "default_amount")
-    private BigDecimal defaultAmount;
+    private Double defaultAmount;
 
     @Column(name = "additional_amount")
-    private BigDecimal additionalAmount;
+    private Double additionalAmount;
 
     @Column(name = "tax_on_flexible_benefit")
-    private BigDecimal taxOnFlexibleBenefit;
+    private Double taxOnFlexibleBenefit;
 
     @Column(name = "tax_on_additional_salary")
-    private BigDecimal taxOnAdditionalSalary;
+    private Double taxOnAdditionalSalary;
 
     @Column(name = "parent")
     private String parent;

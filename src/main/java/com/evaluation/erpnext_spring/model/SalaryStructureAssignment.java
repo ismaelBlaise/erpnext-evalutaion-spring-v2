@@ -2,8 +2,6 @@ package com.evaluation.erpnext_spring.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -70,16 +68,16 @@ public class SalaryStructureAssignment {
     private String base;
 
     @Column(name = "variable")
-    private BigDecimal variable;
+    private Double variable;
 
     @Column(name = "amended_from")
     private String amendedFrom;
 
     @Column(name = "taxable_earnings_till_date")
-    private BigDecimal taxableEarningsTillDate;
+    private Double taxableEarningsTillDate;
 
     @Column(name = "tax_deducted_till_date")
-    private BigDecimal taxDeductedTillDate;
+    private Double taxDeductedTillDate;
 
     @Column(name = "_user_tags")
     private String userTags;
@@ -100,7 +98,7 @@ public class SalaryStructureAssignment {
     private Integer isActive;
 
     @Column(name = "base_salary")
-    private BigDecimal baseSalary;
+    private Double baseSalary;
 
     @Column(name = "payroll_frequency")
     private String payrollFrequency;

@@ -3,7 +3,7 @@ package com.evaluation.erpnext_spring.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -71,7 +71,7 @@ public class SalarySlip {
     private String currency;
 
     @Column(name = "exchange_rate")
-    private BigDecimal exchangeRate;
+    private Double exchangeRate;
 
     @Column(name = "payroll_frequency")
     private String payrollFrequency;
@@ -119,52 +119,52 @@ public class SalarySlip {
     private Double totalWorkingHours;
 
     @Column(name = "hour_rate")
-    private BigDecimal hourRate;
+    private Double hourRate;
 
     @Column(name = "base_hour_rate")
-    private BigDecimal baseHourRate;
+    private Double baseHourRate;
 
     @Column(name = "gross_pay")
-    private BigDecimal grossPay;
+    private Double grossPay;
 
     @Column(name = "base_gross_pay")
-    private BigDecimal baseGrossPay;
+    private Double baseGrossPay;
 
     @Column(name = "gross_year_to_date")
-    private BigDecimal grossYearToDate;
+    private Double grossYearToDate;
 
     @Column(name = "base_gross_year_to_date")
-    private BigDecimal baseGrossYearToDate;
+    private Double baseGrossYearToDate;
 
     @Column(name = "total_deduction")
-    private BigDecimal totalDeduction;
+    private Double totalDeduction;
 
     @Column(name = "base_total_deduction")
-    private BigDecimal baseTotalDeduction;
+    private Double baseTotalDeduction;
 
     @Column(name = "net_pay")
-    private BigDecimal netPay;
+    private Double netPay;
 
     @Column(name = "base_net_pay")
-    private BigDecimal baseNetPay;
+    private Double baseNetPay;
 
     @Column(name = "rounded_total")
-    private BigDecimal roundedTotal;
+    private Double roundedTotal;
 
     @Column(name = "base_rounded_total")
-    private BigDecimal baseRoundedTotal;
+    private Double baseRoundedTotal;
 
     @Column(name = "year_to_date")
-    private BigDecimal yearToDate;
+    private Double yearToDate;
 
     @Column(name = "base_year_to_date")
-    private BigDecimal baseYearToDate;
+    private Double baseYearToDate;
 
     @Column(name = "month_to_date")
-    private BigDecimal monthToDate;
+    private Double monthToDate;
 
     @Column(name = "base_month_to_date")
-    private BigDecimal baseMonthToDate;
+    private Double baseMonthToDate;
 
     @Column(name = "total_in_words")
     private String totalInWords;
@@ -173,40 +173,40 @@ public class SalarySlip {
     private String baseTotalInWords;
 
     @Column(name = "ctc")
-    private BigDecimal ctc;
+    private Double ctc;
 
     @Column(name = "income_from_other_sources")
-    private BigDecimal incomeFromOtherSources;
+    private Double incomeFromOtherSources;
 
     @Column(name = "total_earnings")
-    private BigDecimal totalEarnings;
+    private Double totalEarnings;
 
     @Column(name = "non_taxable_earnings")
-    private BigDecimal nonTaxableEarnings;
+    private Double nonTaxableEarnings;
 
     @Column(name = "standard_tax_exemption_amount")
-    private BigDecimal standardTaxExemptionAmount;
+    private Double standardTaxExemptionAmount;
 
     @Column(name = "tax_exemption_declaration")
-    private BigDecimal taxExemptionDeclaration;
+    private Double taxExemptionDeclaration;
 
     @Column(name = "deductions_before_tax_calculation")
-    private BigDecimal deductionsBeforeTaxCalculation;
+    private Double deductionsBeforeTaxCalculation;
 
     @Column(name = "annual_taxable_amount")
-    private BigDecimal annualTaxableAmount;
+    private Double annualTaxableAmount;
 
     @Column(name = "income_tax_deducted_till_date")
-    private BigDecimal incomeTaxDeductedTillDate;
+    private Double incomeTaxDeductedTillDate;
 
     @Column(name = "current_month_income_tax")
-    private BigDecimal currentMonthIncomeTax;
+    private Double currentMonthIncomeTax;
 
     @Column(name = "future_income_tax_deductions")
-    private BigDecimal futureIncomeTaxDeductions;
+    private Double futureIncomeTaxDeductions;
 
     @Column(name = "total_income_tax")
-    private BigDecimal totalIncomeTax;
+    private Double totalIncomeTax;
 
     @Column(name = "journal_entry")
     private String journalEntry;
