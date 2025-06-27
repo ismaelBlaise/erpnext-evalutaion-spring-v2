@@ -172,7 +172,7 @@ public class PaiementService {
     public List<SalarySlipDto> getSalarySlipsByComponentThreshold(HttpSession session, 
                                                              String componentName, 
                                                              double threshold, 
-                                                             boolean isGreaterThan) {
+                                                             boolean isGreaterThan,boolean isEgal) {
         
         SalarySlipListResponse response = salarySlipService.getSalarySlips(session, 0, 0, null);
         List<SalarySlipDto> allSlips = response.getData();
@@ -190,8 +190,14 @@ public class PaiementService {
                 for (SalaryEarning earning : fullSlip.getEarnings()) {
                     if (earning.getSalaryComponent().equals(componentName)) {
                         
-                        if ((isGreaterThan && earning.getAmount() > threshold) ||
-                            (!isGreaterThan && earning.getAmount() < threshold)) {
+                        if ((isGreaterThan && isEgal && earning.getAmount() >= threshold) ||
+                            (!isGreaterThan && isEgal && earning.getAmount() <= threshold)) {
+                           
+                                filteredSlips.add(fullSlip);
+                            break;  
+                        }
+                         if ((isGreaterThan  && earning.getAmount() > threshold) ||
+                            (!isGreaterThan  && earning.getAmount() < threshold)) {
                            
                                 filteredSlips.add(fullSlip);
                             break;  

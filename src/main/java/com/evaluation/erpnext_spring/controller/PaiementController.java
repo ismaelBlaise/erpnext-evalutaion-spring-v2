@@ -142,8 +142,10 @@ public class PaiementController {
             
             boolean isGreaterThan = "superieur".equals(comparaisonType);
             
+        
+            
             List<SalarySlipDto> filteredSlips = paiementService.getSalarySlipsByComponentThreshold(
-                session, componentName, thresholdValue, isGreaterThan);
+                session, componentName, thresholdValue, isGreaterThan,false);
             
            
             boolean isIncrease = "augmentation".equals(modificationType);
@@ -192,10 +194,22 @@ public class PaiementController {
             modelAndView.addObject("components", components);
             
             
+             boolean isEgal=false;
             boolean isGreaterThan = "superieur".equals(comparaisonType);
+            if("superieur egal".equals(comparaisonType)){
+                isGreaterThan=true;
+                isEgal=true;
+
+            }
+            if("inferieur egal".equals(comparaisonType)){
+                isGreaterThan=false;
+                isEgal=true;
+
+            }
+        
             
             List<SalarySlipDto> filteredSlips = paiementService.getSalarySlipsByComponentThreshold(
-                session, componentName, thresholdValue, isGreaterThan);
+                session, componentName, thresholdValue, isGreaterThan,isEgal);
             
            
             // boolean isIncrease = "augmentation".equals(modificationType);
